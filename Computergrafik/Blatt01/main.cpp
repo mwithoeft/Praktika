@@ -285,7 +285,6 @@ glm::vec3 rgbToCMY(glm::vec3 rgbColors)
 	float c = 1.0f - rgbColors[0];
 	float m = 1.0f - rgbColors[1];
 	float y = 1.0f - rgbColors[2];
-	//std::cout << "c: " << c << " m: " << m << " y: " << y << std::endl;
 	return { c, m, y };
 }
 
@@ -295,7 +294,7 @@ glm::vec3 rgbToHSV(glm::vec3 rgbColors)
 	float cMin = 1.0f;
 
 	// Calc max and min color values
-	for (size_t i = 0; i < (size_t) rgbColors.length; i++)
+	for (size_t i = 0; i < 3; i++)
 	{
 		if (rgbColors[i] > cMax)
 		{
@@ -342,20 +341,138 @@ glm::vec3 rgbToHSV(glm::vec3 rgbColors)
 
 	// Calc value
 	float value = cMax;
-
-
-	std::cout << "h: " << hue << " s: " << saturation << " v: " << value << std::endl;
 	return { hue, saturation, value };
 }
 
 glm::vec3 cmyToRGB(glm::vec3 cmyColors)
 {
-	return rgbToCMY(cmyColors);
+	return{ rgbToCMY(cmyColors) };
 }
+
+glm::vec3 cmyToHSV(glm::vec3 cmyColors)
+{
+	return{ rgbToHSV(cmyToRGB(cmyColors)) };
+}
+
+
+glm::vec3 hsvToRGB(glm::vec3 hsvColors)
+{
+	//Formel auf: https://www.rapidtables.com/convert/color/hsv-to-rgb.html
+
+	float h = hsvColors[0];
+	float s = hsvColors[1];
+	float v = hsvColors[2];
+
+	float c = v * s;
+	float x = c * (1 - abs(fmodf((h/60), 2)-1));
+	float m = v - c;
+
+	float r = 0.0f, g = 0.0f, b = 0.0f;
+	if (h >= 0 && h < 60) 
+	{
+		r = c;
+		g = x;
+		b = 0.0f;
+	}
+	else if (h >= 60 && h < 120) 
+	{
+		r = x;
+		g = c;
+		b = 0.0f;
+	}
+	else if (h >= 120 && h < 180) 
+	{
+		r = 0.0f;
+		g = c;
+		b = x;
+	}
+	else if (h >= 180 && h < 240) 
+	{
+		r = 0.0f;
+		g = x;
+		b = c;
+	} 
+	else if (h >= 240 && h < 300) 
+	{
+		r = x;
+		g = 0;
+		b = c;
+	}
+	else if (h >= 300 && h < 360) 
+	{
+		r = c;
+		g = 0;
+		b = x;
+	}
+	else {
+		//Error!;
+	}
+
+	r = (r + m);
+	g = (g + m);
+	b = (b + m);
+
+	return {r, g, b};
+}
+
+glm::vec3 hsvToCMY(glm::vec3 hsvColors)
+{
+	return{ rgbToCMY(hsvToRGB(hsvColors)) };
+}
+
 
 int main(int argc, char** argv)
 {
-	rgbToHSV({ 0.3, 0.2, 1.0 }); // TEST
+	//Zum Testen: https://convertingcolors.com/rgbpercent-color-30_20_100.html
+	
+	const float R_RGB = 0.3f;
+	const float G_RGB = 0.2f;
+	const float B_RGB = 0.1f;
+
+	const float C_CMY = 0.9f;
+	const float M_CMY = 0.1f;
+	const float Y_CMY = 0.5f;
+
+	const float H_HSV = 30.0f;
+	const float S_HSV = 0.54f;
+	const float V_HSV = 0.6f;
+
+
+
+	glm::vec3 rgb2HSV = rgbToHSV({ R_RGB, G_RGB, B_RGB });
+	std::cout << "RGB zu HSV" << std::endl;
+	std::cout << "Eingabe: R: " << R_RGB << " G: " << G_RGB << " B: " << B_RGB << std::endl;
+	std::cout << "Ausgabe: H: " << rgb2HSV[0] << " S: " << rgb2HSV[1] << " V: " << rgb2HSV[0] << std::endl << std::endl;
+
+
+	glm::vec3 rgb2CMY = rgbToCMY({ R_RGB, G_RGB, B_RGB });
+	std::cout << "RGB zu CMY" << std::endl;
+	std::cout << "Eingabe: R: " << R_RGB << " G: " << G_RGB << " B: " << B_RGB << std::endl;
+	std::cout << "Ausgabe: C: " << rgb2CMY[0] << " M: " << rgb2CMY[1] << " Y: " << rgb2CMY[2] << std::endl << std::endl;
+
+
+	glm::vec3 cmy2RGB = cmyToRGB({ C_CMY, M_CMY, Y_CMY });
+	std::cout << "CMY zu RGB" << std::endl;
+	std::cout << "Eingabe: C: " << C_CMY << " M: " << M_CMY << " Y: " << Y_CMY << std::endl;
+	std::cout << "Ausgabe: R: " << cmy2RGB[0] << " G: " << cmy2RGB[1] << " B: " << cmy2RGB[2] << std::endl << std::endl;
+
+
+	glm::vec3 cmy2HSV = cmyToHSV({ C_CMY, M_CMY, Y_CMY });
+	std::cout << "CMY zu HSV" << std::endl;
+	std::cout << "Eingabe: C: " << C_CMY << " M: " << M_CMY << " Y: " << Y_CMY << std::endl;
+	std::cout << "Ausgabe: H: " << cmy2HSV[0] << " S: " << cmy2HSV[1] << " V: " << cmy2HSV[2] << std::endl << std::endl;
+
+	glm::vec3 hsv2RGB = hsvToRGB({ H_HSV, S_HSV, V_HSV });
+	std::cout << "HSV zu RGB" << std::endl;
+	std::cout << "Eingabe: H: " << H_HSV << " S: " << S_HSV << " V: " << V_HSV << std::endl;
+	std::cout << "Ausgabe: R: " << hsv2RGB[0] << " G: " << hsv2RGB[1] << " B: " << hsv2RGB[2] << std::endl << std::endl;
+
+	glm::vec3 hsv2CMY = hsvToCMY({ H_HSV, S_HSV, V_HSV });
+	std::cout << "HSV zu CMY" << std::endl;
+	std::cout << "Eingabe: H: " << H_HSV << " S: " << S_HSV << " V: " << V_HSV << std::endl;
+	std::cout << "Ausgabe: C: " << hsv2CMY[0] << " M: " << hsv2CMY[1] << " Y: " << hsv2CMY[2] << std::endl << std::endl;
+
+
   // GLUT: Initialize freeglut library (window toolkit).
   glutInitWindowSize    (WINDOW_WIDTH, WINDOW_HEIGHT);
   glutInitWindowPosition(40,40);

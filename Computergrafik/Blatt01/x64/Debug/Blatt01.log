@@ -1,0 +1,7 @@
+﻿  main.cpp
+s:\praktika\computergrafik\blatt01\main.cpp(299): warning C4267: 'argument': conversion from 'size_t' to 'glm::tvec3<float,0>::length_type', possible loss of data
+s:\praktika\computergrafik\blatt01\main.cpp(301): warning C4267: 'argument': conversion from 'size_t' to 'glm::tvec3<float,0>::length_type', possible loss of data
+s:\praktika\computergrafik\blatt01\main.cpp(303): warning C4267: 'argument': conversion from 'size_t' to 'glm::tvec3<float,0>::length_type', possible loss of data
+s:\praktika\computergrafik\blatt01\main.cpp(305): warning C4267: 'argument': conversion from 'size_t' to 'glm::tvec3<float,0>::length_type', possible loss of data
+  Blatt01.vcxproj -> S:\Praktika\Computergrafik\Blatt01\x64\Debug\Blatt01.exe
+  Blatt01.vcxproj -> S:\Praktika\Computergrafik\Blatt01\x64\Debug\Blatt01.pdb (Full PDB)
