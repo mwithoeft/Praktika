@@ -60,7 +60,7 @@ public:
 Object triangle;
 Object quad;
 
-void renderTriangle()
+/*void renderTriangle()
 {
   // Create mvp.
   glm::mat4x4 mvp = projection * view * triangle.model;
@@ -73,7 +73,7 @@ void renderTriangle()
   glBindVertexArray(triangle.vao);
   glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
   glBindVertexArray(0);
-}
+}*/
 
 void renderQuad()
 {
@@ -90,7 +90,7 @@ void renderQuad()
   glBindVertexArray(0);
 }
 
-void initTriangle()
+/*void initTriangle()
 {
   // Construct triangle. These vectors can go out of scope after we have send all data to the graphics card.
   const std::vector<glm::vec3> vertices = { glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f) };
@@ -134,13 +134,13 @@ void initTriangle()
   
   // Modify model matrix.
   triangle.model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.25f, 0.0f, 0.0f));
-}
+}*/
 
-void initQuad()
+void initQuad(glm::vec3 &quadColor)
 {
   // Construct triangle. These vectors can go out of scope after we have send all data to the graphics card.
   const std::vector<glm::vec3> vertices = { { -1.0f, 1.0f, 0.0f }, { -1.0, -1.0, 0.0 }, { 1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 0.0f } };
-  const std::vector<glm::vec3> colors   = { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
+  const std::vector<glm::vec3> colors   = { quadColor, quadColor, quadColor, quadColor };
   const std::vector<GLushort>  indices  = { 0, 1, 2, 0, 2, 3 };
 
   GLuint programId = program.getHandle();
@@ -185,7 +185,7 @@ void initQuad()
 /*
  Initialization. Should return true if everything is ok and false if something went wrong.
  */
-bool init()
+bool init(glm::vec3 &quadColor)
 {
   // OpenGL: Set "background" color and enable depth testing.
   glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -215,8 +215,8 @@ bool init()
   }
 
   // Create all objects.
-  initTriangle();
-  initQuad();
+  //initTriangle();
+  initQuad(quadColor);
   
   return true;
 }
@@ -228,7 +228,7 @@ void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	renderTriangle();
+	//renderTriangle();
 	renderQuad();
 }
 
@@ -420,57 +420,105 @@ glm::vec3 hsvToCMY(glm::vec3 hsvColors)
 	return{ rgbToCMY(hsvToRGB(hsvColors)) };
 }
 
+void userInput(std::string &model, glm::vec3 &input) 
+{
+	bool inputCorrect = false;
+
+	while (!inputCorrect) 
+	{
+		std::cout << "Geben Sie RGB, HSV oder CMY ein" << std::endl;
+		std::cin >> model;
+		if (model.compare("RGB") == 0) 
+		{
+			std::cout << "Geben Sie RGB Wert R zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[0];
+			std::cout << "Geben Sie RGB Wert G zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[1];
+			std::cout << "Geben Sie RGB Wert B zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[2];
+			if (input[0] >= 0 && input[0] <= 1 && input[1] >= 0 && input[1] <= 1 && input[2] >= 0 && input[2] <= 1)
+			{
+				inputCorrect = true;
+			}
+		} 
+		else if (model.compare("HSV") == 0) 
+		{
+			std::cout << "Geben Sie HSV Wert H zwischen 0 und 360 ein" << std::endl;
+			std::cin >> input[0];
+			std::cout << "Geben Sie HSV Wert S zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[1];
+			std::cout << "Geben Sie HSV Wert V zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[2];
+			if (input[0] >= 0 && input[0] <= 360 && input[1] >= 0 && input[1] <= 1 && input[2] >= 0 && input[2] <= 1)
+			{
+				inputCorrect = true;
+			}
+		} 
+		else if(model.compare("CMY") == 0) 
+		{
+			std::cout << "Geben Sie CMY Wert C zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[0];
+			std::cout << "Geben Sie CMY Wert M zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[1];
+			std::cout << "Geben Sie CMY Wert Y zwischen 0 und 1 ein" << std::endl;
+			std::cin >> input[2];
+			if (input[0] >= 0 && input[0] <= 1 && input[1] >= 0 && input[1] <= 1 && input[2] >= 0 && input[2] <= 1)
+			{
+				inputCorrect = true;
+			}
+		}
+		if (!inputCorrect)
+		{
+			std::cout << "Eingabe nicht korrekt!" << std::endl;
+		}
+	}
+}
 
 int main(int argc, char** argv)
 {
 	//Zum Testen: https://convertingcolors.com/rgbpercent-color-30_20_100.html
-	
-	const float R_RGB = 0.3f;
-	const float G_RGB = 0.2f;
-	const float B_RGB = 0.1f;
+	std::string colorModel = "RGB";
+	glm::vec3 input = { 0.1f, 0.1f, 0.1f };
+	glm::vec3 quadColor{0.1, 0.1f, 0.1f};
+	userInput(colorModel, input);
 
-	const float C_CMY = 0.9f;
-	const float M_CMY = 0.1f;
-	const float Y_CMY = 0.5f;
+	if (colorModel.compare("RGB") == 0) 
+	{
+		quadColor[0] = input[0];
+		quadColor[1] = input[1];
+		quadColor[2] = input[2];
 
-	const float H_HSV = 30.0f;
-	const float S_HSV = 0.54f;
-	const float V_HSV = 0.6f;
+		glm::vec3 rgb2HSV = rgbToHSV( input );
+		std::cout << "RGB zu HSV" << std::endl;
+		std::cout << "Ausgabe: H: " << rgb2HSV[0] << " S: " << rgb2HSV[1] << " V: " << rgb2HSV[0] << std::endl << std::endl;
+
+		glm::vec3 rgb2CMY = rgbToCMY( input );
+		std::cout << "RGB zu CMY" << std::endl;
+		std::cout << "Ausgabe: C: " << rgb2CMY[0] << " M: " << rgb2CMY[1] << " Y: " << rgb2CMY[2] << std::endl << std::endl;
+	}
+	else if (colorModel.compare("CMY") == 0) 
+	{
+		quadColor = cmyToRGB( input );
+		std::cout << "CMY zu RGB" << std::endl;
+		std::cout << "Ausgabe: R: " << quadColor[0] << " G: " << quadColor[1] << " B: " << quadColor[2] << std::endl << std::endl;
+
+		glm::vec3 cmy2HSV = cmyToHSV( input );
+		std::cout << "CMY zu HSV" << std::endl;
+		std::cout << "Ausgabe: H: " << cmy2HSV[0] << " S: " << cmy2HSV[1] << " V: " << cmy2HSV[2] << std::endl << std::endl;
+	}
+	else 
+	{
+		quadColor = hsvToRGB( input );
+		std::cout << "HSV zu RGB" << std::endl;
+		std::cout << "Ausgabe: R: " << quadColor[0] << " G: " << quadColor[1] << " B: " << quadColor[2] << std::endl << std::endl;
+
+		glm::vec3 hsv2CMY = hsvToCMY( input );
+		std::cout << "HSV zu CMY" << std::endl;
+		std::cout << "Ausgabe: C: " << hsv2CMY[0] << " M: " << hsv2CMY[1] << " Y: " << hsv2CMY[2] << std::endl << std::endl;
+	}
 
 
 
-	glm::vec3 rgb2HSV = rgbToHSV({ R_RGB, G_RGB, B_RGB });
-	std::cout << "RGB zu HSV" << std::endl;
-	std::cout << "Eingabe: R: " << R_RGB << " G: " << G_RGB << " B: " << B_RGB << std::endl;
-	std::cout << "Ausgabe: H: " << rgb2HSV[0] << " S: " << rgb2HSV[1] << " V: " << rgb2HSV[0] << std::endl << std::endl;
-
-
-	glm::vec3 rgb2CMY = rgbToCMY({ R_RGB, G_RGB, B_RGB });
-	std::cout << "RGB zu CMY" << std::endl;
-	std::cout << "Eingabe: R: " << R_RGB << " G: " << G_RGB << " B: " << B_RGB << std::endl;
-	std::cout << "Ausgabe: C: " << rgb2CMY[0] << " M: " << rgb2CMY[1] << " Y: " << rgb2CMY[2] << std::endl << std::endl;
-
-
-	glm::vec3 cmy2RGB = cmyToRGB({ C_CMY, M_CMY, Y_CMY });
-	std::cout << "CMY zu RGB" << std::endl;
-	std::cout << "Eingabe: C: " << C_CMY << " M: " << M_CMY << " Y: " << Y_CMY << std::endl;
-	std::cout << "Ausgabe: R: " << cmy2RGB[0] << " G: " << cmy2RGB[1] << " B: " << cmy2RGB[2] << std::endl << std::endl;
-
-
-	glm::vec3 cmy2HSV = cmyToHSV({ C_CMY, M_CMY, Y_CMY });
-	std::cout << "CMY zu HSV" << std::endl;
-	std::cout << "Eingabe: C: " << C_CMY << " M: " << M_CMY << " Y: " << Y_CMY << std::endl;
-	std::cout << "Ausgabe: H: " << cmy2HSV[0] << " S: " << cmy2HSV[1] << " V: " << cmy2HSV[2] << std::endl << std::endl;
-
-	glm::vec3 hsv2RGB = hsvToRGB({ H_HSV, S_HSV, V_HSV });
-	std::cout << "HSV zu RGB" << std::endl;
-	std::cout << "Eingabe: H: " << H_HSV << " S: " << S_HSV << " V: " << V_HSV << std::endl;
-	std::cout << "Ausgabe: R: " << hsv2RGB[0] << " G: " << hsv2RGB[1] << " B: " << hsv2RGB[2] << std::endl << std::endl;
-
-	glm::vec3 hsv2CMY = hsvToCMY({ H_HSV, S_HSV, V_HSV });
-	std::cout << "HSV zu CMY" << std::endl;
-	std::cout << "Eingabe: H: " << H_HSV << " S: " << S_HSV << " V: " << V_HSV << std::endl;
-	std::cout << "Ausgabe: C: " << hsv2CMY[0] << " M: " << hsv2CMY[1] << " Y: " << hsv2CMY[2] << std::endl << std::endl;
 
 
   // GLUT: Initialize freeglut library (window toolkit).
@@ -515,7 +563,7 @@ int main(int argc, char** argv)
   glutKeyboardFunc(glutKeyboard);
   
   // init vertex-array-objects.
-  bool result = init();
+  bool result = init(quadColor);
   if (!result) {
     return -2;
   }
