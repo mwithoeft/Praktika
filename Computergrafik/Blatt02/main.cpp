@@ -133,7 +133,7 @@ void initQuad()
 
 	// Unbind vertex array object (back to default).
 	glBindVertexArray(0);
-
+	-
 	// Modify model matrix.
 	quad.model = glm::translate(glm::mat4(1.0f), glm::vec3(1.25f, 0.0f, 0.0f));
 }
