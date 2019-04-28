@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Liste der Projekte</title>
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author"           content="Moritz Withoeft">
+        <meta name="copyright"        content="Minden 2019">
+        <meta name="keywords"         content="start index project projektübersicht">
+        <meta name="description"      content="Hier werden die erstellten Projekte aufgelistet">
+        
+        <link rel="shortcut icon" href="includes/favicon.ico">
+    </head>
+    <body>
+        <header>
+            <picture>
+                <source media="(min-width: 1920px)" srcset="includes/header1920x200.png">
+                <source media="(min-width: 1280px)" srcset="includes/header1280x133.png">
+                <source media="(min-width: 640px)" srcset="includes/header640x67.png">
+                <img src="includes/header320x34.png" alt="Header" style="width:auto;">
+            </picture>
+            <nav style="padding: 15px;">
+                <a href="index.html"><img src="includes/startseite.svg" alt="Index" style="width: 50px;"/></a>
+                <a href="overview.html">Liste der Projekte</a>
+                <a href="new_project.html">Projekt erstellen</a>
+            </nav>
+        </header>        
+        
+        <section>
+            <h1>Liste der Projekte</h1>
+            
+            <ul>
+                <li><a href="#studboard">StudBoard</a></li>
+                <li><a href="#geodatenverarbeitung">Geodatenverarbeitung</a></li>
+            </ul>
+        </section>
+        
+        <section id="studboard">
+            <h1>StudBoard</h1>
+            <p>
+                Beim StudBoard Projekt geht es um eine Website, die von Studierenden für Studierende erstellt worden ist, um ihre Projekte zu präsentieren.<br/>
+                Schau doch mal vorbei!  
+            </p>
+            <a href="project_studboard.html">Zur Projektseite!</a>
+        </section>
+        
+        <section id="geodatenverarbeitung">
+            <h1>Geodatenverarbeitung</h1>
+            <p>
+                Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen von Häusern eine dreidimensionale Figur des Hauses zu schaffen.<br/>
+                Ziel ist es ein möglichst genaues, jedoch ohne Verluste, Abbild als Modell zu schaffen. Da das Projekt im ständigen Umbruch ist, lohnt sich auf jeden Fall ein Blick.
+            </p>
+            <a href="project_geodatenverarbeitung.html">Zur Projektseite!</a>
+        </section>
+        
+        
+        <section>
+            <h1>Login-Formular</h1>
+            
+            <form action="receive.html" method="POST">
+                <ul style="list-style: none;">
+                    <li>
+                        <label for="login">Benutzer</label>
+                        <input id="login" name="login">
+                    </li>
+                    <li>
+                        <label for="password">Passwort</label>
+                        <input id="password" name="password" type="password">
+                    </li>
+                    <li>
+                        <br/>
+                        <input type="submit" value="Anmelden">
+                    </li>
+                </ul>
+            </form>
+            <a href="new_registration.html">Neu registrieren</a>
+        </section>
+        <footer>
+            <a href="disclosures.html">Impressum</a>
+            <a href="privacy_statement.html">Datenschutzerklärung</a>
+            <a href="non-warranty.html">Haftungsausschluss</a>
+            <a href="#top">Nach oben!</a>
+            <p>Kontakt: kontakt@email.de, &copy; Minden 2019</p>
+        </footer>
+    </body>
+</html>

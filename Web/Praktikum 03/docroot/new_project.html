@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Neues Projekt</title>
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author"           content="Moritz Withoeft">
+        <meta name="copyright"        content="Minden 2019">
+        <meta name="keywords"         content="start index project create new projekt neu erstellen">
+        <meta name="description"      content="Hier kann ein neues Projekt erstellt werden">
+        
+        <link rel="shortcut icon" href="includes/favicon.ico">
+    </head>
+    <body>
+        <header>
+            <picture>
+                <source media="(min-width: 1920px)" srcset="includes/header1920x200.png">
+                <source media="(min-width: 1280px)" srcset="includes/header1280x133.png">
+                <source media="(min-width: 640px)" srcset="includes/header640x67.png">
+                <img src="includes/header320x34.png" alt="Header" style="width:auto;">
+            </picture>
+            <nav style="padding: 15px;">
+                <a href="index.html"><img src="includes/startseite.svg" alt="Index" style="width: 50px;"/></a>
+                <a href="overview.html">Liste der Projekte</a>
+                <a href="new_project.html">Projekt erstellen</a>
+            </nav>
+        </header>
+        
+        <section>
+            <h1>Neues Projekt erstellen</h1>
+            
+            <form action="receive.html">
+                <ul style="list-style: none;">
+                    <li>
+                        <label for="titel">Titel</label>
+                        <input id="titel" name="titel">
+                    </li>
+                    <li>
+                        <label for="anfangsdatum">Anfangsdatum</label>
+                        <input id="anfangsdatum" name="anfangsdatum" type="date">
+                    </li>
+                    <li>
+                        <label for="enddatum">Enddatum</label>
+                        <input id="enddatum" name="enddatum" type="date">
+                    </li>
+                    <li>
+                        <label for="kurzbeschreibung">Kurzbeschreibung</label>
+                        <textarea id="kurzbeschreibung" name="kurzbeschreibung" rows="10" cols="30" maxlength="200"></textarea>
+                    </li>
+                    <li>
+                        <label for="langbeschreibung">Kurzbeschreibung</label>
+                        <textarea id="langbeschreibung" name="langbeschreibung" rows="10" cols="30" maxlength="1500"></textarea>
+                    </li>
+                    <li>
+                        <label for="projektziel1">Projektziel 1</label>
+                        <input id="projektziel1" name="projektziel1" type="text">
+                    </li>
+                    <li>
+                        <label for="projektziel2">Projektziel 2</label>
+                        <input id="projektziel2" name="projektziel2" type="text">
+                    </li>
+                    <li>
+                        <label for="logo">Logo des Projekts</label>
+                        <input id="logo" name="logo" type="file" accept="image/*">
+                    </li>
+                    <li>
+                        <br/>
+                        <button>Erstellen!</button>
+                    </li>
+                </ul>
+            </form>
+        </section>
+        
+        <section>
+            <h1>Login-Formular</h1>
+            
+            <form action="receive.html" method="POST">
+                <ul style="list-style: none;">
+                    <li>
+                        <label for="login">Benutzer</label>
+                        <input id="login" name="login">
+                    </li>
+                    <li>
+                        <label for="password">Passwort</label>
+                        <input id="password" name="password" type="password">
+                    </li>
+                    <li>
+                        <br/>
+                        <input type="submit" value="Anmelden">
+                    </li>
+                </ul>
+            </form>
+            <a href="new_registration.html">Neu registrieren</a>
+        </section>
+        <footer>
+            <a href="disclosures.html">Impressum</a>
+            <a href="privacy_statement.html">Datenschutzerklärung</a>
+            <a href="non-warranty.html">Haftungsausschluss</a>
+            <a href="#top">Nach oben!</a>
+            <p>Kontakt: kontakt@email.de, &copy; Minden 2019</p>
+        </footer>
+    </body>
+</html>
