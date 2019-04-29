@@ -27,7 +27,7 @@ glm::mat4x4 projection;
 float zNear = 0.1f;
 float zFar  = 100.0f;
 int n = 5;
-float s = 1.0f;
+int s = 100;
 
 /*
 Struct to hold data for object rendering.
@@ -282,30 +282,26 @@ glm::vec3 hsvToCMY(glm::vec3 hsvColors)
 std::vector<GLushort> setIndices() {
 	std::vector<GLushort> indices;
 	for (int i = 0; i < n-1; i++) {
-		std::cout << "indices" << std::endl;
-		std::cout << 0 << std::endl;
 		indices.push_back(0);
-		std::cout << i + 1 << std::endl;
 		indices.push_back(i + 1);
-		std::cout << i + 2 << std::endl;
 		indices.push_back(i + 2);
 	}
-	std::cout << "indices" << std::endl;
-	std::cout << 0 << std::endl;
 	indices.push_back(0);
-	std::cout << n << std::endl;
 	indices.push_back(n);
-	std::cout << 1 << std::endl;
 	indices.push_back(1);
 	return indices;
 }
+
 std::vector<glm::vec3> setColors() {
 	std::vector<glm::vec3> colors;
+	colors.push_back({ 1, 1, 1 }); // center is white
+
 	int h = 0;
-	colors.push_back({ 1, 1, 1 });
-	for (int i = 0; i < n-1; i++) {
+	int v = 1;
+
+	for (int i = 0; i < n; i++) {
 		h = 360 / n * i;
-		colors.push_back(hsvToRGB({ h, s, 1.0f })); // v = white
+		colors.push_back(hsvToRGB({ h, ((float) s) / 100, v }));
 	}
 	
 	return colors;
@@ -378,6 +374,8 @@ void initCircle()
 	glm::vec3 p1 = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 pLast = p1;
 	std::vector<glm::vec3> vertices;
+	vertices.push_back(p0);
+	vertices.push_back(p1);
 	for (int i = 0; i < n; i++) {
 		glm::vec3 p = rota(pLast, alpha*(3.14f / 180));
 		vertices.push_back(p);
@@ -482,6 +480,20 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  glutDisplay();
 	  }
     break;
+  case 'q':
+	  if (s < 100) {
+		  s += 1;
+		  std::cout << s << std::endl;
+		  initCircle();
+		  glutDisplay();
+	  }
+  case 'w':
+	  if (s > 0) {
+		  s -= 1;
+		  std::cout << s << std::endl;
+		  initCircle();
+		  glutDisplay();
+	  }
   case 'x':
     // do something
     break;
