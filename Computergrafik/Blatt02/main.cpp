@@ -322,7 +322,7 @@ void glutKeyboard (unsigned char keycode, int x, int y)
     return;
     
   case '+':
-	  if (n < 31) {
+	  if (n < 30) {
 	  n++;
 	  std::cout << n << std::endl;
 	  initCircle();
