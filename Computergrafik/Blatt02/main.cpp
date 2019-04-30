@@ -369,14 +369,13 @@ glm::vec3 rota(glm::vec3 p, float angle)
 void initCircle()
 {
 	float alpha = 360.0f / (float)n;
-	std::cout << alpha << std::endl;
 	glm::vec3 p0 = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 p1 = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 pLast = p1;
 	std::vector<glm::vec3> vertices;
 	vertices.push_back(p0);
 	vertices.push_back(p1);
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n-1; i++) {
 		glm::vec3 p = rota(pLast, alpha*(3.14f / 180));
 		vertices.push_back(p);
 		pLast = p;
@@ -482,18 +481,20 @@ void glutKeyboard (unsigned char keycode, int x, int y)
     break;
   case 'q':
 	  if (s < 100) {
-		  s += 1;
+		  s ++;
 		  std::cout << s << std::endl;
 		  initCircle();
 		  glutDisplay();
 	  }
+	  break;
   case 'w':
 	  if (s > 0) {
-		  s -= 1;
+		  s --;
 		  std::cout << s << std::endl;
 		  initCircle();
 		  glutDisplay();
 	  }
+	  break;
   case 'x':
     // do something
     break;
