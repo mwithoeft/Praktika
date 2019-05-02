@@ -28,6 +28,8 @@ float zNear = 0.1f;
 float zFar  = 100.0f;
 int n = 5;
 int s = 100;
+bool mode = false;
+float radius = 1.0f;
 
 /*
 Struct to hold data for object rendering.
@@ -370,7 +372,7 @@ void initCircle()
 {
 	float alpha = 360.0f / (float)n;
 	glm::vec3 p0 = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 p1 = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 p1 = glm::vec3(0.0f, radius, 0.0f);
 	glm::vec3 pLast = p1;
 	std::vector<glm::vec3> vertices;
 	vertices.push_back(p0);
@@ -480,23 +482,49 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  }
     break;
   case 'q':
-	  if (s < 100) {
-		  s ++;
-		  std::cout << s << std::endl;
-		  initCircle();
-		  glutDisplay();
+	  if (mode) {
+			if (s < 100) {
+			  s ++;
+			  std::cout << s << std::endl;
+			  initCircle();
+			  glutDisplay();
+			}
+	  }
+	  else
+	  {
+		  if (radius <= 0.95f) {
+			  radius += 0.05f;
+			  initCircle();
+			  glutDisplay();
+		  }
 	  }
 	  break;
   case 'w':
-	  if (s > 0) {
-		  s --;
-		  std::cout << s << std::endl;
-		  initCircle();
-		  glutDisplay();
+	  if (mode) {
+		  if (s > 0) {
+			  s--;
+			  std::cout << s << std::endl;
+			  initCircle();
+			  glutDisplay();
+		  }
+	  }
+	  else
+	  {
+		  if (radius >= 0.05f) {
+			  radius -= 0.05f;
+			  initCircle();
+			  glutDisplay();
+		  }
 	  }
 	  break;
-  case 'x':
-    // do something
+  case 'e':
+	  if (mode) {
+		  mode = false;
+	  }
+	  else
+	  {
+		  mode = true;
+	  }
     break;
   case 'y':
     // do something
@@ -520,7 +548,7 @@ int main(int argc, char** argv)
   glutInitContextFlags  (GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
   glutInitDisplayMode   (GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   
-  glutCreateWindow("Aufgabenblatt 01");
+  glutCreateWindow("Aufgabenblatt 02");
   glutID = glutGetWindow();
   
   // GLEW: Load opengl extensions
