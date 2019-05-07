@@ -1,0 +1,129 @@
+/* CSS-Seite für die Projektseiten */
+
+
+/* Allgemeines */
+
+.project {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* Listen Einstellungen */
+li:hover {
+    background-color: #5e767e;
+}
+li a:hover {
+    color: white;
+}
+
+ul {
+    list-style-type: disc;
+}
+
+/* Inhaltsverzeichnis */
+
+.projectcontent {
+    background-color: black;
+    border-radius: 15px;
+    color: white;
+    width: 200px;
+    text-indent: 5px;
+    margin-left: 5px;
+}
+
+.projectcontent ul {
+    padding-left: 20px;
+    margin: 0px;
+}
+
+/* Projektinhalte */
+.projectdetails {
+    border-right: thick solid #382ec0;
+    width: 100%;
+    background-clip: padding-box;
+}
+
+.projectdetails > * > * {
+    margin-left: 10px;
+}
+
+.projectdetails article {
+    background-color: #355f5f;
+    border-radius: 15px;
+    margin-bottom: 10px;
+}
+
+.projectdetails h1 {
+    font-size: 150%;
+    color: white;
+}
+
+#projektziele ol {
+    padding-left: 15px;
+    pointer-events: none;
+}
+
+#projektinformationen {
+    min-height: 250px;
+}
+
+.projectdetails article,  .projectdetails header{
+    margin: 2px;
+}
+
+/*Projektlogo und Header */
+.projectlogo {
+    float: left;
+    border: 3px solid #021a40;
+    margin: 5px;
+    padding: 2px;
+}
+
+.projectdetails header, .projectdetails footer {
+    background-color: #1B1C1D;
+    border-radius: 15px;
+    color: white;
+}
+.projectdetails header {
+    min-height: 130px;
+    z-index: 3;
+}
+.projectdetails header h1{
+    font-size: 400%;
+    font-family: fantasy;
+    margin: 0px;
+    padding: 0px;
+}
+
+.sticky {
+    position: sticky;
+    top: 0;
+}
+
+/* Form Einstellungen */
+form {
+    padding-bottom: 10px;
+}
+
+form li:hover {
+    background-color: #355f5f;
+}
+
+[rel=author] {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    color: #ffffff;
+}
+
+/* Bewertung */
+
+#kommentar {
+    background-color: rgb(173, 161, 161);
+    border-radius: 15px;
+}
+#kommentar:focus, #kommentar:hover {
+    background-color: white;
+}
+    

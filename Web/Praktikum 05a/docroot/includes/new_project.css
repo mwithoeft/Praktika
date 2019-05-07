@@ -1,0 +1,66 @@
+/* Zusätzliches CSS um neues Projekt zu erstellen */
+
+/* Input Einstellungen */
+
+textarea {
+    background-color: #ada1a1;
+    border-radius: 15px;
+}
+textarea:focus, textarea:hover {
+    background-color: white;
+}
+input {
+    margin-bottom: 5px;
+}
+#signin input {
+    margin-bottom: 0px;
+}
+
+textarea {
+    min-width: 98%;
+    max-width: 98%;
+    width: 98%;
+}
+
+/* Seitendesign und CSS Überschreibungen */
+
+.projectdetails > * > * {
+    margin-left: 0px;
+}
+
+.projectdetails > * > * > * {
+    margin-left: 10px;
+}
+
+.projectdetails {
+    border-right: none;
+    width: 100%;
+}
+
+.projectdetails header {
+    display: block;
+}
+
+.projectdetails header h1 {
+    font-size: 200%;
+    margin-left: 10px;
+    padding-bottom: 5px;
+}
+
+
+/* Listeneinstellungen */
+ol {
+    list-style-type: none;
+}
+
+ul {
+    list-style-type: none;
+}
+
+#projektziele ol {
+    pointer-events: all;
+}
+
+form li:hover {
+    background-color: initial;
+}

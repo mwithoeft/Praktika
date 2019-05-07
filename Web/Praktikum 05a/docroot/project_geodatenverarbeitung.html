@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Projekt - Geodatenverarbeitung</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Moritz Withoeft">
+    <meta name="copyright" content="Minden 2019">
+    <meta name="keywords" content="start index project geodatenverarbeitung">
+    <meta name="description" content="Projektseite vom Projekt Geodatenverarbeitung">
+
+    <link rel="shortcut icon" href="includes/favicon.ico">
+    <link rel="stylesheet" href="includes/style.css" type="text/css">
+    <link rel="stylesheet" href="includes/project_page.css" type="text/css">
+</head>
+
+<body>
+    <header>
+
+        <!-- Header Bild-->
+        <picture>
+            <source media="(min-width: 1920px)" srcset="includes/header1920x200.png">
+            <source media="(min-width: 1280px)" srcset="includes/header1280x133.png">
+            <source media="(min-width: 640px)" srcset="includes/header640x67.png">
+            <img src="includes/header320x34.png" alt="Header" style="width:auto;">
+        </picture>
+        <!-- Login Formular, um sich anzumelden -->
+        <section id="signin">
+            <h1>Login-Formular</h1>
+
+            <form action="receive.html" method="POST">
+                <ul>
+                    <li>
+                        <label for="login">Benutzer</label>
+                        <input id="login" name="login" type="text">
+                    </li>
+                    <li>
+                        <label for="password">Passwort</label>
+                        <input id="password" name="password" type="password">
+                    </li>
+                    <li>
+                        <br />
+                        <input type="submit" value="Anmelden">
+                        <a href="new_registration.html">Neu registrieren</a>
+                    </li>
+                </ul>
+            </form>
+        </section>
+
+
+    </header>
+
+    <!-- Seitennavigation -->
+    <nav id="sitenav">
+        <a href="index.html"><img src="includes/startseite.svg" alt="Index" style="width: 50px;" /></a>
+        <a href="overview.html">Liste der Projekte</a>
+        <a href="new_project.html">Projekt erstellen</a>
+    </nav>
+
+    <!-- Projektinformationen -->
+    <section class="project">
+
+        <section class="projectdetails">
+
+
+            <header class="sticky">
+                <img class="projectlogo" src="includes/Projektlogo.png" alt="Header">
+                <h1>Geodatenverarbeitung</h1>
+                <a rel="author" href="">Justin Drögemeier</a>
+            </header>
+
+
+            <article id="kurzbeschreibung">
+                <h1>Kurzbeschreibung</h1>
+
+                <p>Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen
+                    von
+                    Häusern eine dreidimensionale Figur des Hauses zu schaffen.</p>
+
+            </article>
+            <article id="langbeschreibung">
+                <h1>Langbeschreibung</h1>
+                <p>
+                    Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen
+                    von
+                    Häusern eine dreidimensionale Figur des Hauses zu schaffen.<br />
+                    Aus diesen Informationen werden für jedes Haus bzw. Grundstück Dateien erzeugt, die die
+                    Informationen
+                    beinhalten. Mit diesen Informationen kann hinterher weiter gearbeitet werden.<br />
+                    Es wird außerdem angestrebt, dass diese Funktion Bestandteil eines größeren Programms wird.
+                </p>
+
+            </article>
+
+            <article id="projektziele">
+                <h1>Projektziele</h1>
+
+                <ol>
+                    <li>Daten anschaulich darstellen und zur Verfügung stellen</li>
+                    <li>Das größte an Potential aus jedem Entwickler herausholen</li>
+                </ol>
+
+            </article>
+
+            <article id="bewertung">
+                <h1>Bewertung</h1>
+                <form action="receive.html" method="POST">
+                    <ul style="list-style: none;">
+                        <li>
+                            <textarea placeholder="Kommentar" id="kommentar" name="kommentar" rows="10" cols="30"
+                                maxlength="1500"></textarea>
+                        </li>
+                        <li>
+                            <label for="review">Bewertung von 1-5</label>
+                            <input id="review" name="review" type="number" min="1" max="5">
+                        </li>
+                        <li>
+                            <br />
+                            <input type="submit" value="Abschicken">
+                        </li>
+                    </ul>
+                </form>
+            </article>
+
+            <footer></footer>
+
+        </section>
+
+
+        <section class="projectcontent">
+            <h1>Inhalt</h1>
+
+            <ul>
+                <li><a href="#projektinformationen">Projektinformationen</a></li>
+                <li><a href="#kurzbeschreibung">Kurzbeschreibung</a></li>
+                <li><a href="#langbeschreibung">Langbeschreibung</a></li>
+                <li><a href="#projektziele">Projektziele</a></li>
+                <li><a href="#bewertung">Bewertung</a></li>
+            </ul>
+        </section>
+
+    </section>
+
+
+    <footer>
+        <a href="disclosures.html">Impressum</a>
+        <a href="privacy_statement.html">Datenschutzerklärung</a>
+        <a href="non-warranty.html">Haftungsausschluss</a>
+        <a id="toplink" href="#top">Nach oben!</a>
+        <p>Kontakt: kontakt@email.de, &copy; Minden 2019</p>
+    </footer>
+</body>
+
+</html>
