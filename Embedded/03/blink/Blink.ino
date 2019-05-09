@@ -12,12 +12,11 @@
 
 // most launchpads have a red LED
 #define LED RED_LED
+#define DELAY4S 4000
+#define DELAY1S 1000
 
 //see pins_energia.h for more LED definitions
 //#define LED GREEN_LED
-//Break timers
-#define LONGBREAK 2000
-#define SHORTBREAK 500
   
 // the setup routine runs once when you press reset:
 void setup() {                
@@ -25,29 +24,10 @@ void setup() {
   pinMode(LED, OUTPUT);     
 }
 
-void morseS(){
-  for(int i = 0;i<3;i++){
-    blink(SHORTBREAK);
-  }
-}
-
-void morseO(){
-  for(int i = 0;i<3;i++){
-    blink(LONGBREAK);
-  }
-}
-
-void blink(int pause){
-  digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(pause);             // wait
-  digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
-  delay(SHORTBREAK);              // wait
-}
-
-
 // the loop routine runs over and over again forever:
 void loop() {
-  morseS();
-  morseO();
-  morseS();
+  digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
+  delay(DELAY4S);               // wait for a second
+  digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
+  delay(DELAY1S);               // wait for a second
 }
