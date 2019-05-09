@@ -66,15 +66,17 @@ TLed<LedPortOut> Led;
 TButton<ButtonPinIn> Button;
 
 
-void setup() {}
-
+void setup() {Serial.begin(9600);}
+  
 void loop() {
-    // if emergency stop, turn led off
+    if emergency stop, turn led off
     if (Button.state() == HIGH) {
+        Serial.print("Notaus wurde betätigt\n");
         Led.off();
+        delay(Delay);
     } else { //otherwise toggle
         Led.toggle();
     }
     // wait
-    delay(Delay);
+    //delay(Delay);
 }
