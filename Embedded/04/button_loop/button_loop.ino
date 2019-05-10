@@ -6,7 +6,9 @@ const uint8_t LedPortOut = RED_LED;
 // define pin for button input
 const uint8_t ButtonPinIn = PC_4;
 // define delay for blinking in ms
-const uint32_t Delay = 2000;
+const uint32_t Delay = 100;
+const uint32_t Delay2 = 2000;
+
 
 //! LED handling class. Has disable() function for emergency stop.
 //! Parameter (in): PORT_NB (output port for connected led)
@@ -65,18 +67,22 @@ TLed<LedPortOut> Led;
 // and for button pin 
 TButton<ButtonPinIn> Button;
 
+void polling(){
+  for (int i = Delay2;i>Delay;i-=Delay){
+    if (Button.state() == HIGH) {
+        Serial.print("Notaus wurde betätigt\n");
+        Led.off();
+        delay(Delay2);
+    }
+    delay(Delay);
+  }
+  
+  
+}
 
 void setup() {Serial.begin(9600);}
   
 void loop() {
-    if emergency stop, turn led off
-    if (Button.state() == HIGH) {
-        Serial.print("Notaus wurde betätigt\n");
-        Led.off();
-        delay(Delay);
-    } else { //otherwise toggle
-        Led.toggle();
-    }
-    // wait
-    //delay(Delay);
+    polling();
+    Led.toggle();
 }
