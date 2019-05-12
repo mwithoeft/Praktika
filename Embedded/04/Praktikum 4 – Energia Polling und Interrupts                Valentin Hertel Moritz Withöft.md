@@ -113,6 +113,8 @@ void loop() {
 }
 ```
 
+
+
 **Aufgabe 4** *(3 Punkte)* 
 
 *Implementieren Sie nun die Not-Aus-Funktionalität mittels Nutzung der TivaWare-ROM-Funktionen zur Ausl*ö*sung eines Interrupts, d.h. ohne Energia-Funktion attachInterrupt() zu benutzen. Schreiben Sie hierzu ein neues Programm.* 
@@ -237,10 +239,10 @@ const uint32_t Delay = 2000;
 //Serial frequency
 const uint32_t serialFrequency = 9600;
 //Buttonstate values
-const uint32_t buttonstate_released = 0;
-const uint32_t buttonstate_pressed = 1;
-const uint32_t buttonstate_held = 2;
-const uint32_t buttonstate_is_released = 3;
+const byte buttonstate_released = 0;
+const byte buttonstate_pressed = 1;
+const byte buttonstate_held = 2;
+const byte buttonstate_is_released = 3;
 
 //! LED handling class. Has disable() function for emergency stop.
 //! Parameter (in): PORT_NB (output port for connected led)
@@ -316,11 +318,6 @@ TLed<LedPortOut> Led;
 // and for button pin
 TButton<ButtonPinIn> Button;
 
-void buttonHandler(){
-  Serial.println(INT_UART0);
-  Led.off();
-}
-
 void setup() {
  Serial.begin(serialFrequency);
 }
@@ -333,4 +330,3 @@ void loop() {
 }
 }
 ```
-

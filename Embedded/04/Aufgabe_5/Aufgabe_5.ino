@@ -14,10 +14,10 @@ const uint32_t Delay = 2000;
 //Serial frequency
 const uint32_t serialFrequency = 9600;
 //Buttonstate values
-const uint32_t buttonstate_released = 0;
-const uint32_t buttonstate_pressed = 1;
-const uint32_t buttonstate_held = 2;
-const uint32_t buttonstate_is_released = 3;
+const byte buttonstate_released = 0;
+const byte buttonstate_pressed = 1;
+const byte buttonstate_held = 2;
+const byte buttonstate_is_released = 3;
 
 
 
@@ -94,11 +94,6 @@ private:
 TLed<LedPortOut> Led;
 // and for button pin
 TButton<ButtonPinIn> Button;
-
-void buttonHandler(){
-  Serial.println(INT_UART0);
-  Led.off();
-}
 
 void setup() {
  Serial.begin(serialFrequency);
