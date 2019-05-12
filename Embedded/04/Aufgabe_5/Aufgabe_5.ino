@@ -11,6 +11,15 @@ const uint8_t LedPortOut = RED_LED;
 const uint8_t ButtonPinIn = PC_4;
 // define delay for blinking in ms
 const uint32_t Delay = 2000;
+//Serial frequency
+const uint32_t serialFrequency = 9600;
+//Buttonstate values
+const uint32_t buttonstate_released = 0;
+const uint32_t buttonstate_pressed = 1;
+const uint32_t buttonstate_held = 2;
+const uint32_t buttonstate_is_released = 3;
+
+
 
 //! LED handling class. Has disable() function for emergency stop.
 //! Parameter (in): PORT_NB (output port for connected led)
@@ -57,10 +66,28 @@ public:
     pinMode(PORT_BUTTON, INPUT);
   }
   boolean state(){
-    return digitalRead(PORT_BUTTON);
-    //return false;
+    byte buttonValue = digitalRead(PORT_BUTTON);
+
+    if(buttonState == buttonstate_released && buttonValue == HIGH) {
+        // Button is pressed
+        buttonState = buttonstate_pressed;
+        return HIGH;
+    } else if (buttonState == buttonstate_pressed && buttonValue == HIGH) {
+        // Button is held
+        buttonState = buttonstate_held;
+        return LOW;
+    } else if (buttonState == buttonstate_held && buttonValue == LOW) {
+        // Button is released
+        buttonState = buttonstate_is_released;
+        return LOW;
+    } else if (buttonState == buttonstate_is_released && buttonValue == LOW) {
+        // Button released
+        buttonState = buttonstate_released;
+        return LOW;
+    }
   }
 private:
+  byte buttonState = buttonstate_released;
 };
 
 // global instances for led output
@@ -69,26 +96,18 @@ TLed<LedPortOut> Led;
 TButton<ButtonPinIn> Button;
 
 void buttonHandler(){
+  Serial.println(INT_UART0);
   Led.off();
 }
 
 void setup() {
-  // Set data rate (baud) for serial data transmission
-  // Setup input pin (Port C, Pin 4)
-  GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_4);
-  // Disable and clear interrupts for the input pin
-  GPIOIntDisable(GPIO_PORTC_BASE, GPIO_PIN_4);
-  GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
-  // Register handler function and trigger condition
-  GPIOIntRegister(GPIO_PORTC_BASE, buttonHandler);
-  GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_RISING_EDGE);
-  // Enable interrupts again
-  GPIOIntEnable(GPIO_PORTC_BASE, GPIO_PIN_4);
+ Serial.begin(serialFrequency);
 }
 
 void loop() {
-  //Toggle LED
-  Led.toggle();
-  //Delay
-  delay(Delay);
+  //Toggle Button
+  if (Button.state() == HIGH) {
+    Led.toggle();
+    Serial.print("Toggle\n");
+}
 }

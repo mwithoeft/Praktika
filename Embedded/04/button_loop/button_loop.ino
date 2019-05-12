@@ -76,8 +76,6 @@ void polling(){
     }
     delay(Delay);
   }
-  
-  
 }
 
 void setup() {Serial.begin(9600);}
