@@ -49,4 +49,5 @@ void loop() {
   morseS();
   morseO();
   morseS();
+  delay(LONGBREAK);
 }
