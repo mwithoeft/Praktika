@@ -29,9 +29,13 @@ float zNear = 0.1f;
 float zFar  = 100.0f;
 float eyeZ = 4;
 int n = 0;
-int r = 50;
+int r = 100;
 
 int s = 4;
+
+int xAngle = 0;
+int yAngle = 0;
+int zAngle = 0;
 
 
 bool mode = false;
@@ -347,95 +351,136 @@ int sumVerticesForNUntil(int n, int limit) {
 }
 
 
-glm::vec3 rotateAlongX(float degree, glm::vec3 vertice) {
+glm::vec3 rotateX(float degree, glm::vec3 vertice) {
 	degree *= -1;
 	float rad = degree * (PI / 180);
 	glm::mat3x3 rotationMatrix = { {1, 0, 0}, {0, cos(rad), -sin(rad) }, {0, sin(rad), cos(rad)} };
 	return rotationMatrix * vertice;
 }
 
-glm::vec3 rotateAlongY(float degree, glm::vec3 vertice) {
+glm::vec3 rotateY(float degree, glm::vec3 vertice) {
 	degree *= -1;
 	float rad = degree * (PI / 180);
 	glm::mat3x3 rotationMatrix = { {cos(rad), 0, sin(rad)}, {0, 1, 0}, {-sin(rad), 0, cos(rad)} };
 	return rotationMatrix * vertice;
 }
 
-glm::vec3 rotateAlongZ(float degree, glm::vec3 vertice) {
+glm::vec3 rotateZ(float degree, glm::vec3 vertice) {
 	degree *= -1;
 	float rad = degree * (PI / 180);
 	glm::mat3x3 rotationMatrix = { {cos(rad), -sin(rad), 0}, {sin(rad), cos(rad), 0 }, {0, 0, 1} };
 	return rotationMatrix * vertice;
 }
 
-glm::vec3 mirrorVerticeXZ(glm::vec3 vertice) {
+glm::vec3 mirrorXZ(glm::vec3 vertice) {
 	glm::mat3x3 mirrorMatrix = { {1, 0, 0}, {0, -1, 0}, {0, 0, 1} };
 	return mirrorMatrix * vertice;
 }
 
+
+glm::vec3 rotateSphereX(glm::vec3 vertice) {
+	float x = vertice[0];
+	float y = vertice[1];
+	float z = vertice[2];
+
+	std::cout << "oooo" << std::endl;
+	std::cout << "oooo" << std::endl;
+	std::cout << "oooo" << std::endl;
+
+	vertice[0] - x;
+	vertice = rotateX(xAngle, vertice);
+	vertice[0] + x;
+
+	return vertice;
+}
+
+glm::vec3 rotateSphereY(glm::vec3 vertice) {
+	float x = vertice[0];
+	float y = vertice[1];
+	float z = vertice[2];
+
+	vertice[1] - y;
+	vertice = rotateY(yAngle, vertice);
+	vertice[1] + y;
+
+	return vertice;
+}
+
+glm::vec3 rotateSphereZ(glm::vec3 vertice) {
+	float x = vertice[0];
+	float y = vertice[1];
+	float z = vertice[2];
+
+	vertice[2] - z;
+	vertice = rotateZ(zAngle, vertice);
+	vertice[2] + z;
+
+	return vertice;
+}
+
 void initSphere()
 {
-
-	// Construct triangle. These vectors can go out of scope after we have send all data to the graphics card.
 	std::vector<glm::vec3> vertices = {};
 	std::vector<glm::vec3> colors = {};
 	std::vector<GLushort>  indices = {};
 
-	float degreeStepSize = 90 / (n + 1);
-	float degreeOctetStepSize = 90;
-	int indicesPerOctet = sumVerticesForN(n + 2);
+	float angleStep = 90 / (n + 1);
+	float angleEighthSize = 90;
+	int indicesEighth = sumVerticesForN(n + 2);
 	int indicesOffset = 0;
 
-	int pointCount = n + 2;
+	int verticesCounter = n + 2;
 
-	for (int ballOctet = 0; ballOctet < 8; ballOctet++) {
-		for (int leftSideIt = 0; leftSideIt < pointCount; leftSideIt++) {
-			float degreeRightStepSize = 90 / (float)(pointCount - leftSideIt - 1);
-			for (int rightSideIt = 0; rightSideIt < pointCount - leftSideIt; rightSideIt++) {
+	for (int sphereEighth = 0; sphereEighth < 8; sphereEighth++) {
+		for (int i = 0; i < verticesCounter; i++) {
+			float angleRight = 90 / (float)(verticesCounter - i - 1);
+			for (int j = 0; j < verticesCounter - i; j++) {
 				glm::vec3 point = { 0.0f, 0.0f, 1.0f * ((float)r / 100) };
-				glm::vec3 rotatedAlongBall = rotateAlongX(-degreeStepSize * leftSideIt, point);
+				glm::vec3 rotatedAngle = rotateX(-angleStep * i, point);
 
-				if (pointCount - leftSideIt != 1) {
-					rotatedAlongBall = rotateAlongY(degreeRightStepSize * rightSideIt, rotatedAlongBall);
+				if (verticesCounter - i != 1) {
+					rotatedAngle = rotateY(angleRight * j, rotatedAngle);
 				}
 
-				float octetRotateDegree = degreeOctetStepSize * (float)(ballOctet % 4);
-				rotatedAlongBall = rotateAlongY(octetRotateDegree, rotatedAlongBall);
+				float angle = angleEighthSize * (float)(sphereEighth % 4);
+				rotatedAngle = rotateY(angle, rotatedAngle);
 
-				if (ballOctet >= 4) {
-					rotatedAlongBall = mirrorVerticeXZ(rotatedAlongBall);
+				if (sphereEighth >= 4) {
+					rotatedAngle = mirrorXZ(rotatedAngle);
 				}
 
-				//printFirstNVector(rotatedAlongBall);
-
-
-				vertices.push_back(rotatedAlongBall);
+				vertices.push_back(rotatedAngle);
 				colors.push_back({ 1.0f, 1.0f, 0.0f });
 
-				if (leftSideIt != pointCount - 1 && rightSideIt != pointCount - leftSideIt - 1) {
-					int left = indicesOffset + sumVerticesForNUntil(pointCount, pointCount - leftSideIt + 1) + rightSideIt;
-					int top = left + (pointCount - leftSideIt);
+				if (i != verticesCounter - 1 && j != verticesCounter - i - 1) {
+					int left = indicesOffset + sumVerticesForNUntil(verticesCounter, verticesCounter - i + 1) + j;
+					int top = left + (verticesCounter - i);
 					int right = left + 1;
 
 					indices.push_back(left);
 					indices.push_back(top);
 					indices.push_back(right);
 
-					//printf("Pushed Triangles with indices (%d, %d, %d)", left, top, right);
-
-					if (leftSideIt > 0) {
-						int bottom = right - (pointCount - leftSideIt + 1);
+					if (i > 0) {
+						int bottom = right - (verticesCounter - i + 1);
 						indices.push_back(left);
 						indices.push_back(bottom);
 						indices.push_back(right);
-
-						//printf("Another one with indices (%d, %d, %d)", left, bottom, right);
 					}
 				}
 			}
 		}
-		indicesOffset += indicesPerOctet;
+		indicesOffset += indicesEighth;
 	}
+
+
+	for (int i = 0; i < vertices.size(); i++) {
+		vertices[i] = rotateSphereX(vertices[i]);
+		vertices[i] = rotateSphereY(vertices[i]);
+		vertices[i] = rotateSphereZ(vertices[i]);
+	}
+
+
 
 
 
@@ -579,9 +624,20 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  glutDisplay();
 	  }
     break;
-  case 'q':
+  case 'x':
+	  xAngle += 3;
+	  init();
+	  glutDisplay();
 	  break;
-  case 'w':
+  case 'y':
+	  yAngle += 3;
+	  init();
+	  glutDisplay();
+	  break;
+  case 'z':
+	  zAngle+=3;
+	  init();
+	  glutDisplay();
 	  break;
   case 'c':
 	  mode = !mode;
