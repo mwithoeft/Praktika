@@ -80,7 +80,7 @@ void renderSphere()
   // Bind vertex array object so we can render the 1 triangle.
   glBindVertexArray(triangle.vao);
   //glDrawElements(GL_TRIANGLES, 8 * ((n + 1) ^ 2), GL_UNSIGNED_SHORT, 0);
-  glDrawElements(GL_TRIANGLES, 8 * (n+1)^2, GL_UNSIGNED_SHORT, 0);
+  glDrawElements(GL_TRIANGLES, 8 * ((n+1)^2) *3, GL_UNSIGNED_SHORT, 0);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBindVertexArray(0);
 }
@@ -366,6 +366,34 @@ glm::vec3 transRotaTransY(glm::vec3 p0, float angle) {
 	return p;
 }
 
+glm::vec3 transRotaTransZ(glm::vec3 p0, float angle) {
+	float x = p0[0];
+	float y = p0[1];
+	float z = p0[2];
+	float t0 = -x;
+	float t1 = -0;
+	float t2 = -z;
+
+	glm::vec3 p = glm::vec3(x + t0, y + t1, z + t2);
+	p = rotate(p, -angle, 'z');
+	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
+	return p;
+}
+
+glm::vec3 transRotaTransX(glm::vec3 p0, float angle) {
+	float x = p0[0];
+	float y = p0[1];
+	float z = p0[2];
+	float t0 = -x;
+	float t1 = -0;
+	float t2 = -z;
+
+	glm::vec3 p = glm::vec3(x + t0, y + t1, z + t2);
+	p = rotate(p, angle, 'x');
+	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
+	return p;
+}
+
 std::vector<glm::vec3> setVertices()
 {
 	std::vector<glm::vec3> vertices;
@@ -440,16 +468,21 @@ void triAngle(glm::vec3 p0) {
 		p1 = transRotaTransY(p1, angle);
 		//Rotation im Z - Y Raum
 		p2 = rotate(p0, angle, 'x');
+		printf("%f %f %f\n", p1[0], p1[1], p1[2]);
 	}
 	//liegt in der X - Y Fläche
 	else if (p0[0] != 0 && p0[2] == 0) {
 		p1 = rotate(p0, -angle, 'z');
 		p1 = transRotaTransYminus(p1, -angle);
 		p2 = rotate(p0, -angle, 'z');
+		printf("%f %f %f\n", p1[0], p1[1], p1[2]);
 	}
 	//liegt mitten im Raum
-	else if (p0[0] != 0 && p0[2] != 0) {
+	else {
+		p1 = transRotaTransZ(p0, angle);
+		p2 = transRotaTransX(p0, angle);
 		
+
 	}
 	vertices.push_back(p1);
 	indices.push_back(vertices.size() - 1);
@@ -458,7 +491,7 @@ void triAngle(glm::vec3 p0) {
 	indices.push_back(vertices.size() - 1);
 
 	recCount++;
-	if (recCount < n+1) {
+	if (recCount < (n+1)) {
 
 		triAngle(p1);
 		triAngle(p2);
@@ -466,6 +499,43 @@ void triAngle(glm::vec3 p0) {
 	recCount--;
 
 }
+
+glm::vec3 mirrorYZ(glm::vec3 p) {
+	float x = p[0];
+	float y = p[1];
+	float z = p[2];
+	float x1 = -1, y1 = 0, z1 = 0;
+	float x2 = 0, y2 = 1, z2 = 0;
+	float x3 = 0, y3 = 0, z3 = 1;
+	return glm::vec3(x * x1 + y * y1 + z * z1,
+		x * x2 + y * y2 + z * z2,
+		x * x3 + y * y3 + z * z3);
+}
+
+glm::vec3 mirrorXZ(glm::vec3 p) {
+	float x = p[0];
+	float y = p[1];
+	float z = p[2];
+	float x1 = 1, y1 = 0, z1 = 0;
+	float x2 = 0, y2 = -1, z2 = 0;
+	float x3 = 0, y3 = 0, z3 = 1;
+	return glm::vec3(x * x1 + y * y1 + z * z1,
+		x * x2 + y * y2 + z * z2,
+		x * x3 + y * y3 + z * z3);
+}
+
+glm::vec3 mirrorXY(glm::vec3 p) {
+	float x = p[0];
+	float y = p[1];
+	float z = p[2];
+	float x1 = 1, y1 = 0, z1 = 0;
+	float x2 = 0, y2 = 1, z2 = 0;
+	float x3 = 0, y3 = 0, z3 = -1;
+	return glm::vec3(x*x1+y*y1+z*z1,
+		x* x2 + y * y2 + z * z2,
+		x* x3 + y * y3 + z * z3);
+}
+
 void initSphere()
 {
   // Construct triangle. These vectors can go out of scope after we have send all data to the graphics card.
@@ -476,16 +546,27 @@ void initSphere()
 	vertices.clear();
 	indices.clear();
 	triAngle(glm::vec3(0.0f, 1.0f, 0.0f));
-  std::vector<glm::vec3> colors;
-  for (int i = 0; i < vertices.size(); i++) {
-	  glm::vec3 tmp = glm::vec3(1.0f, 1.0f, 0.0f);
-	  colors.push_back(tmp);//Gelb
-  }
-  //const std::vector<GLushort>  indices  = indices;
-  for (int i = 0; i < indices.size(); i++) {
-	  std::cout << "ver " << vertices[i][0] << vertices[i][0] << vertices[i][0] << std::endl;
-		std::cout << "indi"     << indices[i]  << std::endl;
-  }
+	int size = vertices.size();
+	for (int i = 0; i < size; i++) {
+		vertices.push_back(mirrorXY(vertices[i]));
+		indices.push_back(vertices.size() - 1);
+	}
+	size = vertices.size();
+	for (int i = 0; i < size; i++) {
+		vertices.push_back(mirrorYZ(vertices[i]));
+		indices.push_back(vertices.size() - 1);
+	}
+	size = vertices.size();
+	for (int i = 0; i < size; i++) {
+		vertices.push_back(mirrorXZ(vertices[i]));
+		indices.push_back(vertices.size() - 1);
+	}
+	std::vector<glm::vec3> colors;
+	for (int i = 0; i < vertices.size(); i++) {
+		glm::vec3 tmp = glm::vec3(1.0f, 1.0f, 0.0f);
+		colors.push_back(tmp);//Gelb
+	}
+
 
   GLuint programId = program.getHandle();
   GLuint pos;
