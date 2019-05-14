@@ -27,12 +27,14 @@ glm::mat4x4 projection;
 
 float zNear = 0.1f;
 float zFar  = 100.0f;
-float eyeZ = 4;
+float eyeZ = 4; // for view matrix (zoom)
 int n = 0;
 int r = 100;
 
 int s = 4;
 
+
+// For rotating the sphere per axis
 int xAngle = 0;
 int yAngle = 0;
 int zAngle = 0;
@@ -75,7 +77,10 @@ Object triangle;
 Object quad;
 Object sphere;
 
-
+/*
+ * Calc the amount of triangles of one qadrant in recursive way.
+ * Example returns are 1 for n=0, 4 for n=1, 9 for n=2, 16 for n=3
+ */
 int calcAmountTriangles(int n) {
 	if (n == 0) {
 		return 1;
@@ -114,6 +119,9 @@ void renderCoord()
   glBindVertexArray(0);
 }
 
+/*
+ * Init the coordination system and set its vertices to construct the axis-lines
+ */
 void initCoord()
 {
 	glm::vec3 center= glm::vec3( 0.0f, 0.0f, 0.0f );
@@ -307,6 +315,9 @@ glm::vec3 hsvToCMY(glm::vec3 hsvColors)
 	return{ rgbToCMY(hsvToRGB(hsvColors)) };
 }
 
+/*
+ * Sets the indices for connecting the vertices
+ */
 std::vector<GLushort> setIndices() {
 
 	std::vector<GLushort> indices;
@@ -320,6 +331,10 @@ std::vector<GLushort> setIndices() {
 	return indices;
 }
 
+
+/*
+ * Sets the color of all vertices to the same one
+ */
 std::vector<glm::vec3> setColors() {
 	std::vector<glm::vec3> colors;
 
@@ -327,7 +342,7 @@ std::vector<glm::vec3> setColors() {
 	for (int i = 0; i <= n; ++i) {
 		// Loop Through Slices
 		for (int j = 0; j <= s; ++j) {
-			colors.push_back({1.0f, 1.0f, 0.0f});
+			colors.push_back({1.0f, 1.0f, 0.0f}); // yellow
 		}
 	}
 	return colors;
@@ -351,6 +366,9 @@ int sumVerticesForNUntil(int n, int limit) {
 }
 
 
+/*
+ * Rotate a vertice on the X axis
+ */
 glm::vec3 rotateX(float degree, glm::vec3 vertice) {
 	degree *= -1;
 	float rad = degree * (PI / 180);
@@ -358,6 +376,9 @@ glm::vec3 rotateX(float degree, glm::vec3 vertice) {
 	return rotationMatrix * vertice;
 }
 
+/*
+ * Rotate a vertice on the Y axis
+ */
 glm::vec3 rotateY(float degree, glm::vec3 vertice) {
 	degree *= -1;
 	float rad = degree * (PI / 180);
@@ -365,6 +386,9 @@ glm::vec3 rotateY(float degree, glm::vec3 vertice) {
 	return rotationMatrix * vertice;
 }
 
+/*
+ * Rotate a vertice on the Z axis
+ */
 glm::vec3 rotateZ(float degree, glm::vec3 vertice) {
 	degree *= -1;
 	float rad = degree * (PI / 180);
@@ -372,20 +396,22 @@ glm::vec3 rotateZ(float degree, glm::vec3 vertice) {
 	return rotationMatrix * vertice;
 }
 
+/*
+ * Mirror a vertice on the XZ-pane
+ */
 glm::vec3 mirrorXZ(glm::vec3 vertice) {
 	glm::mat3x3 mirrorMatrix = { {1, 0, 0}, {0, -1, 0}, {0, 0, 1} };
 	return mirrorMatrix * vertice;
 }
 
-
+/*
+ * Rotate the sphere on the X axis
+ */
 glm::vec3 rotateSphereX(glm::vec3 vertice) {
 	float x = vertice[0];
 	float y = vertice[1];
 	float z = vertice[2];
 
-	std::cout << "oooo" << std::endl;
-	std::cout << "oooo" << std::endl;
-	std::cout << "oooo" << std::endl;
 
 	vertice[0] - x;
 	vertice = rotateX(xAngle, vertice);
@@ -394,6 +420,9 @@ glm::vec3 rotateSphereX(glm::vec3 vertice) {
 	return vertice;
 }
 
+/*
+ * Rotate the sphere on the Y axis
+ */
 glm::vec3 rotateSphereY(glm::vec3 vertice) {
 	float x = vertice[0];
 	float y = vertice[1];
@@ -406,6 +435,9 @@ glm::vec3 rotateSphereY(glm::vec3 vertice) {
 	return vertice;
 }
 
+/*
+ * Rotate the sphere on the Z axis
+ */
 glm::vec3 rotateSphereZ(glm::vec3 vertice) {
 	float x = vertice[0];
 	float y = vertice[1];
@@ -418,6 +450,10 @@ glm::vec3 rotateSphereZ(glm::vec3 vertice) {
 	return vertice;
 }
 
+/*
+ * Inits the Sphere.
+ * Calcs and sets vertices and its indices for connecting them.
+ */
 void initSphere()
 {
 	std::vector<glm::vec3> vertices = {};
@@ -425,16 +461,21 @@ void initSphere()
 	std::vector<GLushort>  indices = {};
 
 	float angleStep = 90 / (n + 1);
-	float angleEighthSize = 90;
+	float angleEighth = 90; // degrees
+
 	int indicesEighth = sumVerticesForN(n + 2);
 	int indicesOffset = 0;
 
 	int verticesCounter = n + 2;
 
+
 	for (int sphereEighth = 0; sphereEighth < 8; sphereEighth++) {
 		for (int i = 0; i < verticesCounter; i++) {
+
 			float angleRight = 90 / (float)(verticesCounter - i - 1);
+
 			for (int j = 0; j < verticesCounter - i; j++) {
+
 				glm::vec3 point = { 0.0f, 0.0f, 1.0f * ((float)r / 100) };
 				glm::vec3 rotatedAngle = rotateX(-angleStep * i, point);
 
@@ -442,7 +483,7 @@ void initSphere()
 					rotatedAngle = rotateY(angleRight * j, rotatedAngle);
 				}
 
-				float angle = angleEighthSize * (float)(sphereEighth % 4);
+				float angle = angleEighth * (float)(sphereEighth % 4);
 				rotatedAngle = rotateY(angle, rotatedAngle);
 
 				if (sphereEighth >= 4) {
@@ -450,7 +491,7 @@ void initSphere()
 				}
 
 				vertices.push_back(rotatedAngle);
-				colors.push_back({ 1.0f, 1.0f, 0.0f });
+				colors.push_back({ 1.0f, 1.0f, 0.0f }); // yellow
 
 				if (i != verticesCounter - 1 && j != verticesCounter - i - 1) {
 					int left = indicesOffset + sumVerticesForNUntil(verticesCounter, verticesCounter - i + 1) + j;
@@ -473,7 +514,7 @@ void initSphere()
 		indicesOffset += indicesEighth;
 	}
 
-
+	// if Sphere has a rotation (default all 0.0), rotate it
 	for (int i = 0; i < vertices.size(); i++) {
 		vertices[i] = rotateSphereX(vertices[i]);
 		vertices[i] = rotateSphereY(vertices[i]);
@@ -537,7 +578,7 @@ bool init()
   glEnable(GL_DEPTH_TEST);
   
   // Construct view matrix.
-  glm::vec3 eye(eyeZ / 2, eyeZ/2, eyeZ);
+  glm::vec3 eye(eyeZ / 2, eyeZ/2, eyeZ); // zoom closer if eyeZ is greater
   glm::vec3 center(0.0f, 0.0f, 0.0f);
   glm::vec3 up(0.0f, 1.0f, 0.0f);
   
@@ -572,7 +613,7 @@ bool init()
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (mode) {
+	if (mode) { // when c was pressed
 		renderCoord();
 	}
 	renderSphere();
