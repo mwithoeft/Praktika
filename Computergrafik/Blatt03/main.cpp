@@ -27,10 +27,11 @@ glm::mat4x4 projection;
 float zNear = 0.1f;
 float zFar  = 100.0f;
 float eyeZ = 4;
-int nigger = 1;
+int n = 3;
 int s = 100;
 bool mode = false;
 float radius = 1.0f;
+constexpr auto PI = 3.14159265358979323846;
 
 /*
 Struct to hold data for object rendering.
@@ -76,7 +77,7 @@ void renderSphere()
   
   // Bind vertex array object so we can render the 1 triangle.
   glBindVertexArray(triangle.vao);
-  glDrawElements(GL_TRIANGLES, 8 * ((nigger + 1) ^ 2), GL_UNSIGNED_SHORT, 0);
+  glDrawElements(GL_TRIANGLES, 8 * ((n + 1) ^ 2), GL_UNSIGNED_SHORT, 0);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBindVertexArray(0);
 }
@@ -290,153 +291,99 @@ glm::vec3 hsvToCMY(glm::vec3 hsvColors)
 	return{ rgbToCMY(hsvToRGB(hsvColors)) };
 }
 
+
+glm::vec3 rotateAroundX(float degree, glm::vec3 vertice) {
+	degree *= -1;
+	float rad = degree * (PI / 180);
+	glm::mat3x3 rotationMatrix = { {1, 0, 0}, {0, cos(rad), -sin(rad) }, {0, sin(rad), cos(rad)} };
+	return rotationMatrix * vertice;
+}
+
+glm::vec3 rotateAroundY(float degree, glm::vec3 vertice) {
+	degree *= -1;
+	float rad = degree * (PI / 180);
+	glm::mat3x3 rotationMatrix = { {cos(rad), 0, sin(rad)}, {0, 1, 0}, {-sin(rad), 0, cos(rad)} };
+	return rotationMatrix * vertice;
+}
+
+glm::vec3 rotateAroundZ(float degree, glm::vec3 vertice) {
+	degree *= -1;
+	float rad = degree * (PI / 180);
+	glm::mat3x3 rotationMatrix = { {cos(rad), -sin(rad), 0}, {sin(rad), cos(rad), 0 }, {0, 0, 1} };
+	return rotationMatrix * vertice;
+}
+
+glm::vec3 rotate(glm::vec3 p0, float angle, char rota) {
+	float x = p0[0];
+	float y = p0[1];
+	float z = p0[2];
+	glm::vec3 point;
+
+
+	//Rota[/URL] x-aches
+	if (rota == 'x') {
+		point = glm::vec3(1 * x + 0 * y + 0 * z,
+			0 * x + cos(angle) * y + -sin(angle) * z,
+			0 * x + sin(angle) * y + cos(angle) * z);
+	}
+	//Rota[/URL] y-aches
+	if (rota == 'y') {
+		point = glm::vec3(cos(angle) * x + 0 * y + sin(angle) * z,
+			0 * x + 1 * y + 0 * z,
+			-sin(angle) * x + 0 * y + cos(angle) * z);
+	}
+	//Rota[/URL] z-aches
+	if (rota == 'z') {
+		point = glm::vec3(cos(angle) * x + -sin(angle) * y + 0 * z,
+			sin(angle) * x + cos(angle) * y + 0 * z,
+			0 * x + 0 * y + 1 * z);
+	}
+
+
+	return point;
+}
+
+
 std::vector<GLushort> setIndices() {
-	/*
-	n=1:
-	6 Eckpunkte
-	4up 4*n
-	4mid
-	4down
-
-	1. p1=0 p2= p1[]+Eckpunkte p3= p2[]+up | p1=0 p2=6 p3=10
-	2. p1=1 p2= p1[]+Eckpunkte p3= p2[]+up | p1=1 p2=7 p3=11
-	n=2:
-	6 Eckpunkte
-	8 up 4*n
-	8 mid
-	8 down
-
-	1. p1=0 p2= p1+Eckpunkte p3= p2[]+up | p1=0 p2=6 p3=14
-	
-	*/
-	int layer = 4 * nigger;
-	const int points = 6;
-	std::vector<GLushort> indices;
-	for (int i = 0; i < points;i++){
-		int p1 = i;
-		indices.push_back(p1);
-		indices.push_back(p1 + points);
-		indices.push_back(p1 + points + layer);
-	}
-	
-
-	for (int k = 0; k <= nigger; k++) {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 8 * ((nigger + 1) ^ 2); j++) {
-				
-			}
+	std::vector<GLushort> indices = {};
+	int i = 0;
+	for (int loopcounter = 0; loopcounter < n + 1; ) {
+		loopcounter++;
+		i = i + loopcounter;
+		for (int j = 0; j < loopcounter; j++) {
+			indices.push_back(i + j);
+			indices.push_back(i + j + 1);
+			indices.push_back(i + j -loopcounter);
 		}
 	}
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < (nigger + 1); j++) {
-			for (int k = 0; k < (nigger + 1); k++) {
-				
-
-			}
-		}
-	}
-	
-	indices.push_back(0);
-	indices.push_back(1);
-	indices.push_back(4);
-	
-	indices.push_back(1);
-	indices.push_back(2);
-	indices.push_back(4);
-
-	indices.push_back(2);
-	indices.push_back(3);
-	indices.push_back(4);
-
-	indices.push_back(3);
-	indices.push_back(0);
-	indices.push_back(4);
-
-	indices.push_back(0);
-	indices.push_back(1);
-	indices.push_back(5);
-
-	indices.push_back(1);
-	indices.push_back(2);
-	indices.push_back(5);
-
-	indices.push_back(2);
-	indices.push_back(3);
-	indices.push_back(5);
-
-	indices.push_back(3);
-	indices.push_back(0);
-	indices.push_back(5);
-	indices.;
 
 	return indices;
 }
 
+
 std::vector<glm::vec3> setColors() {
 	std::vector<glm::vec3> colors;
-	for (int i = 0; i < 8 * ((nigger + 1) ^ 2); i++) {
+	for (int i = 0; i < 24 * ((n + 1) ^ 2); i++) {
 		colors.push_back({ 1.0f, 1.0f, 0.0f });//Gelb
 	}
 	return colors;
-}
-
-std::vector<glm::vec3> tessellate(glm::vec3 p0, glm::vec3 p1) {
-
-	std::vector<glm::vec3> points;
-	for (float i = 0; i < nigger; i++) {
-		glm::vec3 vecp0p1 = p1 - p0;
-		glm::vec3 pn = glm::vec3((i+1 / ((float)nigger + 1.0f)) * vecp0p1[0] + p0[0],
-			(i+1 / ((float)nigger + 1.0f)) * vecp0p1[1] + p0[1],
-			(i+1 / ((float)nigger + 1.0f)) * vecp0p1[2] + p0[2]);
-		points.push_back(pn);
-
-		
-
-	}
-	return points;
 }
 
 std::vector<glm::vec3> setVertices()
 {
 	std::vector<glm::vec3> vertices;
 
-	glm::vec3 p0 = glm::vec3(1.0f, 0.0f, 0.0f);
-	glm::vec3 p1 = glm::vec3(0.0f, 0.0f, 1.0f);
-	glm::vec3 p2 = glm::vec3(-1.0f, 0.0f, 0.0f);
-	glm::vec3 p3 = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 p4 = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 p5 = glm::vec3(0.0f, -1.0f, 0.0f);
+	glm::vec3 p0 = glm::vec3(0.0f, 1.0f, 0.0f);
 	vertices.push_back(p0);
-	vertices.push_back(p1);
-	vertices.push_back(p2);
-	vertices.push_back(p3);
-	vertices.push_back(p4);
-	vertices.push_back(p5);
 
-	//up
-	for (int i = 0; i < 4; i++) {
-		std::vector<glm::vec3> tmp(tessellate(vertices[i], vertices[4]));
-		for (int j = 0; j < nigger; j++) {
-			vertices.push_back(tmp[j]);
+	for (int i = 0; i < n + 1; i++) {
+		glm::vec3 p1 = rotateAroundX(((90 / (n + 1)) * (i + 1)), p0);
+		vertices.push_back(p1);
+		for (int j = 0; j < i + 1; j++) {
+			vertices.push_back(rotateAroundY(((90 / (n + 1)) * (j + 1)), p1));
 		}
 	}
-	//solo mid 5k easy
-	for (int i = 0; i < 4; i++) {
-		std::vector<glm::vec3> tmp(tessellate(vertices[i], vertices[i+1]));
-		for (int j = 0; j < nigger; j++) {
-			vertices.push_back(tmp[j]);
-		}
-	}
-	//down
-	for (int i = 0; i < 4; i++) {
-		std::vector<glm::vec3> tmp(tessellate(vertices[i], vertices[5]));
-		for (int j = 0; j < nigger; j++) {
-			vertices.push_back(tmp[j]);	
-		}
-	}
-	for (int i = 0; i < vertices.size(); i++) {
-		std::cout << i << "(" << vertices[i][0] << "|" << vertices[i][1] << "|" << vertices[i][2] << ")" << std::endl;
-	}
+
 	return vertices;
 }
 
@@ -449,6 +396,10 @@ void initSphere()
   const std::vector<glm::vec3> vertices = setVertices();
   const std::vector<glm::vec3> colors = setColors();
   const std::vector<GLushort>  indices  = setIndices();
+
+  for (int i = 0; i < indices.size(); i++) {
+	  printf("I:%d x: %f y: %f z: %f\n", indices[i], vertices[indices[i]][0], vertices[indices[i]][1], vertices[indices[i]][2]);
+  }
 
   GLuint programId = program.getHandle();
   GLuint pos;
@@ -579,17 +530,17 @@ void glutKeyboard (unsigned char keycode, int x, int y)
     return;
     
   case '+':
-	  if (nigger < 30) {
-	  nigger++;
-	  std::cout << nigger << std::endl;
+	  if (n < 30) {
+	  n++;
+	  std::cout << n << std::endl;
 	  //initCircle();
 	  glutDisplay();
 	  }
     break;
   case '-':
-	  if (nigger > 3) {
-	  nigger--;
-	  std::cout << nigger << std::endl;
+	  if (n > 3) {
+	  n--;
+	  std::cout << n << std::endl;
 	  //initCircle();
 	  glutDisplay();
 	  }
