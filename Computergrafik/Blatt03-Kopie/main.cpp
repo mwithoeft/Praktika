@@ -334,23 +334,35 @@ glm::vec3 rotate(glm::vec3 p0, float angle, char rota) {
 	return point;
 }
 
-glm::vec3 transRotaTrans(glm::vec3 p0, float angle ,char rota) {
+glm::vec3 transRotaTransYminus(glm::vec3 p0, float angle) {
 	float x = p0[0];
 	float y = p0[1];
 	float z = p0[2];
+	angle = 90 / (recCount + 1);
+	angle = angle * (3.14f / 180);
 
-	float t0 = -x;
-	float t1 = 0;
+	float t0 = -0;
+	float t1 = -y;
 	float t2 = -z;
 
-	glm::vec3 p;
-
-	
-	p = glm::vec3(x+t0, y+t1, z+t2);
-	p = rotate(p, angle, rota);
+	glm::vec3 p = glm::vec3(x+t0, y+t1, z+t2);
+	p = rotate(p, -angle, 'y');
 	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
-		 
-	
+	return p;
+}
+glm::vec3 transRotaTransY(glm::vec3 p0, float angle) {
+	float x = p0[0];
+	float y = p0[1];
+	float z = p0[2];
+	angle = 90 / (recCount + 1);
+	angle = angle * (3.14f / 180);
+	float t0 = -x;
+	float t1 = -y;
+	float t2 = -0;
+
+	glm::vec3 p = glm::vec3(x + t0, y + t1, z + t2);
+	p = rotate(p, angle, 'y');
+	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
 	return p;
 }
 
@@ -408,24 +420,48 @@ std::vector<glm::vec3> setVertices()
 	//indices.push_back(vertices.size() - 1);
 	return vertices;
 }
+
 void triAngle(glm::vec3 p0) {
 	float angle = 90 / (n + 1);
 	angle = angle * (3.14f / 180);
-
 	vertices.push_back(p0);
 	indices.push_back(vertices.size() - 1);
-
-	vertices.push_back(rotate(p0, angle, 'x'));
+	glm::vec3 p1;
+	glm::vec3 p2;
+	//liegt auf der Y achse
+	if (p0[2] == 0 && p0[0] == 0) {
+		p1 = rotate(p0, angle, 'x');
+		p2 = rotate(p0, -angle, 'z');
+	}
+	//liegt in der Z - Y Fläche
+	else if (p0[2] != 0 && p0[0]==0 ) {
+		//Rotation in den x - y -z Raum
+		p1 = rotate(p0, angle, 'x');
+		p1 = transRotaTransY(p1, angle);
+		//Rotation im Z - Y Raum
+		p2 = rotate(p0, angle, 'x');
+	}
+	//liegt in der X - Y Fläche
+	else if (p0[0] != 0 && p0[2] == 0) {
+		p1 = rotate(p0, -angle, 'z');
+		p1 = transRotaTransYminus(p1, -angle);
+		p2 = rotate(p0, -angle, 'z');
+	}
+	//liegt mitten im Raum
+	else if (p0[0] != 0 && p0[2] != 0) {
+		
+	}
+	vertices.push_back(p1);
 	indices.push_back(vertices.size() - 1);
 
-	vertices.push_back(rotate(p0, -angle, 'z'));
+	vertices.push_back(p2);
 	indices.push_back(vertices.size() - 1);
 
 	recCount++;
 	if (recCount < n+1) {
 
-		triAngle(rotate(p0, angle, 'x'));
-		triAngle(rotate(p0, -angle, 'z'));
+		triAngle(p1);
+		triAngle(p2);
 	}
 	recCount--;
 
