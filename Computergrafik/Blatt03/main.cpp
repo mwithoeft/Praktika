@@ -315,39 +315,6 @@ glm::vec3 hsvToCMY(glm::vec3 hsvColors)
 	return{ rgbToCMY(hsvToRGB(hsvColors)) };
 }
 
-/*
- * Sets the indices for connecting the vertices
- */
-std::vector<GLushort> setIndices() {
-
-	std::vector<GLushort> indices;
-	for (int i = 0; i < s * n + s; i++) {
-
-		indices.push_back(i);
-		indices.push_back(i + s + 1);
-		indices.push_back(i + s);
-		indices.push_back(i + s + 1);
-	}
-	return indices;
-}
-
-
-/*
- * Sets the color of all vertices to the same one
- */
-std::vector<glm::vec3> setColors() {
-	std::vector<glm::vec3> colors;
-
-
-	for (int i = 0; i <= n; ++i) {
-		// Loop Through Slices
-		for (int j = 0; j <= s; ++j) {
-			colors.push_back({1.0f, 1.0f, 0.0f}); // yellow
-		}
-	}
-	return colors;
-}
-
 
 int sumVerticesForN(int n) {
 	int sum = 0;

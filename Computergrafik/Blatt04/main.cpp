@@ -18,6 +18,7 @@ const int WINDOW_WIDTH  = 640;
 const int WINDOW_HEIGHT = 480;
 // GLUT window id/handle
 int glutID = 0;
+constexpr auto PI = 3.14159265358979323846;
 
 cg::GLSLProgram program;
 
@@ -26,14 +27,21 @@ glm::mat4x4 projection;
 
 float zNear = 0.1f;
 float zFar  = 100.0f;
-float eyeZ = 4;
+float eyeZ = 4; // for view matrix (zoom)
 int n = 0;
-int s = 100;
+int r = 100;
+
+int s = 4;
+
+
+// For rotating the sphere per axis
+int xAngle = 0;
+int yAngle = 0;
+int zAngle = 0;
+
+
 bool mode = false;
 float radius = 1.0f;
-int recCount = 0;
-std::vector<GLushort> indices;
-std::vector<glm::vec3> vertices;
 
 /*
 Struct to hold data for object rendering.
@@ -67,22 +75,32 @@ public:
 
 Object triangle;
 Object quad;
+Object sphere;
+
+/*
+ * Calc the amount of triangles of one qadrant in recursive way.
+ * Example returns are 1 for n=0, 4 for n=1, 9 for n=2, 16 for n=3
+ */
+int calcAmountTriangles(int n) {
+	if (n == 0) {
+		return 1;
+	}
+	return calcAmountTriangles(n - 1) + (n * 2 + 1);
+}
+
 
 void renderSphere()
 {
-  // Create mvp.
-  glm::mat4x4 mvp = projection * view * quad.model;
-  
-  // Bind the shader program and set uniform(s).
-  program.use();
-  program.setUniform("mvp", mvp);
-  
-  // Bind vertex array object so we can render the 1 triangle.
-  glBindVertexArray(triangle.vao);
-  //glDrawElements(GL_TRIANGLES, 8 * ((n + 1) ^ 2), GL_UNSIGNED_SHORT, 0);
-  glDrawElements(GL_TRIANGLES, 8 * ((n+1)^2) *3, GL_UNSIGNED_SHORT, 0);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glBindVertexArray(0);
+	glm::mat4x4 mvp = projection * view * sphere.model;
+
+	// Bind the shader program and set uniform(s).
+	program.use();
+	program.setUniform("mvp", mvp);
+
+	// Bind vertex array object so we can render the n triangles.
+	glBindVertexArray(sphere.vao);
+	glDrawElements(GL_TRIANGLES, 8 * calcAmountTriangles(n) * 3, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(0);
 }
 
 void renderCoord()
@@ -101,6 +119,9 @@ void renderCoord()
   glBindVertexArray(0);
 }
 
+/*
+ * Init the coordination system and set its vertices to construct the axis-lines
+ */
 void initCoord()
 {
 	glm::vec3 center= glm::vec3( 0.0f, 0.0f, 0.0f );
@@ -294,327 +315,223 @@ glm::vec3 hsvToCMY(glm::vec3 hsvColors)
 	return{ rgbToCMY(hsvToRGB(hsvColors)) };
 }
 
-std::vector<GLushort> setIndices() {
-	std::vector<GLushort> indices;
 
-	indices.push_back(0);
-	indices.push_back(1);
-	indices.push_back(2);
-	
-	return indices;
-}
-
-glm::vec3 rotate(glm::vec3 p0, float angle, char rota) {
-	float x = p0[0];
-	float y = p0[1];
-	float z = p0[2];
-	glm::vec3 point;
-
-
-	//Rota x-aches
-	if (rota == 'x') {
-		point = glm::vec3(1 * x + 0 * y + 0 * z,
-			0 * x + cos(angle) * y + -sin(angle) * z,
-			0 * x + sin(angle) * y + cos(angle) * z);
+int sumVerticesForN(int n) {
+	int sum = 0;
+	for (int i = n; i > 0; i--) {
+		sum += i;
 	}
-	//Rota y-aches
-	if (rota == 'y') {
-		point = glm::vec3(cos(angle) * x + 0 * y + sin(angle) * z,
-			0 * x + 1 * y + 0 * z,
-			-sin(angle) * x + 0 * y + cos(angle) * z);
+	return sum;
+}
+
+int sumVerticesForNUntil(int n, int limit) {
+	int sum = 0;
+	for (int i = n; i > limit - 1; i--) {
+		sum += i;
 	}
-	//Rota z-aches
-	if (rota == 'z') {
-		point = glm::vec3(cos(angle) * x + -sin(angle) * y + 0 * z,
-			sin(angle) * x + cos(angle) * y + 0 * z,
-			0 * x + 0 * y + 1 * z);
-	}
-
-
-	return point;
+	return sum;
 }
 
-glm::vec3 transRotaTransYminus(glm::vec3 p0, float angle) {
-	float x = p0[0];
-	float y = p0[1];
-	float z = p0[2];
-	angle = 90 / (recCount + 1);
-	angle = angle * (3.14f / 180);
 
-	float t0 = -0;
-	float t1 = -y;
-	float t2 = -z;
-
-	glm::vec3 p = glm::vec3(x+t0, y+t1, z+t2);
-	p = rotate(p, -angle, 'y');
-	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
-	return p;
-}
-glm::vec3 transRotaTransY(glm::vec3 p0, float angle) {
-	float x = p0[0];
-	float y = p0[1];
-	float z = p0[2];
-	angle = 90 / (recCount + 1);
-	angle = angle * (3.14f / 180);
-	float t0 = -x;
-	float t1 = -y;
-	float t2 = -0;
-
-	glm::vec3 p = glm::vec3(x + t0, y + t1, z + t2);
-	p = rotate(p, angle, 'y');
-	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
-	return p;
+/*
+ * Rotate a vertice on the X axis
+ */
+glm::vec3 rotateX(float degree, glm::vec3 vertice) {
+	degree *= -1;
+	float rad = degree * (PI / 180);
+	glm::mat3x3 rotationMatrix = { {1, 0, 0}, {0, cos(rad), -sin(rad) }, {0, sin(rad), cos(rad)} };
+	return rotationMatrix * vertice;
 }
 
-glm::vec3 transRotaTransZ(glm::vec3 p0, float angle) {
-	float x = p0[0];
-	float y = p0[1];
-	float z = p0[2];
-	float t0 = -x;
-	float t1 = -0;
-	float t2 = -z;
-
-	glm::vec3 p = glm::vec3(x + t0, y + t1, z + t2);
-	p = rotate(p, -angle, 'z');
-	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
-	return p;
+/*
+ * Rotate a vertice on the Y axis
+ */
+glm::vec3 rotateY(float degree, glm::vec3 vertice) {
+	degree *= -1;
+	float rad = degree * (PI / 180);
+	glm::mat3x3 rotationMatrix = { {cos(rad), 0, sin(rad)}, {0, 1, 0}, {-sin(rad), 0, cos(rad)} };
+	return rotationMatrix * vertice;
 }
 
-glm::vec3 transRotaTransX(glm::vec3 p0, float angle) {
-	float x = p0[0];
-	float y = p0[1];
-	float z = p0[2];
-	float t0 = -x;
-	float t1 = -0;
-	float t2 = -z;
-
-	glm::vec3 p = glm::vec3(x + t0, y + t1, z + t2);
-	p = rotate(p, angle, 'x');
-	p = glm::vec3(p[0] - t0, p[1] - t1, p[2] - t2);
-	return p;
+/*
+ * Rotate a vertice on the Z axis
+ */
+glm::vec3 rotateZ(float degree, glm::vec3 vertice) {
+	degree *= -1;
+	float rad = degree * (PI / 180);
+	glm::mat3x3 rotationMatrix = { {cos(rad), -sin(rad), 0}, {sin(rad), cos(rad), 0 }, {0, 0, 1} };
+	return rotationMatrix * vertice;
 }
 
-std::vector<glm::vec3> setVertices()
-{
-	std::vector<glm::vec3> vertices;
-
-	glm::vec3 pTop = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 pBot = glm::vec3(0.0f, -1.0f, 0.0f);
-
-	glm::vec3 p0 = glm::vec3(1.0f, 0.0f, 0.0f);
-	glm::vec3 p1 = glm::vec3(0.0f, 0.0f, 1.0f);
-	
-	vertices.push_back(pTop);
-	//indices.push_back(vertices.size() - 1);
-	
-	
-	glm::vec3 plast = pTop;
-	int angle;
-	for (int i = 1; i <= n; i++) {
-
-		//rotate top -> bot right
-		angle = (90 / (n + 1)) * i;
-		glm::vec3 pRight = rotate(pTop, -angle * (3.14f / 180), 'z');
-		vertices.push_back(pRight);
-		//indices.push_back(vertices.size() - 1);
-		std::cout << pRight[0] << pRight[1] << pRight[2] << std::endl;
-
-		//rotate top -> bot left
-		angle = -(90 / (n + 1)) * i;
-		glm::vec3 pLeft = rotate(pTop, -angle * (3.14f / 180), 'x');
-		vertices.push_back(pLeft);
-		//indices.push_back(vertices.size() - 1);
-		std::cout << pLeft[0] << pLeft[1] << pLeft[2] << std::endl;
-
-		//rotate left -> right
-		angle = 90 / (n + 1) * i;
-		glm::vec3 pMid = rotate(p1, angle * (3.14f / 180), 'y');
-		vertices.push_back(pMid);
-		//indices.push_back(vertices.size() - 1);
-		std::cout << pMid[0] << pMid[1] << pMid[2] << std::endl;
-
-		//Layer left -> right
-		/*
-		for (int j = 1; j < i ; j++) {
-			angle = 90 / (n + 1) * j;
-			glm::vec3 p = rotate(pLeft, angle * (3.14f / 180), 'z');
-			vertices.push_back(p);
-			std::cout << "mittelpunkt" << std::endl;
-		}*/
-	}
-	vertices.push_back(p0);
-	//indices.push_back(vertices.size() - 1);
-	vertices.push_back(p1);
-	//indices.push_back(vertices.size() - 1);
-	return vertices;
+/*
+ * Mirror a vertice on the XZ-pane
+ */
+glm::vec3 mirrorXZ(glm::vec3 vertice) {
+	glm::mat3x3 mirrorMatrix = { {1, 0, 0}, {0, -1, 0}, {0, 0, 1} };
+	return mirrorMatrix * vertice;
 }
 
-void triAngle(glm::vec3 p0) {
-	float angle = 90 / (n + 1);
-	angle = angle * (3.14f / 180);
-	vertices.push_back(p0);
-	indices.push_back(vertices.size() - 1);
-	glm::vec3 p1;
-	glm::vec3 p2;
-	//liegt auf der Y achse
-	if (p0[2] == 0 && p0[0] == 0) {
-		p1 = rotate(p0, angle, 'x');
-		p2 = rotate(p0, -angle, 'z');
-	}
-	//liegt in der Z - Y Fläche
-	else if (p0[2] != 0 && p0[0]==0 ) {
-		//Rotation in den x - y -z Raum
-		p1 = rotate(p0, angle, 'x');
-		p1 = transRotaTransY(p1, angle);
-		//Rotation im Z - Y Raum
-		p2 = rotate(p0, angle, 'x');
-		printf("%f %f %f\n", p1[0], p1[1], p1[2]);
-	}
-	//liegt in der X - Y Fläche
-	else if (p0[0] != 0 && p0[2] == 0) {
-		p1 = rotate(p0, -angle, 'z');
-		p1 = transRotaTransYminus(p1, -angle);
-		p2 = rotate(p0, -angle, 'z');
-		printf("%f %f %f\n", p1[0], p1[1], p1[2]);
-	}
-	//liegt mitten im Raum
-	else {
-		p1 = transRotaTransZ(p0, angle);
-		p2 = transRotaTransX(p0, angle);
-		
+/*
+ * Rotate the sphere on the X axis
+ */
+glm::vec3 rotateSphereX(glm::vec3 vertice) {
+	float x = vertice[0];
+	float y = vertice[1];
+	float z = vertice[2];
 
-	}
-	vertices.push_back(p1);
-	indices.push_back(vertices.size() - 1);
 
-	vertices.push_back(p2);
-	indices.push_back(vertices.size() - 1);
+	vertice[0] - x;
+	vertice = rotateX(xAngle, vertice);
+	vertice[0] + x;
 
-	recCount++;
-	if (recCount < (n+1)) {
-
-		triAngle(p1);
-		triAngle(p2);
-	}
-	recCount--;
-
+	return vertice;
 }
 
-glm::vec3 mirrorYZ(glm::vec3 p) {
-	float x = p[0];
-	float y = p[1];
-	float z = p[2];
-	float x1 = -1, y1 = 0, z1 = 0;
-	float x2 = 0, y2 = 1, z2 = 0;
-	float x3 = 0, y3 = 0, z3 = 1;
-	return glm::vec3(x * x1 + y * y1 + z * z1,
-		x * x2 + y * y2 + z * z2,
-		x * x3 + y * y3 + z * z3);
+/*
+ * Rotate the sphere on the Y axis
+ */
+glm::vec3 rotateSphereY(glm::vec3 vertice) {
+	float x = vertice[0];
+	float y = vertice[1];
+	float z = vertice[2];
+
+	vertice[1] - y;
+	vertice = rotateY(yAngle, vertice);
+	vertice[1] + y;
+
+	return vertice;
 }
 
-glm::vec3 mirrorXZ(glm::vec3 p) {
-	float x = p[0];
-	float y = p[1];
-	float z = p[2];
-	float x1 = 1, y1 = 0, z1 = 0;
-	float x2 = 0, y2 = -1, z2 = 0;
-	float x3 = 0, y3 = 0, z3 = 1;
-	return glm::vec3(x * x1 + y * y1 + z * z1,
-		x * x2 + y * y2 + z * z2,
-		x * x3 + y * y3 + z * z3);
+/*
+ * Rotate the sphere on the Z axis
+ */
+glm::vec3 rotateSphereZ(glm::vec3 vertice) {
+	float x = vertice[0];
+	float y = vertice[1];
+	float z = vertice[2];
+
+	vertice[2] - z;
+	vertice = rotateZ(zAngle, vertice);
+	vertice[2] + z;
+
+	return vertice;
 }
 
-glm::vec3 mirrorXY(glm::vec3 p) {
-	float x = p[0];
-	float y = p[1];
-	float z = p[2];
-	float x1 = 1, y1 = 0, z1 = 0;
-	float x2 = 0, y2 = 1, z2 = 0;
-	float x3 = 0, y3 = 0, z3 = -1;
-	return glm::vec3(x*x1+y*y1+z*z1,
-		x* x2 + y * y2 + z * z2,
-		x* x3 + y * y3 + z * z3);
-}
-
+/*
+ * Inits the Sphere.
+ * Calcs and sets vertices and its indices for connecting them.
+ */
 void initSphere()
 {
-  // Construct triangle. These vectors can go out of scope after we have send all data to the graphics card.
-  //const std::vector<glm::vec3> vertices = { glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f) };
-  //const std::vector<glm::vec3> vertices = { p0, p1, p2, p3, p3, p4, p5};
-  // set colors to yellow
-	recCount = 0;
-	vertices.clear();
-	indices.clear();
-	triAngle(glm::vec3(0.0f, 1.0f, 0.0f));
-	int size = vertices.size();
-	for (int i = 0; i < size; i++) {
-		vertices.push_back(mirrorXY(vertices[i]));
-		indices.push_back(vertices.size() - 1);
+	std::vector<glm::vec3> vertices = {};
+	std::vector<glm::vec3> colors = {};
+	std::vector<GLushort>  indices = {};
+
+	float angleStep = 90 / (n + 1);
+	float angleEighth = 90; // degrees
+
+	int indicesEighth = sumVerticesForN(n + 2);
+	int indicesOffset = 0;
+
+	int verticesCounter = n + 2;
+
+
+	for (int sphereEighth = 0; sphereEighth < 8; sphereEighth++) {
+		for (int i = 0; i < verticesCounter; i++) {
+
+			float angleRight = 90 / (float)(verticesCounter - i - 1);
+
+			for (int j = 0; j < verticesCounter - i; j++) {
+
+				glm::vec3 point = { 0.0f, 0.0f, 1.0f * ((float)r / 100) };
+				glm::vec3 rotatedAngle = rotateX(-angleStep * i, point);
+
+				if (verticesCounter - i != 1) {
+					rotatedAngle = rotateY(angleRight * j, rotatedAngle);
+				}
+
+				float angle = angleEighth * (float)(sphereEighth % 4);
+				rotatedAngle = rotateY(angle, rotatedAngle);
+
+				if (sphereEighth >= 4) {
+					rotatedAngle = mirrorXZ(rotatedAngle);
+				}
+
+				vertices.push_back(rotatedAngle);
+				colors.push_back({ 1.0f, 1.0f, 0.0f }); // yellow
+
+				if (i != verticesCounter - 1 && j != verticesCounter - i - 1) {
+					int left = indicesOffset + sumVerticesForNUntil(verticesCounter, verticesCounter - i + 1) + j;
+					int top = left + (verticesCounter - i);
+					int right = left + 1;
+
+					indices.push_back(left);
+					indices.push_back(top);
+					indices.push_back(right);
+
+					if (i > 0) {
+						int bottom = right - (verticesCounter - i + 1);
+						indices.push_back(left);
+						indices.push_back(bottom);
+						indices.push_back(right);
+					}
+				}
+			}
+		}
+		indicesOffset += indicesEighth;
 	}
-	size = vertices.size();
-	for (int i = 0; i < size; i++) {
-		vertices.push_back(mirrorYZ(vertices[i]));
-		indices.push_back(vertices.size() - 1);
-	}
-	size = vertices.size();
-	for (int i = 0; i < size; i++) {
-		vertices.push_back(mirrorXZ(vertices[i]));
-		indices.push_back(vertices.size() - 1);
-	}
-	std::vector<glm::vec3> colors;
+
+	// if Sphere has a rotation (default all 0.0), rotate it
 	for (int i = 0; i < vertices.size(); i++) {
-		glm::vec3 tmp = glm::vec3(1.0f, 1.0f, 0.0f);
-		colors.push_back(tmp);//Gelb
+		vertices[i] = rotateSphereX(vertices[i]);
+		vertices[i] = rotateSphereY(vertices[i]);
+		vertices[i] = rotateSphereZ(vertices[i]);
 	}
 
 
-  GLuint programId = program.getHandle();
-  GLuint pos;
-
-  // Step 0: Create vertex array object.
-  glGenVertexArrays(1, &triangle.vao);
-  glBindVertexArray(triangle.vao);
-  
-  // Step 1: Create vertex buffer object for position attribute and bind it to the associated "shader attribute".
-  glGenBuffers(1, &triangle.positionBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, triangle.positionBuffer);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
-  
-  // Bind it to position.
-  pos = glGetAttribLocation(programId, "position");
-  glEnableVertexAttribArray(pos);
-  glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  
-  // Step 2: Create vertex buffer object for color attribute and bind it to...
-  glGenBuffers(1, &triangle.colorBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, triangle.colorBuffer);
-  glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
-  
-  // Bind it to color.
-  pos = glGetAttribLocation(programId, "color");
-  glEnableVertexAttribArray(pos);
-  glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  
-  // Step 3: Create vertex buffer object for indices. No binding needed here.
-  glGenBuffers(1, &triangle.indexBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle.indexBuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
-  
-  // Unbind vertex array object (back to default).
-  glBindVertexArray(0);
-  
-  // Modify model matrix.
-  triangle.model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.25f, 0.0f, 0.0f));
-}
 
 
 
-glm::vec3 rota(glm::vec3 p, float angle)
-{
-	float p1 = p[0];
-	float p2 = p[1];
-	glm::vec3 rp = glm::vec3(p1*cos(angle) - p2 * sin(angle), p2 * cos(angle) + p1 * sin(angle), 0.0f);
-	return rp;
+	GLuint programId = program.getHandle();
+	GLuint pos;
+
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	// Step 0: Create vertex array object.
+	glGenVertexArrays(1, &sphere.vao);
+	glBindVertexArray(sphere.vao);
+
+	// Step 1: Create vertex buffer object for position attribute and bind it to the associated "shader attribute".
+	glGenBuffers(1, &sphere.positionBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, sphere.positionBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+
+	// Bind it to position.
+	pos = glGetAttribLocation(programId, "position");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Step 2: Create vertex buffer object for color attribute and bind it to...
+	glGenBuffers(1, &sphere.colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, sphere.colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
+
+	// Bind it to color.
+	pos = glGetAttribLocation(programId, "color");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Step 3: Create vertex buffer object for indices. No binding needed here.
+	glGenBuffers(1, &sphere.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
+
+	// Unbind vertex array object (back to default).
+	glBindVertexArray(0);
+
+	// Modify model matrix.
+	//quad.model = glm::translate(glm::mat4(1.0f), glm::vec3(1.25f, 0.0f, 0.0f));
 }
 
 
@@ -628,7 +545,7 @@ bool init()
   glEnable(GL_DEPTH_TEST);
   
   // Construct view matrix.
-  glm::vec3 eye(eyeZ / 2, eyeZ/2, eyeZ);
+  glm::vec3 eye(eyeZ / 2, eyeZ/2, eyeZ); // zoom closer if eyeZ is greater
   glm::vec3 center(0.0f, 0.0f, 0.0f);
   glm::vec3 up(0.0f, 1.0f, 0.0f);
   
@@ -663,13 +580,13 @@ bool init()
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (mode) {
+	if (mode) { // when c was pressed
 		renderCoord();
 	}
 	renderSphere();
 }
 
-void glutDisplay()
+void glutDisplay ()
 {
    render();
    glutSwapBuffers();
@@ -678,7 +595,7 @@ void glutDisplay()
 /*
  Resize callback.
  */
-void glutResize(int width, int height)
+void glutResize (int width, int height)
 {
   // Division by zero is bad...
   height = height < 1 ? 1 : height;
@@ -686,12 +603,13 @@ void glutResize(int width, int height)
   
   // Construct projection matrix.
   projection = glm::perspective(45.0f, (float) width / height, zNear, zFar);
+  //projection = glm::ortho(-5.0F * width / height, 5.0F * width / height, -5.0F, 5.0F, zNear, zFar);
 }
 
 /*
  Callback for char input.
  */
-void glutKeyboard(unsigned char keycode, int x, int y)
+void glutKeyboard (unsigned char keycode, int x, int y)
 {
   switch (keycode) {
   case 27: // ESC
@@ -699,7 +617,7 @@ void glutKeyboard(unsigned char keycode, int x, int y)
     return;
     
   case '+':
-	  if (n < 3) {
+	  if (n < 4) {
 	  n++;
 	  std::cout << n << std::endl;
 	  init();
@@ -714,23 +632,34 @@ void glutKeyboard(unsigned char keycode, int x, int y)
 	  glutDisplay();
 	  }
     break;
-  case 'q':
+  case 'x':
+	  xAngle += 3;
+	  init();
+	  glutDisplay();
 	  break;
-  case 'w':
+  case 'y':
+	  yAngle += 3;
+	  init();
+	  glutDisplay();
+	  break;
+  case 'z':
+	  zAngle+=3;
+	  init();
+	  glutDisplay();
 	  break;
   case 'c':
 	  mode = !mode;
 	  glutDisplay();
     break;
   case 'a':
-	  if (eyeZ < 20) {
+	  if (eyeZ < 50) {
 		  eyeZ+=0.5;
 		  init();
 		  glutDisplay();
 	  }
     break;
   case 's':
-	  if (eyeZ > 2) {
+	  if (eyeZ > 1) {
 		  eyeZ-=0.5;
 		  init();
 		  glutDisplay();
@@ -755,6 +684,9 @@ int main(int argc, char** argv)
   glutCreateWindow("Aufgabenblatt 02");
   glutID = glutGetWindow();
   
+
+  //glEnable(GL_CULL_FACE);
+
   // GLEW: Load opengl extensions
   //glewExperimental = GL_TRUE;
   if (glewInit() != GLEW_OK) {
