@@ -29,7 +29,7 @@ float zNear = 0.1f;
 float zFar  = 100.0f;
 float eyeZ = 4; // for view matrix (zoom)
 int n = 0;
-int gRadius = 100;
+int r = 100;
 
 int s = 4;
 
@@ -125,9 +125,9 @@ void renderCoord()
 void initCoord()
 {
 	glm::vec3 center= glm::vec3( 0.0f, 0.0f, 0.0f );
-	glm::vec3 xAxis = glm::vec3( 3.0f, 0.0f, 0.0f );
-	glm::vec3 yAxis = glm::vec3( 0.0f, 3.0f, 0.0f );
-	glm::vec3 zAxis = glm::vec3( 0.0f, 0.001f, 3.0f );
+	glm::vec3 xAxis = glm::vec3( 1.0f, 0.0f, 0.0f );
+	glm::vec3 yAxis = glm::vec3( 0.0f, 1.0f, 0.0f );
+	glm::vec3 zAxis = glm::vec3( 0.0f, 0.0f, 1.0f );
 	std::vector<glm::vec3> vertices;
 	vertices.push_back(center);
 	vertices.push_back(xAxis);
@@ -443,7 +443,7 @@ void initSphere()
 
 			for (int j = 0; j < verticesCounter - i; j++) {
 
-				glm::vec3 point = { 0.0f, 0.0f, 1.0f * ((float)gRadius / 100) };
+				glm::vec3 point = { 0.0f, 0.0f, 1.0f * ((float)r / 100) };
 				glm::vec3 rotatedAngle = rotateX(-angleStep * i, point);
 
 				if (verticesCounter - i != 1) {
@@ -458,42 +458,23 @@ void initSphere()
 				}
 
 				vertices.push_back(rotatedAngle);
-				colors.push_back({ 0.0f, 1.0f, 1.0f }); // yellow
+				colors.push_back({ 1.0f, 1.0f, 0.0f }); // yellow
 
 				if (i != verticesCounter - 1 && j != verticesCounter - i - 1) {
 					int left = indicesOffset + sumVerticesForNUntil(verticesCounter, verticesCounter - i + 1) + j;
 					int top = left + (verticesCounter - i);
 					int right = left + 1;
 
-					if (sphereEighth >= 4) {
-						indices.push_back(top);
-						indices.push_back(right);
-						indices.push_back(left);
-					}
-					else {
-						indices.push_back(top);
-						indices.push_back(left);
-						indices.push_back(right);
-					}
+					indices.push_back(left);
+					indices.push_back(top);
+					indices.push_back(right);
 
-					if (sphereEighth >= 4) {
-						if (i > 0) {
-							int bottom = right - (verticesCounter - i + 1);
-							indices.push_back(bottom);
-							indices.push_back(left);
-							indices.push_back(right);
-						}
+					if (i > 0) {
+						int bottom = right - (verticesCounter - i + 1);
+						indices.push_back(left);
+						indices.push_back(bottom);
+						indices.push_back(right);
 					}
-					else {
-						if (i > 0) {
-							int bottom = right - (verticesCounter - i + 1);
-							indices.push_back(right);
-							indices.push_back(left);
-							indices.push_back(bottom);
-						}
-					}
-
-					
 				}
 			}
 		}
@@ -561,12 +542,11 @@ bool init()
 {
   // OpenGL: Set "background" color and enable depth testing.
   glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-  
   //glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
   
   // Construct view matrix.
-  glm::vec3 eye(0.0f, 0.0f, eyeZ); // zoom closer if eyeZ is greater
+  glm::vec3 eye(eyeZ, eyeZ, eyeZ); // zoom closer if eyeZ is greater
   glm::vec3 center(0.0f, 0.0f, 0.0f);
   glm::vec3 up(0.0f, 1.0f, 0.0f);
   
@@ -602,10 +582,8 @@ void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (mode) { // when c was pressed
-		glDisable(GL_CULL_FACE);
 		renderCoord();
 	}
-	glEnable(GL_CULL_FACE);
 	renderSphere();
 }
 
@@ -625,8 +603,8 @@ void glutResize (int width, int height)
   glViewport(0, 0, width, height);
   
   // Construct projection matrix.
-  //projection = glm::perspective(45.0f, (float) width / height, zNear, zFar);
-  projection = glm::ortho(-5.0F * width / height, 5.0F * width / height, -5.0F, 5.0F, zNear, zFar);
+  projection = glm::perspective(45.0f, (float) width / height, zNear, zFar);
+  //projection = glm::ortho(-5.0F * width / height, 5.0F * width / height, -5.0F, 5.0F, zNear, zFar);
 }
 
 /*
@@ -660,24 +638,7 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  init();
 	  glutDisplay();
 	  break;
-  case 'r':
-	  if (gRadius > 10) {
-		  gRadius--;
-		  std::cout << n << std::endl;
-		  init();
-		  glutDisplay();
-	  }
-	  break;
-  case 'R':
-	  if (gRadius < 100) {
-		  gRadius++;
-		  std::cout << gRadius << "y\n" << yAngle << "x\n" << xAngle << "z\n" << zAngle << std::endl;
-		  init();
-		  glutDisplay();
-	  }
-	  break;
   case 'y':
-	  printf("rotay \n \n \n \n \n rota y");
 	  yAngle += 3;
 	  init();
 	  glutDisplay();
@@ -715,8 +676,6 @@ int main(int argc, char** argv)
   glutInitWindowSize    (WINDOW_WIDTH, WINDOW_HEIGHT);
   glutInitWindowPosition(40,40);
   glutInit(&argc, argv);
-
-
   
   // GLUT: Create a window and opengl context (version 4.3 core profile).
   glutInitContextVersion(4, 3);
