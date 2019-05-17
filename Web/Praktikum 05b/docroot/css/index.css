@@ -1,0 +1,65 @@
+/* CSS für Startseite */
+
+/* Seitenaufbau */
+.tron {
+    padding: 0px;
+    height: 500px;
+    background: #000000;
+}
+
+
+.twocolumns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.twocolumns article {
+    width: 50%;
+    border: 1px solid black;
+    margin: 2px;
+    padding: 3px;
+}
+
+a {
+    color: black;
+}
+    
+.tron h1 {
+    padding: 20px;
+    margin: 20px;
+    display: block;
+    font-size: 4em;
+    position: relative;
+    float: left;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    text-align: center;
+}
+
+/* Animationseinstellungen */
+.tron h1.fadein {
+    color: white;
+    animation: fadein;
+    animation-duration: 8s;
+}
+.tron h1.fadeout {
+    color: black;
+    animation: fadeout;
+    animation-duration: 8s;
+}
+
+/* Animationen */
+
+@keyframes fadein {
+    0% {color: black;}
+    75% {color: black;}
+    100% {color: white;}
+}
+
+@keyframes fadeout {
+    0% {color: white;}
+    75% {color: white;}
+    100% {color: black;}
+}

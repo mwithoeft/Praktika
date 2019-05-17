@@ -1,0 +1,64 @@
+/* CSS für die Projektübersichtsseite */
+
+/* Seitenaufbau */
+
+.overviewcontent {
+    background-color: black;
+    border-radius: 15px;
+    color: white;
+    width: 200px;
+    text-indent: 3px;
+}
+
+.overview {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.overviewprojects {
+    border-right: thick solid #382ec0;
+    width: 100%;
+    background-clip: padding-box;
+}
+
+.overviewprojects section {
+    background-color: #355f5f;
+    border-radius: 15px;
+}
+
+.overviewprojects h1 {
+    font-size: 150%;
+    color: white;
+    margin-left: 10px;
+}
+.overviewprojects header, .overviewprojects footer {
+    background-color: #1B1C1D;
+    border-radius: 15px;
+}
+
+.overview section {
+    margin: 2px;
+}
+
+.shortdescription {
+    border-radius: 5px;
+    color: white;
+    background-color: #003030;
+    padding: 2px;
+}
+
+/* Listeneinstellungen */
+
+.overviewcontent ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+li:hover {
+    background-color: #5e767e;
+}
+li a:hover {
+    color: white;
+}
