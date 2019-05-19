@@ -1,5 +1,5 @@
 // Called on install stage
-this.addEventListener('install', function (event) {
+self.addEventListener('install', function (event) {
     // Sicherstellen, dass zuerst alle Dateien im Cache landen
     event.waitUntil(
         caches.open('v1').then(function (cache) {
@@ -31,15 +31,15 @@ this.addEventListener('install', function (event) {
                 '/css/overview.css',
                 '/css/project_page.css',
 
-                '/serviceworker-worker.js',
+                '/serviceworker.js',
+                '/service-worker.js',
 
                 '/js/jsonapi.js',
                 '/js/lang.js',
                 '/js/projektverwaltung.js',
-                '/js/demo.js',
                 '/js/popup.js',
+                '/js/location.js',
                 '/js/localStorage.js',
-                '/js/geolocation.js'
             ]);
 
         })
@@ -47,7 +47,7 @@ this.addEventListener('install', function (event) {
 });
 
 // Wird aufgerufen wenn Dateien angefragt werden
-this.addEventListener('fetch', function (evt) {
+self.addEventListener('fetch', function (evt) {
     console.log("Hole " + evt.request.url);
     evt.respondWith(// Responde with erwartet eine asynchrone Funktion
         caches.match(evt.request).then(
