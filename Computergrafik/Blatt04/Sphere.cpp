@@ -200,8 +200,10 @@ void Sphere::rotateSphereX() {
 		float z = vertices[i][2];
 
 		vertices[i][0] - x;
+		vertices[i][1] - y;
 		vertices[i] = rotateX(angleChange, vertices[i]);
 		vertices[i][0] + x;
+		vertices[i][1] + y;
 	}
 }
 
@@ -215,8 +217,10 @@ void Sphere::rotateSphereY() {
 		float z = vertices[i][2];
 
 		vertices[i][1] - y;
+		vertices[i][2] - z;
 		vertices[i] = rotateY(angleChange, vertices[i]);
 		vertices[i][1] + y;
+		vertices[i][2] + z;
 	}
 }
 
@@ -229,8 +233,10 @@ void Sphere::rotateSphereZ() {
 		float y = vertices[i][1];
 		float z = vertices[i][2];
 
+		vertices[i][0] - x;
 		vertices[i][2] - z;
 		vertices[i] = rotateZ(angleChange, vertices[i]);
+		vertices[i][0] + x;
 		vertices[i][2] + z;
 	}
 }
