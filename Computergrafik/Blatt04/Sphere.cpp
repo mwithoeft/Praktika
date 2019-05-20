@@ -13,10 +13,11 @@ Sphere::~Sphere()
 }
 
 
-void Sphere::init() {
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> colors;
-	std::vector<GLushort> indices;
+void Sphere::calcPoints() {
+
+	vertices = {};
+	colors = {};
+	indices = {};
 
 	float angleStep = 90 / (stacks + 1);
 	float angleEighth = 90; // degrees
@@ -91,16 +92,15 @@ void Sphere::init() {
 		indicesOffset += indicesEighth;
 	}
 
-	// if Sphere has a rotation (default all 0.0), rotate it
-	for (int i = 0; i < vertices.size(); i++) {
-		vertices[i] = rotateSphereX(vertices[i]);
-		vertices[i] = rotateSphereY(vertices[i]);
-		vertices[i] = rotateSphereZ(vertices[i]);
+
+}
+
+void Sphere::init() {
+
+	if (!initialized) {
+		calcPoints();
+		initialized = true;
 	}
-
-
-
-
 
 	GLuint programId = program->getHandle();
 	GLuint pos;
@@ -139,7 +139,6 @@ void Sphere::init() {
 
 	// Unbind vertex array object (back to default).
 	glBindVertexArray(0);
-
 }
 
 void Sphere::draw(glm::mat4x4 mvp) {
@@ -194,47 +193,52 @@ glm::vec3 Sphere::mirrorXZ(glm::vec3 vertice) {
 /*
  * Rotate the sphere on the X axis
  */
-glm::vec3 Sphere::rotateSphereX(glm::vec3 vertice) {
-	float x = vertice[0];
-	float y = vertice[1];
-	float z = vertice[2];
+void Sphere::rotateSphereX() {
+	for (int i = 0; i < vertices.size(); i++) {
+		float x = vertices[i][0];
+		float y = vertices[i][1];
+		float z = vertices[i][2];
 
-
-	vertice[0] - x;
-	vertice = rotateX(xAngle, vertice);
-	vertice[0] + x;
-
-	return vertice;
+		vertices[i][0] - x;
+		vertices[i][1] - y;
+		vertices[i] = rotateX(angleChange, vertices[i]);
+		vertices[i][0] + x;
+		vertices[i][1] + y;
+	}
 }
 
 /*
  * Rotate the sphere on the Y axis
  */
-glm::vec3 Sphere::rotateSphereY(glm::vec3 vertice) {
-	float x = vertice[0];
-	float y = vertice[1];
-	float z = vertice[2];
+void Sphere::rotateSphereY() {
+	for (int i = 0; i < vertices.size(); i++) {
+		float x = vertices[i][0];
+		float y = vertices[i][1];
+		float z = vertices[i][2];
 
-	vertice[1] - y;
-	vertice = rotateY(yAngle, vertice);
-	vertice[1] + y;
-
-	return vertice;
+		vertices[i][1] - y;
+		vertices[i][2] - z;
+		vertices[i] = rotateY(angleChange, vertices[i]);
+		vertices[i][1] + y;
+		vertices[i][2] + z;
+	}
 }
 
 /*
  * Rotate the sphere on the Z axis
  */
-glm::vec3 Sphere::rotateSphereZ(glm::vec3 vertice) {
-	float x = vertice[0];
-	float y = vertice[1];
-	float z = vertice[2];
+void Sphere::rotateSphereZ() {
+	for (int i = 0; i < vertices.size(); i++) {
+		float x = vertices[i][0];
+		float y = vertices[i][1];
+		float z = vertices[i][2];
 
-	vertice[2] - z;
-	vertice = rotateZ(zAngle, vertice);
-	vertice[2] + z;
-
-	return vertice;
+		vertices[i][0] - x;
+		vertices[i][2] - z;
+		vertices[i] = rotateZ(angleChange, vertices[i]);
+		vertices[i][0] + x;
+		vertices[i][2] + z;
+	}
 }
 
 
@@ -276,13 +280,26 @@ int Sphere::getAngleZ() {
 }
 void Sphere::setAngleX(int angle) {
 	xAngle = angle;
+	rotateSphereX();
+	init();
 }
 void Sphere::setAngleY(int angle) {
 	yAngle = angle;
+	rotateSphereY();
+	init();
 }
 void Sphere::setAngleZ(int angle) {
 	zAngle = angle;
+	rotateSphereZ();
+	init();
 }
+void Sphere::setAngleChange(int angle) {
+	angleChange = angle;
+}
+int Sphere::getAngleChange() {
+	return angleChange;
+}
+
 int Sphere::getStacks() {
 	return stacks;
 }

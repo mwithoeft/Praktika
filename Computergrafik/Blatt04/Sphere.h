@@ -17,6 +17,9 @@ public:
 	void setAngleY(int angle);
 	void setAngleZ(int angle);
 	
+	void setAngleChange(int angle);
+	int getAngleChange();
+
 	int getStacks();
 	void setStacks(int s);
 
@@ -41,14 +44,25 @@ private :
 	int xAngle = 0;
 	int yAngle = 0;
 	int zAngle = 0;
+	int angleChange = 3;
+
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> colors;
+	std::vector<GLushort> indices;
+
+	bool initialized = false;
+
 
 	glm::vec3 rotateX(float degree, glm::vec3 vertice);
 	glm::vec3 rotateY(float degree, glm::vec3 vertice);
 	glm::vec3 rotateZ(float degree, glm::vec3 vertice);
 	glm::vec3 mirrorXZ(glm::vec3 vertice);
-	glm::vec3 rotateSphereX(glm::vec3 vertice);
-	glm::vec3 rotateSphereY(glm::vec3 vertice);
-	glm::vec3 rotateSphereZ(glm::vec3 vertice);
+
+	void rotateSphereX();
+	void rotateSphereY();
+	void rotateSphereZ();
+
+	void Sphere::calcPoints();
 
 	int sumVerticesForN(int n);
 	int sumVerticesForNUntil(int n, int limit);
