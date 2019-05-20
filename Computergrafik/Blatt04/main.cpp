@@ -281,7 +281,6 @@ void glutKeyboard (unsigned char keycode, int x, int y)
     break;
   case 'x':
 	  sun->setAngleX(sun->getAngleX() + 3);
-	  init();
 	  glutDisplay();
 	  break;
   case 'r':
@@ -301,12 +300,10 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  break;
   case 'y':
 	  sun->setAngleY(sun->getAngleY() + 3);
-	  init();
 	  glutDisplay();
 	  break;
   case 'z':
 	  sun->setAngleZ(sun->getAngleZ() + 3);
-	  init();
 	  glutDisplay();
 	  break;
   case 'c':
