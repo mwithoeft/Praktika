@@ -15,10 +15,6 @@ Sphere::~Sphere()
 
 void Sphere::calcPoints() {
 
-	vertices = {};
-	colors = {};
-	indices = {};
-
 	float angleStep = 90 / (stacks + 1);
 	float angleEighth = 90; // degrees
 
@@ -50,7 +46,7 @@ void Sphere::calcPoints() {
 				}
 
 				vertices.push_back(rotatedAngle);
-				colors.push_back({ 0.0f, 1.0f, 1.0f }); // yellow
+				colors.push_back(getColor()); // yellow
 
 				if (i != verticesCounter - 1 && j != verticesCounter - i - 1) {
 					int left = indicesOffset + sumVerticesForNUntil(verticesCounter, verticesCounter - i + 1) + j;
@@ -149,6 +145,21 @@ void Sphere::draw(glm::mat4x4 mvp) {
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, 8 * calcAmountTriangles(stacks) * 3, GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
+}
+
+void Sphere::setColor(Color c) {
+	color = c;
+}
+glm::vec3 Sphere::getColor() {
+	switch (color) {
+		case RED: return { 1.0f, 0.0f, 0.0f }; break;
+		case GREEN: return { 0.0f, 1.0f, 0.0f }; break;
+		case BLUE: return { 0.0f, 0.0f, 1.0f }; break;
+		case WHITE: return { 1.0f, 1.0f, 1.0f }; break;
+		case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
+		case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
+		case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
+	}
 }
 
 

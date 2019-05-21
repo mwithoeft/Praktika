@@ -1,5 +1,6 @@
 #pragma once
 #include "GLSLProgram.h"
+enum Color { RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
 
 class Sphere {
 
@@ -26,11 +27,14 @@ public:
 	int getRadius();
 	void setRadius(int r);
 
+	glm::vec3 getColor();
+	void setColor(Color color);
+
 
 private :
 	cg::GLSLProgram* program;
 
-
+	Color color = YELLOW;
 	GLuint vao;
 	GLuint positionBuffer;
 	GLuint colorBuffer;
