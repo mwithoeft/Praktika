@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Impressum</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Moritz Withoeft">
+    <meta name="copyright" content="Minden 2019">
+    <meta name="keywords" content="start index project disclosures legal impressumg">
+    <meta name="description" content="Das Impressum der Website">
+
+    <!-- Includes -->
+    <link rel="shortcut icon" href="includes/favicon.ico">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+
+    <!-- JS -->
+    <script src="./js/lang.js"></script>
+    
+</head>
+
+<body>
+    <header>
+        <!-- Header Bild-->
+        <picture>
+            <source media="(min-width: 1920px)" srcset="includes/header1920x200.png">
+            <source media="(min-width: 1280px)" srcset="includes/header1280x133.png">
+            <source media="(min-width: 640px)" srcset="includes/header640x67.png">
+            <img src="includes/header320x34.png" alt="Header" style="width:auto;">
+        </picture>
+
+        <!-- Login Formular, um sich anzumelden -->
+        <section id="signin">
+            <h1>Login-Formular</h1>
+
+            <form action="receive.html" method="POST">
+                <ul>
+                    <li>
+                        <label for="login">Benutzer</label>
+                        <input id="login" name="login" type="text">
+                    </li>
+                    <li>
+                        <label for="password">Passwort</label>
+                        <input id="password" name="password" type="password">
+                    </li>
+                    <li>
+                        <br />
+                        <input type="submit" value="Anmelden">
+                        <a href="new_registration.html">Neu registrieren</a>
+                    </li>
+                </ul>
+            </form>
+        </section>
+
+
+    </header>
+
+    <!-- Seitennavigation -->
+    <nav id="sitenav">
+        <a href="index.html"><img src="includes/startseite.svg" alt="Index" style="width: 50px;" /></a>
+        <a class="lang_list" href="overview.html"></a>
+        <a class="lang_create" href="new_project.html"></a>
+    </nav>
+    <footer>
+        <a href="disclosures.html">Impressum</a>
+        <a href="privacy_statement.html">Datenschutzerklärung</a>
+        <a href="non-warranty.html">Haftungsausschluss</a>
+        <a id="toplink" href="#top">Nach oben!</a>
+        <p>Kontakt: kontakt@email.de, &copy; Minden 2019</p>
+    </footer>
+</body>
+
+</html>

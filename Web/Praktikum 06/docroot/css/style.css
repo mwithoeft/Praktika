@@ -1,0 +1,137 @@
+/* CSS-File für alle Seiten auf der Homepage gültig */
+
+/* Allgemeine Einstellungen */
+ul {
+    list-style-type: none;
+}
+
+body {
+    background-color: #F5FFFA;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* Design für den Header */
+header {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+}
+
+header img {
+    border-radius: 15px;
+    display: block;
+}
+
+/* Design für den Footer */
+
+footer {
+    text-align: center;
+    border-radius: 5px;
+    background-color: #000000;
+    color: #FFFFFF;
+}
+footer a {  
+    color: #FFFFFF;
+}
+footer a:hover {
+    color: #5e767e;
+}
+
+/* Seitennavigation */
+#sitenav {
+    margin: 0px;
+    display: block;
+    background-color: #000000;
+    text-decoration: none;
+    border-radius: 10px;
+    color: #FFFFFF;
+    width: 100%;
+    border-top: 3px solid #00BFFF;
+}
+#sitenav a {
+    font-size: 150%;
+    font-weight: bold;
+    text-decoration: none; 
+    color: #FFFFFF;
+    padding: 20px;
+}
+
+#sitenav a:hover {
+    color: #5e767e;
+}
+
+/* Link Einstellungen */
+
+a {
+    color: white;
+}
+a:hover {
+    color: #5e767e;
+}
+
+a:link {
+    text-decoration: none; 
+}
+
+a:visited {
+    text-decoration: none; 
+}
+
+#toplink {
+    padding: 5px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    border-radius: 5px;
+    color: #FFFFFF;
+    text-decoration: none;
+    background-color: #000000;
+}
+
+#toplink:hover {
+    color: #5e767e;
+}
+
+/* Design des Log-Ins */
+#signin {
+    font-weight: bold;
+    font-size: 70%;
+    text-align: center;
+    background-color: #808080;
+    border-radius: 15px;
+    max-width: 15%;
+    max-height: 133px;
+    display: block;
+    margin-left: 10px;
+}
+
+#signin li a {
+    color: black;
+}
+#signin li a:hover {
+    color: white;
+}
+
+#signin li {
+    color: black;
+}
+#signin li:hover {
+    background-color: #808080;
+}
+
+
+/* Input Einstellungen */ 
+label {
+    text-align: left;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 70%;
+    text-align: left;
+    box-sizing: border-box;
+}
+input {
+    border-radius: 15px;
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Neues Projekt</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Moritz Withoeft">
+    <meta name="copyright" content="Minden 2019">
+    <meta name="keywords" content="start index project create new projekt neu erstellen">
+    <meta name="description" content="Hier kann ein neues Projekt erstellt werden">
+
+    <!-- Includes -->
+    <link rel="shortcut icon" href="includes/favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="css/project_page.css" type="text/css">
+    <link rel="stylesheet" href="css/new_project.css" type="text/css">
+
+    <!-- JS -->
+    <script src="./js/lang.js"></script>
+
+</head>
+
+<body>
+    <header>
+        <!-- Header Bild-->
+        <picture>
+            <source media="(min-width: 1920px)" srcset="includes/header1920x200.png">
+            <source media="(min-width: 1280px)" srcset="includes/header1280x133.png">
+            <source media="(min-width: 640px)" srcset="includes/header640x67.png">
+            <img src="includes/header320x34.png" alt="Header" style="width:auto;">
+        </picture>
+
+        <!-- Login Formular, um sich anzumelden -->
+        <section id="signin">
+            <h1>Login-Formular</h1>
+            <form action="receive.html" method="POST">
+                <ul>
+                    <li>
+                        <label for="login">Benutzer</label>
+                        <input id="login" name="login" type="text">
+                    </li>
+                    <li>
+                        <label for="password">Passwort</label>
+                        <input id="password" name="password" type="password">
+                    </li>
+                    <li>
+                        <br />
+                        <input type="submit" value="Anmelden">
+                        <a href="new_registration.html">Neu registrieren</a>
+                    </li>
+                </ul>
+            </form>
+        </section>
+
+
+    </header>
+
+    <!-- Seitennavigation -->
+    <nav id="sitenav">
+        <a href="index.html"><img src="includes/startseite.svg" alt="Index" style="width: 50px;" /></a>
+        <a class="lang_list" href="overview.html"></a>
+        <a class="lang_create" href="new_project.html"></a>
+    </nav>
+
+
+    <!-- Erstellung eines neuen Projekts -->
+    <section class="projectdetails">
+
+        <form class="newproject" action="receive.html" method="POST">
+
+
+            <header>
+                <h1 class="lang_create"></h1>
+                <ul>
+                    <li>
+                        <label for="logo">Logo des Projekts</label>
+                        <input id="logo" name="logo" type="file" accept="image/*">
+                    </li>
+                    <li>
+                        <input placeholder="Titel" id="titel" name="titel" type="text">
+                    </li>
+                    <li>
+                        <input placeholder="Projektleiter" id="projektleiter" name="projektleiter" type="text">
+                    </li>
+                </ul>
+            </header>
+
+            <article id="kurzbeschreibung">
+
+                <h1></h1>
+
+                <textarea placeholder="Kurzbeschreibung" id="text_kurzbeschreibung" name="kurzbeschreibung" rows="10"
+                    cols="30" maxlength="200"></textarea>
+
+            </article>
+            <article id="langbeschreibung">
+
+                <h1></h1>
+
+                <textarea placeholder="Langbeschreibung" id="text_langbeschreibung" name="langbeschreibung" rows="10"
+                    cols="30" maxlength="1500"></textarea>
+
+            </article>
+
+            <article id="projektziele">
+
+                <h1></h1>
+
+                <ol>
+                    <li>
+                        <input placeholder="Projektziel 1" id="projektziel1" name="projektziel1" type="text">
+                    </li>
+                    <li>
+                        <input placeholder="Projektziel 2" id="projektziel2" name="projektziel2" type="text">
+                    </li>
+                </ol>
+
+            </article>
+
+            <article id="zusaetzliches">
+                <h1></h1>
+                <label for="anfangsdatum">Anfangsdatum</label>
+                <input id="anfangsdatum" name="anfangsdatum" type="date">
+
+                <label for="enddatum">Enddatum</label>
+                <input id="enddatum" name="enddatum" type="date">
+
+                <input value="Abschicken" type="submit">
+            </article>
+
+        </form>
+    </section>
+
+
+    <footer>
+        <a href="disclosures.html">Impressum</a>
+        <a href="privacy_statement.html">Datenschutzerklärung</a>
+        <a href="non-warranty.html">Haftungsausschluss</a>
+        <a id="toplink" href="#top">Nach oben!</a>
+        <p>Kontakt: kontakt@email.de, &copy; Minden 2019</p>
+    </footer>
+</body>
+
+</html>
