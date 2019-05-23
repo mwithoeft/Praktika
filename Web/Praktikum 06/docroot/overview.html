@@ -20,6 +20,11 @@
     <link rel="stylesheet" href="css/overview.css" type="text/css">
 
     <!-- JS -->
+    <script src="./js/login.js"></script>
+    <script src="./js/projektverwaltung.js"></script>
+    <script src="./js/jsonapi.js"></script>
+    <script src="./js/localStorage.js"></script>
+    <script src="./js/overview.js"></script>
     <script src="./js/lang.js"></script>
 
 </head>
@@ -35,30 +40,12 @@
         </picture>
 
         <!-- Login Formular, um sich anzumelden -->
-        <section id="signin">
-            <h1>Login-Formular</h1>
-
-            <form action="receive.html" method="POST">
-                <ul>
-                    <li>
-                        <label for="login">Benutzer</label>
-                        <input id="login" name="login" type="text">
-                    </li>
-                    <li>
-                        <label for="password">Passwort</label>
-                        <input id="password" name="password" type="password">
-                    </li>
-                    <li>
-                        <br />
-                        <input type="submit" value="Anmelden">
-                        <a href="new_registration.html">Neu registrieren</a>
-                    </li>
-                </ul>
-            </form>
-        </section>
+        <section id="signin"></section>
 
 
     </header>
+
+
 
     <!-- Seitennavigation -->
     <section>
@@ -69,47 +56,17 @@
         </nav>
     </section>
 
+    <input id="amount" onchange="listProjects()" min="1" max="100" value="10"  name="amount" type="number" placeholder="Anzeige Anzahl" style="margin:10px;">
+
     <!-- Übersicht der Projekte -->
     <section class="overview">
 
-        <section class="overviewprojects">
-            <section id="studboard">
-                <header>
-                    <h1>StudBoard</h1>
-                </header>
-                <p class="shortdescription">
-                    Beim StudBoard Projekt geht es um eine Website, die von Studierenden für Studierende erstellt worden
-                    ist, um
-                    ihre Projekte zu präsentieren.<br />
-                    Schau doch mal vorbei!
-                </p>
-                <footer>
-                    <a class="lang_to_project" href="project_studboard.html"></a>
-                </footer>
-            </section>
-
-            <section id="geodatenverarbeitung">
-                <header>
-                    <h1>Geodatenverarbeitung</h1>
-                </header>
-                <p class="shortdescription">
-                    Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen
-                    von
-                    Häusern eine dreidimensionale Figur des Hauses zu schaffen.<br />
-                    Ziel ist es ein möglichst genaues, jedoch ohne Verluste, Abbild als Modell zu schaffen. Da das
-                    Projekt im
-                    ständigen Umbruch ist, lohnt sich auf jeden Fall ein Blick.
-                </p>
-                <footer>
-                    <a class="lang_to_project" href="project_geodatenverarbeitung.html"></a>
-                </footer>
-            </section>
-        </section>
+        <section class="overviewprojects"></section>
 
         <section class="overviewcontent">
-            <h1 class="lang_list">Liste der Projekte</h1>
+            <h1 class="lang_list"></h1>
 
-            <ul>
+            <ul id="project_list">
                 <li><a href="#studboard">StudBoard</a></li>
                 <li><a href="#geodatenverarbeitung">Geodatenverarbeitung</a></li>
             </ul>
