@@ -126,4 +126,12 @@ form li:hover {
 #kommentar:focus, #kommentar:hover {
     background-color: white;
 }
-    
+
+#bewertung ul li:hover {
+    background-color: #355f5f;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none; 
+}

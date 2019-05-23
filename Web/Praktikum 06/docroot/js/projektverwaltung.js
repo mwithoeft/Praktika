@@ -31,11 +31,16 @@ class Project extends Project_User {
 }
 
 class Comment {
-    constructor(id, kommentar, bewertung, nutzer, projekt) {
+    constructor(id, kommentar, nutzer) {
         this.id = id;
         this.kommentar = kommentar;
-        this.bewertung = bewertung;
         this.nutzer = nutzer;
-        this.projekt = projekt;
+    }
+}
+
+class Rating {
+    constructor(id, bewertung) {
+        this.id = id;
+        this.bewertung = bewertung;
     }
 }

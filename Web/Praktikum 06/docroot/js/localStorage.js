@@ -2,7 +2,7 @@
 var testprojekt1 = new Project();
 testprojekt1.id = 1;
 testprojekt1.kurzbeschreibung = "Beim StudBoard Projekt geht es um eine Website, die von Studierenden für Studierende erstellt worden ist, um ihre Projekte zu präsentieren.";
-testprojekt1.langbeschreibung = "Beim StudBoard Projekt geht es um eine Website, die von Studierenden für Studierende erstellt worden ist, um ihre Projekte zu präsentieren. Weiterhin können Projekte bewertet und Verbesserungsvorschläge eingereicht werden. Dieses Projekt entwickelt sich stetig weiter, sodass immer wieder neue Features hinzukommen. Das StudBoard richtet sich ausschließlich an Studierende, damit sie ihr bestmögliches Potenzial entfalten können.";
+testprojekt1.langbeschreibung = "<h1>Allgemeines</h1>Beim StudBoard Projekt geht es um eine Website, die von Studierenden für Studierende erstellt worden ist, um ihre Projekte zu präsentieren. <h1>Weiteres</h1>Weiterhin können Projekte bewertet und Verbesserungsvorschläge eingereicht werden. Dieses Projekt entwickelt sich stetig weiter, sodass immer wieder neue Features hinzukommen. Das StudBoard richtet sich ausschließlich an Studierende, damit sie ihr bestmögliches Potenzial entfalten können.";
 testprojekt1.projektleiter = "Florian Fehring";
 testprojekt1.startzeitpunkt = "2019/03/02";
 testprojekt1.endzeitpunkt = "2019/07/05";
@@ -14,7 +14,7 @@ testprojekt1.titel = "StudBoard";
 var testprojekt2 = new Project();
 testprojekt2.id = 2;
 testprojekt2.kurzbeschreibung = "Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen von Häusern eine dreidimensionale Figur des Hauses zu schaffen.";
-testprojekt2.langbeschreibung = "Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen von Häusern eine dreidimensionale Figur des Hauses zu schaffen. Aus diesen Informationen werden für jedes Haus bzw. Grundstück Dateien erzeugt, die die Informationen beinhalten. Mit diesen Informationen kann hinterher weiter gearbeitet werden. Es wird außerdem angestrebt, dass diese Funktion Bestandteil eines größeren Programms wird.";
+testprojekt2.langbeschreibung = "<h1>Allgemeines</h1>Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen von Häusern eine dreidimensionale Figur des Hauses zu schaffen. <h2>Nützliches</h2>Aus diesen Informationen werden für jedes Haus bzw. Grundstück Dateien erzeugt, die die Informationen beinhalten. <h1>Weiteres</h1>Mit diesen Informationen kann hinterher weiter gearbeitet werden. Es wird außerdem angestrebt, dass diese Funktion Bestandteil eines größeren Programms wird.";
 testprojekt2.projektleiter = "Justin Drögemeier";
 testprojekt2.startzeitpunkt = "2019/04/07";
 testprojekt2.endzeitpunkt = "2019/07/03";
@@ -38,6 +38,7 @@ testprojekt3.titel = "Test";
 var testprojects = [testprojekt1, testprojekt2, testprojekt3];
 var testusers = [];
 var testcomments = [];
+var testratings = [];
 
 
 class Storage {
@@ -61,16 +62,19 @@ class Storage {
                     this.writeUser(testusers);
                     this.writeProject(testprojects);
                     this.writeComment(testcomments);
+                    this.writeRating(testratings);
                 } else {
                     this.readUser();
                     this.readProject();
                     this.readComment();
+                    this.readRating();
                 }
             } else {
                 localStorage.setItem("visits", 1);
                 this.writeUser(testusers);
                 this.writeProject(testprojects);
                 this.writeComment(testcomments);
+                this.writeRating(testratings);
             }
             console.log("This is your " + localStorage.getItem("visits") + " visit");
         } else {
@@ -113,6 +117,17 @@ class Storage {
         }
         return fetched;
     }
+    readRating() {
+        let items = {...localStorage};
+        let fetched = [];
+        for (let item in items) {
+            let rating = this.parser.jsonToRating(items[item]);
+            if (rating.bewertung) {
+                fetched.push(rating);
+            }
+        }
+        return fetched;
+    }
 
     writeUser(users) {
         for (let y = 0; y < users.length; y++) {
@@ -124,13 +139,26 @@ class Storage {
             localStorage.setItem("project" + y, this.parser.projectToJson(projects[y]));
         }
     }
-    writeComment(comments) {
-        for (let y = 0; y < comments.length; y++) {
-            localStorage.setItem("comment" + y, this.parser.commentToJson(comments[y]));
+    writeComment(comment) {
+        let fetched = this.readComment();
+        for (let y = 0; y <= fetched.length; y++) {
+            if (y == fetched.length) {
+                localStorage.setItem("comment" + y, this.parser.commentToJson(comment));
+            } else {
+                localStorage.setItem("comment" + y, this.parser.commentToJson(fetched[y]));
+            }
+        }
+    }
+    writeRating(rating) {
+        let fetched = this.readRating();
+        for (let y = 0; y <= fetched.length; y++) {
+            if (y == fetched.length) {
+                localStorage.setItem("rating" + y, this.parser.commentToJson(rating));
+            } else {
+                localStorage.setItem("rating" + y, this.parser.commentToJson(fetched[y]));
+            }
         }
     }
 
 
 }
-
-let storage = new Storage();

@@ -10,7 +10,6 @@ function listProjects() {
     document.getElementsByClassName("overviewprojects")[0].innerHTML = "";
     document.getElementById("project_list").innerHTML = "";
 
-    console.log(projectAmount);
 
     for (let i = 0; i < projectAmount; i++) {
         if (i < projects.length) {
