@@ -39,6 +39,7 @@ self.addEventListener('install', function (event) {
                 '/js/projektverwaltung.js',
                 '/js/location.js',
                 '/js/localStorage.js',
+                '/js/login.js',
             ]);
 
         })

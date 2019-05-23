@@ -21,6 +21,11 @@
 
     <!-- JS -->
     <script src="./js/lang.js"></script>
+    <script src="./js/login.js"></script>
+    <script src="./js/jsonapi.js"></script>
+    <script src="./js/projektverwaltung.js"></script>
+    <script src="./js/localStorage.js"></script>
+    <script src="./js/project.js"></script>
 
 </head>
 
@@ -35,27 +40,7 @@
             <img src="includes/header320x34.png" alt="Header" style="width:auto;">
         </picture>
         <!-- Login Formular, um sich anzumelden -->
-        <section id="signin">
-            <h1>Login-Formular</h1>
-
-            <form action="receive.html" method="POST">
-                <ul>
-                    <li>
-                        <label for="login">Benutzer</label>
-                        <input id="login" name="login" type="text">
-                    </li>
-                    <li>
-                        <label for="password">Passwort</label>
-                        <input id="password" name="password" type="password">
-                    </li>
-                    <li>
-                        <br />
-                        <input type="submit" value="Anmelden">
-                        <a href="new_registration.html">Neu registrieren</a>
-                    </li>
-                </ul>
-            </form>
-        </section>
+        <section id="signin"></section>
 
 
     </header>
@@ -67,70 +52,60 @@
         <a class="lang_create" href="new_project.html"></a>
     </nav>
 
+    <button id="button_edit" onclick="" type="button" style="margin:10px; border-radius:5px;">Bearbeiten</button>
+
     <!-- Projektinformationen -->
     <section class="project">
 
         <section class="projectdetails">
 
 
-            <header class="sticky">
-                <img class="projectlogo" src="includes/Projektlogo.png" alt="Header">
-                <h1>Geodatenverarbeitung</h1>
-                <a rel="author" href="">Justin Drögemeier</a>
+            <header id="project_header" class="sticky">
             </header>
 
 
             <article id="kurzbeschreibung">
                 <h1></h1>
 
-                <p>Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen
-                    von
-                    Häusern eine dreidimensionale Figur des Hauses zu schaffen.</p>
+                <p id="p_kurzbeschreibung"></p>
 
             </article>
             <article id="langbeschreibung">
                 <h1></h1>
-                <p>
-                    Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen
-                    von
-                    Häusern eine dreidimensionale Figur des Hauses zu schaffen.<br />
-                    Aus diesen Informationen werden für jedes Haus bzw. Grundstück Dateien erzeugt, die die
-                    Informationen
-                    beinhalten. Mit diesen Informationen kann hinterher weiter gearbeitet werden.<br />
-                    Es wird außerdem angestrebt, dass diese Funktion Bestandteil eines größeren Programms wird.
-                </p>
+                <p id="p_langbeschreibung"></p>
 
             </article>
 
             <article id="projektziele">
                 <h1></h1>
 
-                <ol>
-                    <li>Daten anschaulich darstellen und zur Verfügung stellen</li>
-                    <li>Das größte an Potential aus jedem Entwickler herausholen</li>
-                </ol>
+                <ol id="ol_projektziele"></ol>
 
             </article>
 
             <article id="bewertung">
                 <h1></h1>
-                <form action="receive.html" method="POST">
-                    <ul style="list-style: none;">
-                        <li>
-                            <textarea placeholder="Kommentar" id="kommentar" name="kommentar" rows="10" cols="30"
-                                maxlength="1500"></textarea>
-                        </li>
-                        <li>
-                            <label for="review">Bewertung von 1-5</label>
-                            <input id="review" name="review" type="number" min="1" max="5">
-                        </li>
-                        <li>
-                            <br />
-                            <input type="submit" value="Abschicken">
-                        </li>
-                    </ul>
-                </form>
+                <ul style="list-style: none;">
+                    <li>
+                        <textarea placeholder="Kommentar" id="kommentar" name="kommentar" rows="10" cols="30"
+                            maxlength="1500"></textarea>
+                    </li>
+                    <li>
+                        <br />
+                        <input onclick="storeComment()" type="submit" value="Abschicken">
+                    </li>
+                </ul>
+                <ul style="list-style: none; padding: 10px;">
+                    <li>
+                        <label for="review">Bewertung von 1-5</label>
+                        <input onchange="storeRating()" id="review" name="review" type="number" min="1" max="5">
+                    </li>
+                </ul>
             </article>
+
+            <article id="d_bewertung"></article>
+
+            <article id="d_kommentare"></article>
 
             <footer></footer>
 
