@@ -14,14 +14,20 @@
 
     <!-- Includes -->
     <link rel="shortcut icon" href="includes/favicon.ico">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css" type="text/css">
     <link rel="stylesheet" href="css/project_page.css" type="text/css">
     <link rel="stylesheet" href="css/new_project.css" type="text/css">
 
     <!-- JS -->
+    <script src="./js/projektverwaltung.js"></script>
+    <script src="./js/jsonapi.js"></script>
+    <script src="./js/localStorage.js"></script>
+    <script src="./js/login.js"></script>
+    <script src="./js/new_project.js"></script>
     <script src="./js/lang.js"></script>
+
 
 </head>
 
@@ -36,26 +42,7 @@
         </picture>
 
         <!-- Login Formular, um sich anzumelden -->
-        <section id="signin">
-            <h1>Login-Formular</h1>
-            <form action="receive.html" method="POST">
-                <ul>
-                    <li>
-                        <label for="login">Benutzer</label>
-                        <input id="login" name="login" type="text">
-                    </li>
-                    <li>
-                        <label for="password">Passwort</label>
-                        <input id="password" name="password" type="password">
-                    </li>
-                    <li>
-                        <br />
-                        <input type="submit" value="Anmelden">
-                        <a href="new_registration.html">Neu registrieren</a>
-                    </li>
-                </ul>
-            </form>
-        </section>
+        <section id="signin"></section>
 
 
     </header>
@@ -71,69 +58,69 @@
     <!-- Erstellung eines neuen Projekts -->
     <section class="projectdetails">
 
-        <form class="newproject" action="receive.html" method="POST">
 
 
-            <header>
-                <h1 class="lang_create"></h1>
-                <ul>
-                    <li>
-                        <label for="logo">Logo des Projekts</label>
-                        <input id="logo" name="logo" type="file" accept="image/*">
-                    </li>
-                    <li>
-                        <input placeholder="Titel" id="titel" name="titel" type="text">
-                    </li>
-                    <li>
-                        <input placeholder="Projektleiter" id="projektleiter" name="projektleiter" type="text">
-                    </li>
-                </ul>
-            </header>
 
-            <article id="kurzbeschreibung">
+        <header>
+            <h1 class="lang_create"></h1>
+            <ul>
+                <li>
+                    <label for="logo">Logo des Projekts</label>
+                    <input id="logo" name="logo" type="file" accept="image/*">
+                </li>
+                <li>
+                    <input placeholder="Titel" id="titel" name="titel" type="text">
+                </li>
+                <li>
+                    <input placeholder="Projektleiter" id="projektleiter" name="projektleiter" type="text">
+                </li>
+            </ul>
+        </header>
 
-                <h1></h1>
+        <article id="kurzbeschreibung">
 
-                <textarea placeholder="Kurzbeschreibung" id="text_kurzbeschreibung" name="kurzbeschreibung" rows="10"
-                    cols="30" maxlength="200"></textarea>
+            <h1></h1>
 
-            </article>
-            <article id="langbeschreibung">
+            <textarea placeholder="Kurzbeschreibung" id="text_kurzbeschreibung" name="kurzbeschreibung" rows="10"
+                cols="30" maxlength="200"></textarea>
 
-                <h1></h1>
+        </article>
+        <article id="langbeschreibung">
 
-                <textarea placeholder="Langbeschreibung" id="text_langbeschreibung" name="langbeschreibung" rows="10"
-                    cols="30" maxlength="1500"></textarea>
+            <h1></h1>
 
-            </article>
+            <textarea placeholder="Langbeschreibung" id="text_langbeschreibung" name="langbeschreibung" rows="10"
+                cols="30" maxlength="1500"></textarea>
 
-            <article id="projektziele">
+        </article>
 
-                <h1></h1>
+        <article id="projektziele">
 
-                <ol>
-                    <li>
-                        <input placeholder="Projektziel 1" id="projektziel1" name="projektziel1" type="text">
-                    </li>
-                    <li>
-                        <input placeholder="Projektziel 2" id="projektziel2" name="projektziel2" type="text">
-                    </li>
-                </ol>
+            <h1></h1>
 
-            </article>
+            <ol>
+                <li>
+                    <input placeholder="Projektziel 1" id="projektziel1" name="projektziel1" type="text">
+                </li>
+                <li>
+                    <input placeholder="Projektziel 2" id="projektziel2" name="projektziel2" type="text">
+                </li>
+            </ol>
 
-            <article id="zusaetzliches">
-                <h1></h1>
-                <label for="anfangsdatum">Anfangsdatum</label>
-                <input id="anfangsdatum" name="anfangsdatum" type="date">
+        </article>
 
-                <label for="enddatum">Enddatum</label>
-                <input id="enddatum" name="enddatum" type="date">
+        <article id="zusaetzliches">
+            <h1></h1>
+            <label for="anfangsdatum">Anfangsdatum</label>
+            <input id="anfangsdatum" name="anfangsdatum" type="date" data-date-format="YYYY/MM/DD">
 
-                <input value="Abschicken" type="submit">
-            </article>
+            <label for="enddatum">Enddatum</label>
+            <input id="enddatum" name="enddatum" type="date" data-date-format="YYYY/MM/DD">
 
-        </form>
+            <input value="Abschicken" type="submit" onclick="storeProject()">
+        </article>
+
+
     </section>
 
 

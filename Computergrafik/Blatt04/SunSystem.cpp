@@ -11,6 +11,7 @@ SunSystem::SunSystem(cg::GLSLProgram* prog)
 	axis = new Axis(prog);
 	planet = new Sphere(prog, 20, 50);
 	moon = new Sphere(prog, 20, 25);
+
 }
 SunSystem::~SunSystem()
 {

@@ -37,4 +37,18 @@ class JSONApi {
         Object.setPrototypeOf(comment, Comment.prototype);
         return comment;
     }
+
+    ratingToJson(rating) {
+        let ratingStr = JSON.stringify(rating);
+        return ratingStr;
+    }
+    jsonToRating(ratingStr) {
+        let rating = JSON.parse(ratingStr);
+        if (!rating) {
+            rating = [];
+        }
+        Object.setPrototypeOf(rating, Rating.prototype);
+        return rating;
+    }
+
 }
