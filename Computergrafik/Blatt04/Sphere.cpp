@@ -15,7 +15,7 @@ Sphere::~Sphere()
 
 void Sphere::calcPoints() {
 
-	float angleStep = 90 / (stacks + 1);
+	float angleStep = 90 / ((float)stacks + 1);
 	float angleEighth = 90; // degrees
 
 	int indicesEighth = sumVerticesForN(stacks + 2);
