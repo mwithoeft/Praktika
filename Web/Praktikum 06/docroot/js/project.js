@@ -62,6 +62,7 @@ function showProject() {
 
         showComments();
         showRatings();
+        modifyContentBoard();
     } else {
         console.error("Das Projekt konnte nicht gefunden werden!");
     }
@@ -141,4 +142,41 @@ function getUrlVars() {
         vars[key] = value;
     });
     return vars;
+}
+
+function modifyContentBoard () {
+    let p = document.querySelector("#p_langbeschreibung");
+    let headlines = p.querySelectorAll("h1, h2");
+
+    if (headlines.length > 0) {
+        var headlineList = document.createElement("ul");
+        headlineList.setAttribute("id", "headlineList");
+        let list = document.getElementById("langbeschreibung_list");
+        list.appendChild(headlineList);
+    
+        for (let i = 0; i < headlines.length; i++) {
+            headlines[i].setAttribute("id", "headline_" + i);
+    
+            if (headlines[i].nodeName === "H1") {
+                var li = document.createElement("li");
+                let root = document.getElementById("headlineList");
+                root.appendChild(li);
+            } else if (headlines[i].nodeName === "H2" && headlines[i - 1].nodeName === "H1") {
+                var ul = document.createElement("ul");
+                li.appendChild(ul);
+                var li = document.createElement("li");
+                ul.appendChild(li);
+            } else if (headlines[i].nodeName === "H2" && headlines[i - 1].nodeName === "H2") {
+                var li = document.createElement("li");
+                ul.appendChild(li);
+            }
+            var link = document.createElement("a");
+            li.appendChild(link);
+            link.setAttribute("href", ("#" + headlines[i].id));
+            link.innerHTML = headlines[i].innerHTML;
+        }   
+    }
+
+
+
 }
