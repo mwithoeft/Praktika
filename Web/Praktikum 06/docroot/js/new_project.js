@@ -14,7 +14,7 @@ function storeProject() {
     let id = storage.readProject().length;
 
     let p = new Project(id, kurzbeschreibung, langbeschreibung, ziele, bild, titel, startzeitpunkt, endzeitpunkt, projektleiter);
-
+    console.log(p);
     storage.writeProject(p);
 
     window.location.replace("./project.html?id=" + id);

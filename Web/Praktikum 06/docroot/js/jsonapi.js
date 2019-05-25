@@ -4,8 +4,10 @@ class JSONApi {
         return userStr;
     }
     jsonToUser(userStr) {
-        let user = JSON.parse(userStr);
-        if (!user) {
+        let user;
+        try {
+            user = JSON.parse(userStr);
+        } catch (e) {
             user = [];
         }
         Object.setPrototypeOf(user, User.prototype);
@@ -17,8 +19,10 @@ class JSONApi {
         return projectStr;
     }
     jsonToProject(projectStr) {
-        let project = JSON.parse(projectStr);
-        if (!project) {
+        let project;
+        try {
+            project = JSON.parse(projectStr);
+        } catch (e) {
             project = [];
         }
         Object.setPrototypeOf(project, Project.prototype);
@@ -30,8 +34,10 @@ class JSONApi {
         return commentStr;
     }
     jsonToComment(commentStr) {
-        let comment = JSON.parse(commentStr);
-        if (!comment) {
+        let comment;
+        try {
+            comment = JSON.parse(commentStr);
+        } catch (e) {
             comment = [];
         }
         Object.setPrototypeOf(comment, Comment.prototype);
@@ -43,8 +49,10 @@ class JSONApi {
         return ratingStr;
     }
     jsonToRating(ratingStr) {
-        let rating = JSON.parse(ratingStr);
-        if (!rating) {
+        let rating;
+        try {
+            rating = JSON.parse(ratingStr);
+        } catch (e) {
             rating = [];
         }
         Object.setPrototypeOf(rating, Rating.prototype);

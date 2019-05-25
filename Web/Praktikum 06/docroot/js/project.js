@@ -60,7 +60,6 @@ function showProject() {
         project_goals.appendChild(goal2);
 
 
-
         showComments();
         showRatings();
     } else {
@@ -74,11 +73,14 @@ function showComments() {
     let comments = storage.readComment();
     let c = document.getElementById("d_kommentare");
     c.innerHTML = "";
+    let heading = document.createElement("h1");
+    heading.innerText = "Kommentare";
+    c.appendChild(heading);
 
     for (let i = 0; i < comments.length; i++){
         if(comments[i].id == pID){
             let p = document.createElement("p");
-            p.innerText = comments[i].kommentar;
+            p.innerText = "Kommentar:\n\n" + comments[i].kommentar;
             c.appendChild(p);
         }
     }
@@ -86,7 +88,32 @@ function showComments() {
 
 function showRatings() {
     let storage = new Storage();
+    let pID = getUrlVars()["id"];
+    let ratings = storage.readRating();
 
+    let c = document.getElementById("d_bewertung");
+    c.innerHTML = "";
+    let heading = document.createElement("h1");
+    heading.innerText = "Bewertung";
+    c.appendChild(heading);
+
+    let score = 0;
+    let number = 0;
+
+    for (let i=0; i<ratings.length; i++) {
+        if(ratings[i].id == pID) {
+            score += parseInt(ratings[i].bewertung);
+            number++;
+        }
+    }
+    let p = document.createElement("p");
+    c.appendChild(p);
+    if (number > 0) {
+        let average = score / number;
+        p.innerText = "Durchschnittliche Bewertung: " + average;
+    } else {
+        p.innerText = "Bisher wurde keine Bewertung abgegeben."
+    }
 
 }
 function storeComment() {
