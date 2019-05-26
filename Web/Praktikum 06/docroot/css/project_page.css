@@ -11,7 +11,7 @@
 
 /* Listen Einstellungen */
 li:hover {
-    background-color: #5e767e;
+    background-color: #355f5f;
 }
 li a:hover {
     color: white;
@@ -69,7 +69,8 @@ ul {
 }
 
 .projectdetails article,  .projectdetails header{
-    margin: 2px;
+    margin: 4px;
+    padding-left: 8px;
 }
 
 /*Projektlogo und Header */
@@ -94,6 +95,10 @@ ul {
     font-family: fantasy;
     margin: 0px;
     padding: 0px;
+}
+
+.projectdetails header li:hover{
+    background-color: #1B1C1D;
 }
 
 .sticky {

@@ -60,9 +60,9 @@ function showProject() {
         project_goals.appendChild(goal2);
 
 
-
         showComments();
         showRatings();
+        modifyContentBoard();
     } else {
         console.error("Das Projekt konnte nicht gefunden werden!");
     }
@@ -74,11 +74,14 @@ function showComments() {
     let comments = storage.readComment();
     let c = document.getElementById("d_kommentare");
     c.innerHTML = "";
+    let heading = document.createElement("h1");
+    heading.innerText = "Kommentare";
+    c.appendChild(heading);
 
     for (let i = 0; i < comments.length; i++){
         if(comments[i].id == pID){
             let p = document.createElement("p");
-            p.innerText = comments[i].kommentar;
+            p.innerText = "Kommentar:\n\n" + comments[i].kommentar;
             c.appendChild(p);
         }
     }
@@ -86,7 +89,32 @@ function showComments() {
 
 function showRatings() {
     let storage = new Storage();
+    let pID = getUrlVars()["id"];
+    let ratings = storage.readRating();
 
+    let c = document.getElementById("d_bewertung");
+    c.innerHTML = "";
+    let heading = document.createElement("h1");
+    heading.innerText = "Bewertung";
+    c.appendChild(heading);
+
+    let score = 0;
+    let number = 0;
+
+    for (let i=0; i<ratings.length; i++) {
+        if(ratings[i].id == pID) {
+            score += parseInt(ratings[i].bewertung);
+            number++;
+        }
+    }
+    let p = document.createElement("p");
+    c.appendChild(p);
+    if (number > 0) {
+        let average = score / number;
+        p.innerText = "Durchschnittliche Bewertung: " + average;
+    } else {
+        p.innerText = "Bisher wurde keine Bewertung abgegeben."
+    }
 
 }
 function storeComment() {
@@ -114,4 +142,41 @@ function getUrlVars() {
         vars[key] = value;
     });
     return vars;
+}
+
+function modifyContentBoard () {
+    let p = document.querySelector("#p_langbeschreibung");
+    let headlines = p.querySelectorAll("h1, h2");
+
+    if (headlines.length > 0) {
+        var headlineList = document.createElement("ul");
+        headlineList.setAttribute("id", "headlineList");
+        let list = document.getElementById("langbeschreibung_list");
+        list.appendChild(headlineList);
+    
+        for (let i = 0; i < headlines.length; i++) {
+            headlines[i].setAttribute("id", "headline_" + i);
+    
+            if (headlines[i].nodeName === "H1") {
+                var li = document.createElement("li");
+                let root = document.getElementById("headlineList");
+                root.appendChild(li);
+            } else if (headlines[i].nodeName === "H2" && headlines[i - 1].nodeName === "H1") {
+                var ul = document.createElement("ul");
+                li.appendChild(ul);
+                var li = document.createElement("li");
+                ul.appendChild(li);
+            } else if (headlines[i].nodeName === "H2" && headlines[i - 1].nodeName === "H2") {
+                var li = document.createElement("li");
+                ul.appendChild(li);
+            }
+            var link = document.createElement("a");
+            li.appendChild(link);
+            link.setAttribute("href", ("#" + headlines[i].id));
+            link.innerHTML = headlines[i].innerHTML;
+        }   
+    }
+
+
+
 }
