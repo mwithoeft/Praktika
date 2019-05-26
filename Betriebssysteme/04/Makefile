@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -std=c11
-CFLAGS2 = -Wall -std=c11 -I$(INCLUDE) -c
+CFLAGS = -Wall -std=c11 -I$(INCLUDE)
+CFLAGS2 = -Wall -std=c11 -I$(INCLUDE) -c -g
 INCLUDE = ./include
 
 all: miniMinden
@@ -16,7 +16,10 @@ miniMinden.o: miniMinden.c
 
 run: miniMinden
 	./miniMinden
+
+install:
 	
+
 clean:
 	rm -rf miniMinden
 	rm -rf miniMinden.o
