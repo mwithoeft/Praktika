@@ -11,26 +11,33 @@ void setup() {
   fibData[0] = 1;
   fibData[1] = 1;
   asm volatile(
-       "ldr r4, [%[input0], #0]\n\t"
-       "ldr r5, [%[input0], #8]\n\t"
-       "ADD %[output], [[%[input0], #0], [%[input0], #8]] \n\t"
-       "\n\t"
-       
-       : [output] "+r" (fibData[2])
-       : [input0] "r" (fibData[0])
-
+    "Mov r4, %[i]\n\t"
+    "sub r4, #2\n\t"
+    "Mov r5, %[arr]\n\t"
+    
+    "fibDataLoop: \n\t"
+    "ldr r6, [r5, #0]\n\t"
+    "ldr r7, [r5, #1]\n\t"
+    "ADD r6, r7\n\t"
+    
+    "STR r6, [r5,#2]\n\t"
+    "ADD r5, #1\n\t"
+    
+    "SUB r4, #1\n\t"
+    "cmp r4, #0 \n\t"
+    "Bne fibDataLoop\n\t"
+    :
+    : [arr] "r" (fibData), [i] "r" (lastFiboIndex)
+    : "r4", "r5", "r6", "r7"
     );
 }
 // main loop
 void loop() {
   // print data
-  for (int i = 2; i < lastFiboIndex; i++)
+  for (int i = 0; i < lastFiboIndex; i++)
   {
-    
   Serial.println(fibData[i]);
   }
 // delay 1s
 delay(waitTime);
 }
-  
-  
