@@ -1,4 +1,6 @@
-# Embeddet Praktikum 06
+# Embeddet Praktikum 06 
+
+#### Valentin Hertel Moritz Wifhöft
 
 ## Aufgabe 1
 
