@@ -1,6 +1,6 @@
 #include "SunSystem.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include <GL/freeglut.h>s
+#include <GL/freeglut.h>
 #include <glm/gtc/constants.hpp>
 
 SunSystem::SunSystem(cg::GLSLProgram* prog)
