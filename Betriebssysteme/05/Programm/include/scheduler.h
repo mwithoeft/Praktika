@@ -19,7 +19,8 @@ typedef struct listProcess {
 } listProcess;
 
 void runJob(listProcess *list);
-int cmp(job *node1, job *node2, void *dummy);
+int cmpPrio(job *node1, job *node2, void *dummy);
+int cmpTime(job *node1, job *node2, void *dummy);
 void initJob(listProcess list);
 job* createJob(listProcess*, char[50], int, int);
 void firstComeFirstServed(listProcess*);
