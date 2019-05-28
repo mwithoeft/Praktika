@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <filter>
+        <description>Set cache expiry for static content</description>
+        <filter-name>Expires</filter-name>
+        <filter-class>filter.Expires</filter-class>
+        <init-param>
+            <description>Add an Expires Header</description>
+            <param-name>days</param-name>
+            <param-value>30</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>Expires</filter-name>
+        <url-pattern>*.png</url-pattern>
+        <url-pattern>*.mp4</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter>
+        <description>Set cache expiry for static content</description>
+        <filter-name>Json</filter-name>
+        <filter-class>filter.JsonF</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Json</filter-name>
+        <url-pattern>*.json</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+</web-app>
