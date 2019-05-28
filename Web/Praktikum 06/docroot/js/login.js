@@ -29,7 +29,7 @@ function createLoginForm() {
 
     /* Form */
     let f = document.createElement("form");
-    f.setAttribute('method',"post");
+    //f.setAttribute('method',"post");
     f.setAttribute('action',"receive.html");
     f.setAttribute('onsubmit', "createSession()");
     signIn.appendChild(f);
