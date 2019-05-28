@@ -18,6 +18,7 @@ typedef struct listProcess {
     LIST_HEADER(job);
 } listProcess;
 
+void printJob(listProcess* list);
 void runJob(listProcess *list);
 int cmpPrio(job *node1, job *node2, void *dummy);
 int cmpTime(job *node1, job *node2, void *dummy);
