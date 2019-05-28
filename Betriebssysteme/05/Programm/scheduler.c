@@ -8,14 +8,13 @@ void appendJob(listProcess *list, char processname[50], int time, int priority) 
 	List_append(list, process);
 }
 
-void firstComeFirstServed(listProcess *list) {
+void runJob(listProcess *list){
+
 	job *node = list->head;
 	int amount = list->count;
 	float currentTime = 0;
 	float totalTime = 0;
 	float averageTime = 0;
-
-	printf("First Come First Served:\n");
 
 	while(node != NULL) {
 		currentTime += node->time;
@@ -24,11 +23,16 @@ void firstComeFirstServed(listProcess *list) {
 		node->time -= node->time;
 
 		printf("%s wurde abgearbeitet (Akutelle Zeit: %.3f).\n", node->name, currentTime);
-		node = List_remove(list, node);
+		node = node->next;
 	}
 	averageTime = totalTime / amount;
 	printf("Mittlere Verweilzeit: %.3f\n", averageTime);
 
+}
+
+void firstComeFirstServed(listProcess *list) {
+	printf("First Come First Served:\n");
+	runJob(list);
 }
 
 void shortestJobFirst(listProcess *list){

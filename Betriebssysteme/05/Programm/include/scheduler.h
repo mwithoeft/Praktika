@@ -17,6 +17,8 @@ typedef struct listProcess {
     //Zeigt auf den ersten Knoten
     LIST_HEADER(job);
 } listProcess;
+
+void runJob(listProcess *list);
 int cmp(job *node1, job *node2, void *dummy);
 void initJob(listProcess list);
 job* createJob(listProcess*, char[50], int, int);
