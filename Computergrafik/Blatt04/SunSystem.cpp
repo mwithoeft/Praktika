@@ -159,7 +159,7 @@ void SunSystem::drawPlanetTwo() {
 		matrixStack.push(model);
 		rad = beta * (PI / 180);
 		model = glm::rotate(model, rad, zAxis);
-		rad = rotationAngle * (PI / 180);
+		rad = rotationAngle * (PI / 180) *2;
 		model = glm::rotate(model, rad, yAxis);
 		planet->draw(projection * view * model);
 		model = matrixStack.top();
@@ -169,7 +169,7 @@ void SunSystem::drawPlanetTwo() {
 		matrixStack.push(model);
 		rad = beta * (PI / 180);
 		model = glm::rotate(model, rad, zAxis);
-		rad = rotationMoonAngle * (PI / 180);
+		rad = rotationMoonAngle * (PI / 180) *2;
 		model = glm::rotate(model, rad, yAxis);
 		axis->draw(projection * view * model);
 		drawPlanetTwoMoons();
