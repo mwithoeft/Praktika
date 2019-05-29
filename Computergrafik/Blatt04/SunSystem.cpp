@@ -7,10 +7,10 @@ SunSystem::SunSystem(cg::GLSLProgram* prog)
 	: program(prog),
 	model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(prog, 20, 100);
+	sun = new Sphere(prog, planetStacks, 100);
 	axis = new Axis(prog);
-	planet = new Sphere(prog, 20, 50);
-	moon = new Sphere(prog, 20, 25);
+	planet = new Sphere(prog, planetStacks, 50);
+	moon = new Sphere(prog, planetStacks, 25);
 
 }
 SunSystem::~SunSystem()

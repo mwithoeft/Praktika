@@ -32,7 +32,7 @@ float zNear = 0.1f;
 float zFar  = 100.0f;
 float eyeX = -2.0f;
 float eyeY = 5.0f;
-float eyeZ = 7.0f; // for view matrix (zoom)
+float eyeZ = 11.0f; // for view matrix (zoom)
 
 glm::vec3 eye(eyeX, eyeY, eyeZ);
 glm::vec3 center(0.0f, 0.0f, 0.0f);
