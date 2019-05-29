@@ -14,10 +14,12 @@ class Popup {
 
 }
 
-p = new Popup();
-if (navigator.language == 'de-DE') {
-    p.openPopup('Deutsch: Hallo!', 5000);
-} else if (navigator.language == 'en' || navigator.language == 'en-US' || navigator.language == 'en-NZ') {
-    p.openPopup('Englisch: Hello!', 5000);
-}
+window.addEventListener("load", function () {
+    p = new Popup();
+    if (navigator.language == 'de-DE') {
+        p.openPopup('Deutsch: Hallo!', 5000);
+    } else if (navigator.language == 'en' || navigator.language == 'en-US' || navigator.language == 'en-NZ') {
+        p.openPopup('Englisch: Hello!', 5000);
+    }
+});
 
