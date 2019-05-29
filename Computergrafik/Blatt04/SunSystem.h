@@ -4,6 +4,7 @@
 #include "Sphere.h"
 #include "Axis.h"
 
+enum Direction {LEFT = -1, RIGHT = 1};
 
 class SunSystem {
 public:
@@ -53,16 +54,17 @@ private:
 	const int betaStepSize = 3;
 	const float planetOneLiftStep = 0.125;
 	const float speedStep = 0.05f;
-	const int planetStacks = 0;
+	const int planetStacks = 4;
 
 	bool sunRotation = false;
 
 
 	int alpha = 0;
-	int beta = 45;
+	int beta = -45;
 	float planetOneLift = 0.0f;
 	float speed = 0.0f;
 	float rotationAngle = 0.0f;
 	float rotationMoonAngle = 0.0f;
+	Direction direction = RIGHT;
 
 };
