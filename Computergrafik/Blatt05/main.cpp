@@ -9,10 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-#include "GLSLProgram.h"
-#include "GLTools.h"
-
-#include "SunSystem.h"
+#include "header/GLSLProgram.h"
+#include "header/GLTools.h"
+#include "header/SunSystem.h"
 
 // Standard window width
 const int WINDOW_WIDTH  = 640;

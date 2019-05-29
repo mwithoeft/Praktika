@@ -1,4 +1,4 @@
-#include "SunSystem.h"
+#include "header/SunSystem.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/freeglut.h>
 #include <glm/gtc/constants.hpp>

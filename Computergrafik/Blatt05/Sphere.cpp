@@ -1,4 +1,4 @@
-#include "Sphere.h"
+#include "header/Sphere.h"
 
 Sphere::Sphere(cg::GLSLProgram* prog) : program(prog) {}
 

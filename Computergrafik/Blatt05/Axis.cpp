@@ -1,4 +1,4 @@
-#include "Axis.h"
+#include "header/Axis.h"
 
 Axis::Axis(cg::GLSLProgram* prog) : program(prog) {}
 

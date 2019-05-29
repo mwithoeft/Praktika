@@ -1,4 +1,4 @@
-#include "GLSLProgram.h"
+#include "header/GLSLProgram.h"
 
 using namespace cg;
 
