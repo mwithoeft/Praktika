@@ -30,9 +30,9 @@ SunSystem *sunSystem = new SunSystem(&program);
 
 float zNear = 0.1f;
 float zFar  = 100.0f;
-float eyeX = -2.0f;
-float eyeY = 5.0f;
-float eyeZ = 7.0f; // for view matrix (zoom)
+float eyeX = 0.0f;
+float eyeY = 0.0f;
+float eyeZ = 11.0f; // for view matrix (zoom)
 
 glm::vec3 eye(eyeX, eyeY, eyeZ);
 glm::vec3 center(0.0f, 0.0f, 0.0f);
@@ -102,8 +102,8 @@ void glutResize (int width, int height)
   glViewport(0, 0, width, height);
   
   // Construct projection matrix.
-  projection = glm::perspective(45.0f, (float) width / height, zNear, zFar);
-  //projection = glm::ortho(-5.0F * width / height, 5.0F * width / height, -5.0F, 5.0F, zNear, zFar);
+  //projection = glm::perspective(45.0f, (float) width / height, zNear, zFar);
+  projection = glm::ortho(-5.0F * width / height, 5.0F * width / height, -5.0F, 5.0F, zNear, zFar);
 
   sunSystem->setProjection(projection);
 }

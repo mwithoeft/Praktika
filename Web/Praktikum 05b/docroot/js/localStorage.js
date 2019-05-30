@@ -118,6 +118,6 @@ class Storage {
 
 }
 
-window.onload = function () {
+window.addEventListener("load", function () {
     let storage = new Storage();
-}
+});

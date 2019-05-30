@@ -7,10 +7,10 @@ SunSystem::SunSystem(cg::GLSLProgram* prog)
 	: program(prog),
 	model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(prog, 20, 100);
+	sun = new Sphere(prog, planetStacks, 100);
 	axis = new Axis(prog);
-	planet = new Sphere(prog, 20, 50);
-	moon = new Sphere(prog, 20, 25);
+	planet = new Sphere(prog, planetStacks, 50);
+	moon = new Sphere(prog, planetStacks, 25);
 
 }
 SunSystem::~SunSystem()
@@ -63,7 +63,7 @@ void SunSystem::draw() {
 
 	matrixStack.push(model);
 	rad = rotationAngle * (PI / 180);
-	model = glm::rotate(model, rad, yAxis);
+	model = glm::rotate(model, direction * rad, yAxis);
 	drawPlanetOne();
 	drawPlanetTwo();
 	model = matrixStack.top();
@@ -141,7 +141,7 @@ void SunSystem::drawPlanetOneMoons() {
 	for (int i = 0; i < 4; i++) {
 		matrixStack.push(model);
 		float rad = (i*90) * (PI / 180);
-		model = glm::rotate(model, rad, yAxis);
+		model = glm::rotate(model, direction * rad, yAxis);
 		model = glm::translate(model, { 1.0f, 0.0f, 0.0f });
 		moon->draw(projection * view * model);
 		model = matrixStack.top();
@@ -152,14 +152,14 @@ void SunSystem::drawPlanetTwo() {
 	matrixStack.push(model);
 
 	model = glm::translate(model, { -5.0f, 0.0f, 0.0f });
-	float rad = -rotationAngle * (PI / 180);
+	float rad = -rotationAngle * direction * (PI / 180);
 	model = glm::rotate(model, rad, yAxis);
 
 		/* Zeichne Planet 2 */
 		matrixStack.push(model);
 		rad = beta * (PI / 180);
 		model = glm::rotate(model, rad, zAxis);
-		rad = rotationAngle * (PI / 180);
+		rad = rotationAngle * (PI / 180) *2;
 		model = glm::rotate(model, rad, yAxis);
 		planet->draw(projection * view * model);
 		model = matrixStack.top();
@@ -169,7 +169,7 @@ void SunSystem::drawPlanetTwo() {
 		matrixStack.push(model);
 		rad = beta * (PI / 180);
 		model = glm::rotate(model, rad, zAxis);
-		rad = rotationMoonAngle * (PI / 180);
+		rad = rotationMoonAngle * (PI / 180) *2;
 		model = glm::rotate(model, rad, yAxis);
 		axis->draw(projection * view * model);
 		drawPlanetTwoMoons();
