@@ -17,7 +17,7 @@ typedef struct listProcess {
     //Zeigt auf den ersten Knoten
     LIST_HEADER(job);
 } listProcess;
-
+float getTime(listProcess *list);
 void printJob(listProcess* list);
 void runJob(listProcess *list);
 int cmpPrio(job *node1, job *node2, void *dummy);

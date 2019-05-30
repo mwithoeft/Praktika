@@ -1,17 +1,17 @@
-#include "scheduler.h"
+	#include "scheduler.h"
 
 void firstComeFirstServed(listProcess *list) {
-	printf("First Come First Served:\n");
+	printf("\nFirst Come First Served:\n");
 	runJob(list);
 }
 void shortestJobFirst(listProcess *list){
 	List_sort(list,(ListNodeCompareFunction)cmpTime, NULL);
-	printf("Shortest Job First:\n");
+	printf("\nShortest Job First:\n");
 	runJob(list);
 }
 void prioScheduling(listProcess *list){
 	List_sort(list,(ListNodeCompareFunction)cmpPrio, NULL);
-	printf("Prio Scheduling:\n");
+	printf("\nPrio Scheduling:\n");
 	runJob(list);
 }
 void appendJob(listProcess *list, char processname[50], int time, int priority) {
@@ -22,30 +22,64 @@ void appendJob(listProcess *list, char processname[50], int time, int priority) 
 	List_append(list, process);
 }
 void roundRobin(listProcess *list){
-
+	int amount = list->count;
+	float totalTime = 0;
+	float averageTime = 0;
+	float termTime = 0;
+	float timeLast = 0;
+	printf("\nRound Robin:");
+	job *node = list->head;
+	while(list->count != 0){
+		printf("\nEs wird an den Jobs zu folgenden Anteilen gearbeitet:\n");
+		termTime = getTime(list);
+		timeLast = 0;
+		while(node != NULL){
+			node->time -= termTime;
+			timeLast += termTime;
+			printf("Es wurde %.2fs an %s gearbeitet\n",termTime, node->name);
+			if(node->time == 0){
+//				printf("%s wurde erfolgreich abgearbeitet\n",node->name);
+				List_remove(list, node);
+			}
+			node = (job*) node->next;
+		}
+		totalTime = timeLast + totalTime;
+		averageTime += totalTime;
+		node = list->head;
+	}
+	averageTime /= (float) amount;
+	printf("Mittlere Verweilzeit:%.2f\n",averageTime);
+}
+float getTime(listProcess *list){
+	job *node = list->head;
+	float value = node->time;
+	while(node != NULL){
+		if(node->time < value){
+			value = node->time;
+		}
+		node = (job*) node->next;
+	}
+	return value;
 }
 void roundRobinPrio(listProcess *list){
-
 }
 void runJob(listProcess *list){
 	job *node = list->head;
 	int amount = list->count;
-	int counter = 0;
 	float currentTime = 0;
 	float totalTime = 0;
 	float averageTime = 0;
 
 	while(node != NULL) {
 		currentTime += node->time;
-		totalTime += node->time * (list->count - counter);
+		totalTime += node->time * list->count;
 		//Muss an sich nicht gemacht werden, symbolisiert aber, dass die Jobzeit nach dem Arbeiten auf 0 ist
-//		node->time -= node->time;
+		node->time -= node->time;
 		printf("%s wurde abgearbeitet (Akutelle Zeit: %.2f).\n", node->name, currentTime);
-		node = node->next;
-		counter++;
+		node = List_remove(list, node);
 	}
 	averageTime = totalTime / amount;
-	printf("Mittlere Verweilzeit: %.3f\n", averageTime);
+	printf("Mittlere Verweilzeit: %.2f\n", averageTime);
 }
 int cmpPrio(job *node1, job *node2, void *dummy){
 	return node2->priority - node1->priority;
@@ -63,9 +97,10 @@ void initJobs(listProcess *list){
 }
 void printJob(listProcess *list){
 	job *node = list->head;
+	printf("\nJobs:\n");
 	while(node != NULL){
 		printf("Job:%s	Time:%.2f	Prio:%i\n",node->name, node->time, node->priority);
-		node = node->next;
+		node = (job*) node->next;
 	}
 }
 int main() {
@@ -74,7 +109,11 @@ int main() {
 	initJobs(&list);
 	printJob(&list);
 	firstComeFirstServed(&list);
+	initJobs(&list);
 	shortestJobFirst(&list);
+	initJobs(&list);
 	prioScheduling(&list);
+	initJobs(&list);
+	roundRobin(&list);
 	return 0;
 }
