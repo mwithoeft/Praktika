@@ -21,19 +21,22 @@ void appendJob(listProcess *list, char processname[50], int time, int priority) 
     process->priority = priority;
 	List_append(list, process);
 }
-void roundRobin(listProcess *list){
+void roundRobinPrio(listProcess *list){
 	int amount = list->count;
 	float totalTime = 0;
 	float averageTime = 0;
 	float termTime = 0;
+	float currentSteps = 0;
 	float timeLast = 0;
-	printf("\nRound Robin:");
+	printf("\nRound Robin Prio:");
 	job *node = list->head;
 	while(list->count != 0){
 		printf("\nEs wird an den Jobs zu folgenden Anteilen gearbeitet:\n");
-		termTime = getTime(list);
+//		termTime = getTime(list);
+		currentSteps = getSteps(list);
 		timeLast = 0;
 		while(node != NULL){
+			termTime = currentSteps * node->priority;
 			node->time -= termTime;
 			timeLast += termTime;
 			printf("Es wurde %.2fs an %s gearbeitet\n",termTime, node->name);
@@ -61,8 +64,29 @@ float getTime(listProcess *list){
 	}
 	return value;
 }
-void roundRobinPrio(listProcess *list){
+float getSteps(listProcess *list){
+	job *node = list->head;
+	float steps = node->time / node->priority;
+	while(node != NULL){
+		float nodeSteps = node->time / node->priority;
+		if(nodeSteps < steps){
+			steps = nodeSteps;
+		}
+		node = (job*) node->next;
+	}
+	return steps;
 }
+
+void roundRobin(listProcess *list){
+	printf("\n\nRound Robin (no priorities): Setting all priorities to 1 beforehands");
+	job *node = list->head;
+	while(node != NULL){
+		node->priority = 1;
+		node = (job*) node->next;
+	}
+	roundRobinPrio(list);
+}
+
 void runJob(listProcess *list){
 	job *node = list->head;
 	int amount = list->count;
@@ -115,5 +139,7 @@ int main() {
 	prioScheduling(&list);
 	initJobs(&list);
 	roundRobin(&list);
+	initJobs(&list);
+	roundRobinPrio(&list);
 	return 0;
 }
