@@ -113,11 +113,32 @@ int cmpTime(job *node1, job *node2, void *dummy){
 	return node1->time - node2->time;
 }
 void initJobs(listProcess *list){
-	appendJob(list, "A", 30, 2);
-	appendJob(list, "B", 20, 1);
-	appendJob(list, "C", 25, 5);
-	appendJob(list, "D", 28, 4);
-	appendJob(list, "E", 18, 3);
+//	appendJob(list, "A", 30, 2);
+//	appendJob(list, "B", 20, 1);
+//	appendJob(list, "C", 25, 5);
+//	appendJob(list, "D", 28, 4);
+//	appendJob(list, "E", 18, 3);
+
+//	appendJob(list, "A", 8, 2);
+//	appendJob(list, "B", 4, 1);
+//	appendJob(list, "C", 20, 5);
+//	appendJob(list, "D", 16, 4);
+//	appendJob(list, "E", 15, 3);
+
+	appendJob(list, "A", 10, 10);
+	appendJob(list, "B", 10, 1);
+	appendJob(list, "C", 10, 3);
+	appendJob(list, "D", 10, 6);
+	appendJob(list, "E", 10, 15);
+
+//	appendJob(list, "A", 1, 2);
+//	appendJob(list, "B", 1, 1);
+//	appendJob(list, "C", 1, 5);
+//	appendJob(list, "D", 1, 4);
+//	appendJob(list, "E", 1, 3);
+
+
+
 }
 void printJob(listProcess *list){
 	job *node = list->head;
