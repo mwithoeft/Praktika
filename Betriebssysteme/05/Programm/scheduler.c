@@ -35,6 +35,7 @@ void roundRobinPrio(listProcess *list){
 //		termTime = getTime(list);
 		currentSteps = getSteps(list);
 		timeLast = 0;
+		int termCount = 0;
 		while(node != NULL){
 			termTime = currentSteps * node->priority;
 			node->time -= termTime;
@@ -43,10 +44,11 @@ void roundRobinPrio(listProcess *list){
 			if(node->time == 0){
 //				printf("%s wurde erfolgreich abgearbeitet\n",node->name);
 				List_remove(list, node);
+				termCount++;
 			}
 			node = (job*) node->next;
 		}
-		totalTime = timeLast + totalTime;
+		totalTime = timeLast * termCount + totalTime;
 		averageTime += totalTime;
 		node = list->head;
 	}
@@ -78,7 +80,7 @@ float getSteps(listProcess *list){
 }
 
 void roundRobin(listProcess *list){
-	printf("\n\nRound Robin (no priorities): Setting all priorities to 1 beforehands");
+	printf("\n\nRound Robin (keine Prioritaeten): Setze alle Prioritaeten auf 1...");
 	job *node = list->head;
 	while(node != NULL){
 		node->priority = 1;
@@ -113,11 +115,11 @@ int cmpTime(job *node1, job *node2, void *dummy){
 	return node1->time - node2->time;
 }
 void initJobs(listProcess *list){
-//	appendJob(list, "A", 30, 2);
-//	appendJob(list, "B", 20, 1);
-//	appendJob(list, "C", 25, 5);
-//	appendJob(list, "D", 28, 4);
-//	appendJob(list, "E", 18, 3);
+	appendJob(list, "A", 30, 2);
+	appendJob(list, "B", 20, 1);
+	appendJob(list, "C", 25, 5);
+	appendJob(list, "D", 28, 4);
+	appendJob(list, "E", 18, 3);
 
 //	appendJob(list, "A", 8, 2);
 //	appendJob(list, "B", 4, 1);
@@ -125,11 +127,11 @@ void initJobs(listProcess *list){
 //	appendJob(list, "D", 16, 4);
 //	appendJob(list, "E", 15, 3);
 
-	appendJob(list, "A", 10, 10);
-	appendJob(list, "B", 10, 1);
-	appendJob(list, "C", 10, 3);
-	appendJob(list, "D", 10, 6);
-	appendJob(list, "E", 10, 15);
+//	appendJob(list, "A", 10, 10);
+//	appendJob(list, "B", 10, 1);
+//	appendJob(list, "C", 10, 3);
+//	appendJob(list, "D", 10, 6);
+//	appendJob(list, "E", 10, 15);
 
 //	appendJob(list, "A", 1, 2);
 //	appendJob(list, "B", 1, 1);
