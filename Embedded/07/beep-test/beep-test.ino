@@ -17,7 +17,6 @@ const byte buttonstate_is_released = 3;
 int stateD = 0;
 int stateB = 0;
 
-
 template <const uint8_t PIN_NB>
 class TButton {
 public:
@@ -25,48 +24,32 @@ public:
     pinMode(PIN_NB, INPUT);
     }
     int state(){
-      int state = digitalRead(PIN_NB);
-    
+      int state = digitalRead(PIN_NB);  
       if(state != lastButtonState) {
           lastDebounceTime = millis();
-      }
-      
+      }     
       if ((millis( ) - lastDebounceTime) > debounceDelay) {
           buttonState = state;
-      }
-      
+      }   
       lastButtonState = state;
       return buttonState;
   }
-  
 private:
   int buttonState = 0;
   int lastButtonState = 0;
   long lastDebounceTime = 0;
   long debounceDelay = 250;
 };
-
 void setup(){
   Serial.begin(SerialRate);
   pinMode(BuzzerPortOut, OUTPUT);
 }
-
 TButton<ButtonPin4> Button4;
 TButton<ButtonPin5> Button5;
 
 void loop(){
-  
-  if(Button4.state()){
-    stateB = 1;
-  }else{
-    stateB = 0;
-  }
-  if(Button5.state()){
-    stateD = 1;
-  }else{
-    stateD = 0;
-  }
-
+  stateB = Button4.state();
+  stateD = Button5.state();
   Serial.print("Beep-test:");
   Serial.print(stateB);
   Serial.print(stateD);
@@ -77,7 +60,4 @@ void loop(){
     delay(100);
   }
   digitalWrite(BuzzerPortOut, LOW);
-  
-  
-  //Serial.print(digitalRead(ButtonPin4));
 }
