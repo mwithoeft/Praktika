@@ -18,9 +18,9 @@ String string = "";
 bool mode = true;
 
 const byte buttonstate_released = 0;
-  const byte buttonstate_pressed = 1;
-  const byte buttonstate_held = 2;
-  const byte buttonstate_is_released = 3;
+const byte buttonstate_pressed = 1;
+const byte buttonstate_held = 2;
+const byte buttonstate_is_released = 3;
 
  
 
@@ -166,44 +166,37 @@ class Morse{
     }
   private:
 };
-
-
 template <const uint8_t PIN_NB>
 class TButton {
 public:
-  TButton(){}
-  boolean state(){
-    byte buttonValue = digitalRead(PIN_NB);
-
-    if(buttonState == buttonstate_released && buttonValue == HIGH) {
-        // Button is pressed
-        buttonState = buttonstate_pressed;
-        return HIGH;
-    } else if (buttonState == buttonstate_pressed && buttonValue == HIGH) {
-        // Button is held
-        buttonState = buttonstate_held;
-        return LOW;
-    } else if (buttonState == buttonstate_held && buttonValue == LOW) {
-        // Button is released
-        buttonState = buttonstate_is_released;
-        return LOW;
-    } else if (buttonState == buttonstate_is_released && buttonValue == LOW) {
-        // Button released
-        buttonState = buttonstate_released;
-        return LOW;
+  TButton(){
+    pinMode(PIN_NB, INPUT);
     }
+    int state(){
+      int state = digitalRead(PIN_NB);
+    
+      if(state != lastButtonState) {
+          lastDebounceTime = millis();
+      }
+      
+      if ((millis( ) - lastDebounceTime) > debounceDelay) {
+          buttonState = state;
+      }
+      
+      lastButtonState = state;
+      return buttonState;
   }
 private:
-  byte buttonState = buttonstate_released;
-  
+  int buttonState = 0;
+  int lastButtonState = 0;
+  long lastDebounceTime = 0;
+  long debounceDelay = 250;
 };
-
-TButton<ButtonPin5> Button;
 OutputStrategy out = BuzzerOutput();
-
+TButton<ButtonPin5> Button;
+Morse morse;
 
 void toggelOutput(){
-  
     if(mode){
       Serial.print("Mode is LED\n");
       out = LedOutput();
@@ -219,13 +212,10 @@ void toggelOutput(){
 }
 void doMorse(){
   Serial.print("Morse\n");
-  Morse morse;
   if(string.length()>0){
     morse.morseString(out, string);  
   }
   Serial.print("end morse\n");
-  delay(1500);
-  setup();
 }
 void interruptPin4(){
   //SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
@@ -244,7 +234,6 @@ void interruptPin4(){
   // Enable interrupts again
   GPIOIntEnable(GPIO_PORTC_BASE, GPIO_PIN_4);
 }
-
 void interruptPin5(){
   //SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
   //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
@@ -262,25 +251,22 @@ void interruptPin5(){
   // Enable interrupts again
   GPIOIntEnable(GPIO_PORTC_BASE, GPIO_PIN_5);
 }
-
 void setup(){
   Serial.begin(SerialRate);
   interruptPin4();
-  interruptPin5();
 }
-  //Morse object
-  
-  
-void loop(){
-  //128 Bit
-  //34028236692093846346337460743176821145;
-  
-  // read the incoming byte:
-    while(Serial.available() == 0){}
+void loop(){    
+    if(digitalRead(PC_5)){
+      doMorse();
+   }
+}
+void serialEvent() {
+  while (Serial.available()) {
     string += Serial.readString(); 
     string.toLowerCase();
     if (string.length() > 128){
       Serial.print("Eingabe Text ist zu lang geben Sie einen neuen ein");
       string = "";
     }
+  }
 }
