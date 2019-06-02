@@ -47,6 +47,9 @@ class OutputStrategy{
           delay(Dit);
         }
     }
+    void clear(){
+      digitalWrite(outputPin, LOW);
+    }
     OutputStrategy& operator=(const OutputStrategy& other){
       if(this != &other){
         this->outputPin = other.outputPin;
@@ -149,7 +152,7 @@ class Morse{
         return "_______";
     } 
    }
-    void morseString(OutputStrategy out, String input){
+    void morseString(OutputStrategy *out, String input){
       String morsecode ="";
       for(int i = 0; i < input.length()-1; i++){
         Serial.print("Buchstabe:");
@@ -161,7 +164,7 @@ class Morse{
          morsecode += "_";
         } 
       for(int i = 0; i < morsecode.length(); i++){
-        out.printMorse(morsecode.charAt(i));
+        out->printMorse(morsecode.charAt(i));
       }
     }
   private:
@@ -190,30 +193,34 @@ private:
   int buttonState = 0;
   int lastButtonState = 0;
   long lastDebounceTime = 0;
-  long debounceDelay = 250;
+  long debounceDelay = 1000;
 };
 OutputStrategy out = BuzzerOutput();
 TButton<ButtonPin5> Button;
+TButton<ButtonPin4> Button4;
 Morse morse;
 
 void toggelOutput(){
+  GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
+  if(Button4.state()){
     if(mode){
       Serial.print("Mode is LED\n");
-      out = LedOutput();
+      out.clear();
+      out = LedOutput();    
       mode = !mode;
    }else{
       Serial.print("Mode is Buzzer\n");
+      out.clear();
       out = BuzzerOutput();
       mode = !mode;
-    
+    } 
+    delay(1000);
   }
-  delay(1500);
-  setup();
 }
 void doMorse(){
   Serial.print("Morse\n");
   if(string.length()>0){
-    morse.morseString(out, string);  
+    morse.morseString(&out, string);  
   }
   Serial.print("end morse\n");
 }
