@@ -16,6 +16,7 @@ const byte buttonstate_is_released = 3;
 
 int stateD = 0;
 int stateB = 0;
+int stateBeep = 2;
 
 template <const uint8_t PIN_NB>
 class TButton {
@@ -55,7 +56,7 @@ void loop(){
   Serial.print(stateD);
   Serial.print("\n");
   
-  if(stateB+stateD == 2){
+  if(stateB+stateD == stateBeep){
     digitalWrite(BuzzerPortOut, HIGH);
     delay(100);
   }
