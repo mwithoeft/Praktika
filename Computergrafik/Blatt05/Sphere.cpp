@@ -1,4 +1,6 @@
 #include "header/Sphere.h"
+#include <GL/freeglut.h>
+#include <glm/glm.hpp>
 
 Sphere::Sphere(cg::GLSLProgram* prog) : program(prog) {}
 
@@ -10,6 +12,7 @@ Sphere::~Sphere()
 	glDeleteBuffers(1, &indexBuffer);
 	glDeleteBuffers(1, &colorBuffer);
 	glDeleteBuffers(1, &positionBuffer);
+	glDeleteBuffers(1, &normalBuffer);
 }
 
 
@@ -88,6 +91,7 @@ void Sphere::calcPoints() {
 		indicesOffset += indicesEighth;
 	}
 
+	buildNormalVector();
 
 }
 
@@ -103,7 +107,6 @@ void Sphere::init() {
 
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	// Step 0: Create vertex array object.
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -135,6 +138,34 @@ void Sphere::init() {
 
 	// Unbind vertex array object (back to default).
 	glBindVertexArray(0);
+
+	/* Für die Normalen */
+	glGenVertexArrays(1, &objNormals.vao);
+	glBindVertexArray(objNormals.vao);
+	// Position buffer.
+	glGenBuffers(1, &objNormals.positionBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objNormals.positionBuffer);
+	glBufferData(GL_ARRAY_BUFFER, positions2.size() * sizeof(glm::vec3), positions2.data(), GL_STATIC_DRAW);
+
+	pos = glGetAttribLocation(programId, "position");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Color buffer.
+	glGenBuffers(1, &objNormals.colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objNormals.colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, colors2.size() * sizeof(glm::vec3), colors2.data(), GL_STATIC_DRAW);
+
+	pos = glGetAttribLocation(programId, "color");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Index buffer.
+	objNormals.indexCount = (GLuint)indices2.size();
+
+	glGenBuffers(1, &objNormals.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexCount * sizeof(GLuint), indices2.data(), GL_STATIC_DRAW);
 }
 
 void Sphere::draw(glm::mat4x4 mvp) {
@@ -145,7 +176,55 @@ void Sphere::draw(glm::mat4x4 mvp) {
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, 8 * calcAmountTriangles(stacks) * 3, GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
+
+	if (renderNormals) {
+		program->use();
+		program->setUniform("mvp", mvp);
+		glBindVertexArray(objNormals.vao);
+		glDrawElements(GL_LINES, objNormals.indexCount, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+
+	
 }
+
+void Sphere::buildNormalVector() {
+
+	/* Berechne immer für 3 Punkte die Normale */
+
+	for (int i = 0; i < indices.size() ; i+=3) {
+		glm::vec3 p1 = vertices[indices[i]];
+		glm::vec3 p2 = vertices[indices[i+1]];
+		glm::vec3 p3 = vertices[indices[i+2]];
+
+		/* p2 zuerst, weil die Normalen sonst nach innen zeigen */
+		glm::vec3 normal = computeNormal(p2, p1, p3);
+
+		/* Reihenfolge wichtig */
+		indices2.push_back(positions2.size());
+		positions2.push_back(p1);
+		indices2.push_back(positions2.size());
+		positions2.push_back(p1 + normal * normalScale);
+
+		indices2.push_back(positions2.size());
+		positions2.push_back(p2);
+		indices2.push_back(positions2.size());
+		positions2.push_back(p2 + normal * normalScale);
+
+		indices2.push_back(positions2.size());
+		positions2.push_back(p3);
+		indices2.push_back(positions2.size());
+		positions2.push_back(p3 + normal * normalScale);
+
+		colors2.push_back(getNormalsColor());
+		colors2.push_back(getNormalsColor());
+		colors2.push_back(getNormalsColor());
+		colors2.push_back(getNormalsColor());
+		colors2.push_back(getNormalsColor());
+		colors2.push_back(getNormalsColor());
+	}
+}
+
 
 void Sphere::setColor(Color c) {
 	color = c;
@@ -159,6 +238,20 @@ glm::vec3 Sphere::getColor() {
 		case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
 		case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
 		case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
+	}
+}
+void Sphere::setNormalsColor(Color c) {
+	normalsColor = c;
+}
+glm::vec3 Sphere::getNormalsColor() {
+	switch (normalsColor) {
+	case RED: return { 1.0f, 0.0f, 0.0f }; break;
+	case GREEN: return { 0.0f, 1.0f, 0.0f }; break;
+	case BLUE: return { 0.0f, 0.0f, 1.0f }; break;
+	case WHITE: return { 1.0f, 1.0f, 1.0f }; break;
+	case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
+	case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
+	case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
 	}
 }
 
@@ -324,3 +417,6 @@ void Sphere::setRadius(int r) {
 	radius = r;
 }
 
+glm::vec3 Sphere::computeNormal (glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c) {
+	return glm::normalize(glm::cross(c - a, b - a));
+}

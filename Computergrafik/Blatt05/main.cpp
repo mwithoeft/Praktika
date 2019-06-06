@@ -29,8 +29,8 @@ SunSystem *sunSystem = new SunSystem(&program);
 
 float zNear = 0.1f;
 float zFar  = 100.0f;
-float eyeX = 0.0f;
-float eyeY = 0.0f;
+float eyeX = -5.0f;
+float eyeY = 5.0f;
 float eyeZ = 11.0f; // for view matrix (zoom)
 
 glm::vec3 eye(eyeX, eyeY, eyeZ);
@@ -101,8 +101,8 @@ void glutResize (int width, int height)
   glViewport(0, 0, width, height);
   
   // Construct projection matrix.
-  //projection = glm::perspective(45.0f, (float) width / height, zNear, zFar);
-  projection = glm::ortho(-5.0F * width / height, 5.0F * width / height, -5.0F, 5.0F, zNear, zFar);
+  projection = glm::perspective(45.0f, (float) width / height, zNear, zFar);
+  //projection = glm::ortho(-5.0F * width / height, 5.0F * width / height, -5.0F, 5.0F, zNear, zFar);
 
   sunSystem->setProjection(projection);
 }
@@ -142,6 +142,18 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  break;
   case 's':
 	  sunSystem->toggleSunRotation();
+	  break;
+  case 'n':
+	  sunSystem->toggleNormals();
+	  break;
+  case 'm':
+	  //Wireframe - solide Umschaltung
+	  break;
+  case '+':
+	  sunSystem->scaleUp();
+	  break;
+  case '-':
+	  sunSystem->scaleDown();
 	  break;
   }
   glutPostRedisplay();

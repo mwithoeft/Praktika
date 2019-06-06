@@ -44,6 +44,7 @@ void SunSystem::draw() {
 	}
 
 	matrixStack.push(model);
+	model = glm::scale(model, glm::vec3(scale));
 
 	float rad = alpha * (PI / 180);
 	model = glm::rotate(model, rad, zAxis);
@@ -223,4 +224,20 @@ void SunSystem::drawPlanetTwoMoons() {
 
 	model = matrixStack.top();
 	matrixStack.pop();
+}
+
+void SunSystem::toggleNormals() {
+	sun->renderNormals = !sun->renderNormals;
+	planet->renderNormals = !planet->renderNormals;
+	moon->renderNormals = !moon->renderNormals;
+}
+void SunSystem::scaleUp() {
+	if (scale < 2.0f) {
+		scale += 0.1f;
+	}
+}
+void SunSystem::scaleDown() {
+	if (scale > 0.2f) {
+		scale -= 0.1f;
+	}
 }

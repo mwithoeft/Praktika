@@ -24,6 +24,9 @@ public:
 	void liftUpPlanetOne();
 	void liftDownPlanetOne();
 	void toggleSunRotation();
+	void toggleNormals();
+	void scaleUp();
+	void scaleDown();
 
 private:
 	std::stack <glm::mat4x4> matrixStack;
@@ -54,7 +57,7 @@ private:
 	const int betaStepSize = 3;
 	const float planetOneLiftStep = 0.125;
 	const float speedStep = 0.05f;
-	const int planetStacks = 4;
+	const int planetStacks = 0;
 
 	bool sunRotation = false;
 
@@ -65,6 +68,8 @@ private:
 	float speed = 0.0f;
 	float rotationAngle = 0.0f;
 	float rotationMoonAngle = 0.0f;
-	Direction direction = LEFT;
+	Direction direction = RIGHT;
+
+	float scale = 1.0f;
 
 };
