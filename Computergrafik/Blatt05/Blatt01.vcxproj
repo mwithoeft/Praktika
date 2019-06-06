@@ -172,12 +172,12 @@
     <ClCompile Include="SunSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Axis.h" />
-    <ClInclude Include="Colors.h" />
-    <ClInclude Include="GLSLProgram.h" />
-    <ClInclude Include="GLTools.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="SunSystem.h" />
+    <ClInclude Include="header\Axis.h" />
+    <ClInclude Include="header\Colors.h" />
+    <ClInclude Include="header\GLSLProgram.h" />
+    <ClInclude Include="header\GLTools.h" />
+    <ClInclude Include="header\Sphere.h" />
+    <ClInclude Include="header\SunSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\simple.frag" />

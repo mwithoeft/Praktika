@@ -65,6 +65,6 @@ private:
 	float speed = 0.0f;
 	float rotationAngle = 0.0f;
 	float rotationMoonAngle = 0.0f;
-	Direction direction = RIGHT;
+	Direction direction = LEFT;
 
 };
