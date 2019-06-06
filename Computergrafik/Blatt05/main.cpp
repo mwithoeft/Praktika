@@ -46,7 +46,7 @@ bool init()
   // OpenGL: Set "background" color and enable depth testing.
   glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
   
-  //glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   
   // Construct view matrix.
