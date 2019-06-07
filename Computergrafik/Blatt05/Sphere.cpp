@@ -106,8 +106,8 @@ void Sphere::init() {
 	GLuint pos;
 
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	// Step 0: Create vertex array object.
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -420,4 +420,5 @@ void Sphere::setRadius(int r) {
 
 glm::vec3 Sphere::computeNormal (glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c) {
 	return glm::normalize(glm::cross(c - a, b - a));
-}
+}
+
