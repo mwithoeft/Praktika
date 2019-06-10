@@ -25,6 +25,7 @@ public:
 	void liftDownPlanetOne();
 	void toggleSunRotation();
 	void toggleNormals();
+	void toggleWireframe();
 	void scaleUp();
 	void scaleDown();
 

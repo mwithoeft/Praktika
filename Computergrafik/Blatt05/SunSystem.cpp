@@ -241,3 +241,9 @@ void SunSystem::scaleDown() {
 		scale -= 0.1f;
 	}
 }
+
+void SunSystem::toggleWireframe() {
+	sun->renderWireframe = !sun->renderWireframe;
+	planet->renderWireframe = !planet->renderWireframe;
+	moon->renderWireframe = !moon->renderWireframe;
+}

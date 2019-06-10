@@ -35,6 +35,7 @@ public:
 	void setNormalsColor(Color color);
 
 	bool renderNormals = false;
+	bool renderWireframe = false;
 
 
 private :

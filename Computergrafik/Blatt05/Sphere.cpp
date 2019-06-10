@@ -106,8 +106,12 @@ void Sphere::init() {
 	GLuint pos;
 
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	if (renderWireframe) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
 	// Step 0: Create vertex array object.
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

@@ -147,7 +147,9 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  sunSystem->toggleNormals();
 	  break;
   case 'm':
-	  //Wireframe - solide Umschaltung
+	  sunSystem->toggleWireframe();
+	  init();
+	  glutDisplay();
 	  break;
   case '+':
 	  sunSystem->scaleUp();
