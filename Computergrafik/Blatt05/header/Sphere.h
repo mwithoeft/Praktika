@@ -70,6 +70,7 @@ private :
 	std::vector<glm::vec3> positions2;
 	std::vector<glm::vec3> colors2;
 	std::vector<GLuint> indices2;
+	std::vector<glm::vec3> normals;
 
 
 	bool initialized = false;

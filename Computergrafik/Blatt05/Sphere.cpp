@@ -196,38 +196,60 @@ void Sphere::draw(glm::mat4x4 mvp) {
 void Sphere::buildNormalVector() {
 
 	/* Berechne immer für 3 Punkte die Normale */
+	/* Alte Version für die 3 Normalen an einem Vertex */
+	//for (int i = 0; i < indices.size() ; i+=3) {
+	//	glm::vec3 p1 = vertices[indices[i]];
+	//	glm::vec3 p2 = vertices[indices[i+1]];
+	//	glm::vec3 p3 = vertices[indices[i+2]];
 
-	for (int i = 0; i < indices.size() ; i+=3) {
-		glm::vec3 p1 = vertices[indices[i]];
-		glm::vec3 p2 = vertices[indices[i+1]];
-		glm::vec3 p3 = vertices[indices[i+2]];
+	//	/* p2 zuerst, weil die Normalen sonst nach innen zeigen */
+	//	glm::vec3 normal = computeNormal(p2, p1, p3);
 
-		/* p2 zuerst, weil die Normalen sonst nach innen zeigen */
-		glm::vec3 normal = computeNormal(p2, p1, p3);
+	//	/* Reihenfolge wichtig */
+	//	indices2.push_back(positions2.size());
+	//	positions2.push_back(p1);
+	//	indices2.push_back(positions2.size());
+	//	positions2.push_back(p1 + normal * normalScale);
+
+	//	indices2.push_back(positions2.size());
+	//	positions2.push_back(p2);
+	//	indices2.push_back(positions2.size());
+	//	positions2.push_back(p2 + normal * normalScale);
+
+	//	indices2.push_back(positions2.size());
+	//	positions2.push_back(p3);
+	//	indices2.push_back(positions2.size());
+	//	positions2.push_back(p3 + normal * normalScale);
+
+	//	colors2.push_back(getNormalsColor());
+	//	colors2.push_back(getNormalsColor());
+	//	colors2.push_back(getNormalsColor());
+	//	colors2.push_back(getNormalsColor());
+	//	colors2.push_back(getNormalsColor());
+	//	colors2.push_back(getNormalsColor());
+	//}
+
+	/*Zeichne Normale mit Hilfe des Mittelpunkts*/
+	for (int i = 0; i < vertices.size(); i++) {
+		glm::vec3 p1 = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 p2 = vertices[i];
+		
+		glm::vec3 normal = { p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2] };
+		normal = glm::normalize(normal);
+		normals.push_back(normal);
 
 		/* Reihenfolge wichtig */
-		indices2.push_back(positions2.size());
-		positions2.push_back(p1);
-		indices2.push_back(positions2.size());
-		positions2.push_back(p1 + normal * normalScale);
-
 		indices2.push_back(positions2.size());
 		positions2.push_back(p2);
 		indices2.push_back(positions2.size());
 		positions2.push_back(p2 + normal * normalScale);
 
-		indices2.push_back(positions2.size());
-		positions2.push_back(p3);
-		indices2.push_back(positions2.size());
-		positions2.push_back(p3 + normal * normalScale);
-
-		colors2.push_back(getNormalsColor());
-		colors2.push_back(getNormalsColor());
-		colors2.push_back(getNormalsColor());
-		colors2.push_back(getNormalsColor());
 		colors2.push_back(getNormalsColor());
 		colors2.push_back(getNormalsColor());
 	}
+
+
+
 }
 
 
