@@ -5,6 +5,8 @@
 #include "Axis.h"
 
 enum Direction {LEFT = -1, RIGHT = 1};
+enum Lightsource { L_POINT, L_DIRECTION };
+enum Shading { FLAT, GOURAUD };
 
 class SunSystem {
 public:
@@ -26,6 +28,8 @@ public:
 	void toggleSunRotation();
 	void toggleNormals();
 	void toggleWireframe();
+	void toggleLightsource();
+	void toggleShading();
 	void scaleUp();
 	void scaleDown();
 
@@ -42,6 +46,9 @@ private:
 	Axis* axis;
 	Sphere* planet;
 	Sphere* moon;
+
+	Lightsource lightsource = L_POINT;
+	Shading shading = FLAT;
 
 	void drawPlanetOne();
 	void drawPlanetOneMoons();

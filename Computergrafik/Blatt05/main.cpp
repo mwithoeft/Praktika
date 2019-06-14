@@ -47,7 +47,8 @@ bool init()
   glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
   
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
+  glDepthFunc(GL_LEQUAL);
+  //glEnable(GL_CULL_FACE);
   
   // Construct view matrix.
   
@@ -150,6 +151,12 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  sunSystem->toggleWireframe();
 	  init();
 	  glutDisplay();
+	  break;
+  case 'l':
+	  sunSystem->toggleLightsource();
+	  break;
+  case 'k':
+	  sunSystem->toggleShading();
 	  break;
   case '+':
 	  sunSystem->scaleUp();

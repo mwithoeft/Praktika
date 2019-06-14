@@ -7,7 +7,7 @@ public:
 	Axis(cg::GLSLProgram* prog);
 	~Axis();
 	void init();
-	void draw(glm::mat4x4 mvp);
+	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
 
 private:
 	cg::GLSLProgram* program;

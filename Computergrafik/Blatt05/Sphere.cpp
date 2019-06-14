@@ -1,10 +1,11 @@
 #include "header/Sphere.h"
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
-Sphere::Sphere(cg::GLSLProgram* prog) : program(prog) {}
-
-Sphere::Sphere(cg::GLSLProgram* prog, int s, int r) : program(prog), stacks(s),	radius(r) {}
+Sphere::Sphere(cg::GLSLProgram* prog, int s, int r) : program(prog), stacks(s),	radius(r) {
+	//initShader();
+}
 
 Sphere::~Sphere()
 {
@@ -13,6 +14,22 @@ Sphere::~Sphere()
 	glDeleteBuffers(1, &colorBuffer);
 	glDeleteBuffers(1, &positionBuffer);
 	glDeleteBuffers(1, &normalBuffer);
+}
+
+void Sphere::initShader() {
+	/* Hier muss noch umgeschaltet werden. Eventuell auch nicht aus dem Konstruktor aufrufen, wegen umschalten*/
+	
+	initShader(*program, "shader/shadedGouraud.vert", "shader/shadedGouraud.frag");
+	initShader(*program, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
+
+	program->use();
+	program->setUniform("light", glm::vec3(0, 0, 0));
+	program->setUniform("lightI", float(1.0f));
+	program->setUniform("surfKa", glm::vec3(0.1f, 0.1f, 0.1f));
+	program->setUniform("surfKd", glm::vec3(0.8f, 0.1f, 0.1f));
+	program->setUniform("surfKs", glm::vec3(1, 1, 1));
+	program->setUniform("surfShininess", float(8.0f));
+
 }
 
 
@@ -173,9 +190,25 @@ void Sphere::init() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexCount * sizeof(GLuint), indices2.data(), GL_STATIC_DRAW);
 }
 
-void Sphere::draw(glm::mat4x4 mvp) {
+void Sphere::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
+	
+	glm::mat4 mv = view * model;
+	// Create mvp.
+	glm::mat4 mvp = projection * mv;
+
+	// Create normal matrix (nm) from model matrix.
+	glm::mat3 nm = glm::inverseTranspose(glm::mat3(model));
+	
 	program->use();
+
+	/* Dieses kann weg, wenn der Shader importiert ist */
 	program->setUniform("mvp", mvp);
+
+	/* Hier wird in der Konsole noch ein Fehler ausgegeben, weil die Uniform nicht gefunden wurde, weil der Shader noch nicht drin ist*/
+	program->setUniform("modelviewMatrix", mv);
+	program->setUniform("projectionMatrix", projection);
+	program->setUniform("normalMatrix", nm);
+
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	glBindVertexArray(vao);
@@ -448,3 +481,19 @@ glm::vec3 Sphere::computeNormal (glm::vec3 const& a, glm::vec3 const& b, glm::ve
 	return glm::normalize(glm::cross(c - a, b - a));
 }
 
+void Sphere::initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag) {
+	if (!program.compileShaderFromFile(vert.c_str(), cg::GLSLShader::VERTEX))
+	{
+		throw std::runtime_error("COMPILE VERTEX: " + program.log());
+	}
+
+	if (!program.compileShaderFromFile(frag.c_str(), cg::GLSLShader::FRAGMENT))
+	{
+		throw std::runtime_error("COMPILE FRAGMENT: " + program.log());
+	}
+
+	if (!program.link())
+	{
+		throw std::runtime_error("LINK: " + program.log());
+	}
+}

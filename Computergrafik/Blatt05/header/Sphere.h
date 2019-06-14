@@ -4,14 +4,14 @@
 
 enum Color { RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
 
+
 class Sphere {
 
 public:
-	Sphere(cg::GLSLProgram* prog);
 	Sphere(cg::GLSLProgram* prog, int s, int r);
 	~Sphere();
 	void init();
-	void draw(glm::mat4x4 mvp);
+	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
 
 	int getAngleX();
 	int getAngleY();
@@ -53,6 +53,7 @@ private :
 
 	GLuint indexCount;
 
+
 	const float PI = 3.141592653589793;
 
 	int stacks = 0;
@@ -87,8 +88,9 @@ private :
 	void rotateSphereZ();
 
 	void buildNormalVector();
-
 	void calcPoints();
+	void initShader();
+	void initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag);
 
 	int sumVerticesForN(int n);
 	int sumVerticesForNUntil(int n, int limit);
