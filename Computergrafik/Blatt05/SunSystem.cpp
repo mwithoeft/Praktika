@@ -3,14 +3,15 @@
 #include <GL/freeglut.h>
 #include <glm/gtc/constants.hpp>
 
-SunSystem::SunSystem(cg::GLSLProgram* prog)
+SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	: program(prog),
+	programShaded(shProg),
 	model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(prog, planetStacks, 100);
+	sun = new Sphere(prog, shProg, planetStacks, 100);
 	axis = new Axis(prog);
-	planet = new Sphere(prog, planetStacks, 50);
-	moon = new Sphere(prog, planetStacks, 25);
+	planet = new Sphere(prog, shProg, planetStacks, 50);
+	moon = new Sphere(prog, shProg, planetStacks, 25);
 
 }
 SunSystem::~SunSystem()
@@ -22,14 +23,20 @@ SunSystem::~SunSystem()
 }
 
 void SunSystem::init() {
+	//sun->setColor(YELLOW);
 	sun->init();
-	axis->init();
-	planet->setColor(GREEN);
+
+	//planet->setColor(GREEN);
 	planet->init();
 
-	moon->setColor(WHITE);
+	//moon->setColor(WHITE);
 	moon->init();
-
+	
+	axis->init();
+	
+	sun->setLightVector(lights[lightsource]);
+	planet->setLightVector(lights[lightsource]);
+	moon->setLightVector(lights[lightsource]);
 }
 void SunSystem::draw() {
 	/* Monde drehen sich doppelt so schnell, um den Unterschied zu sehen */
@@ -65,6 +72,7 @@ void SunSystem::draw() {
 	matrixStack.push(model);
 	rad = rotationAngle * (PI / 180);
 	model = glm::rotate(model, direction * rad, yAxis);
+
 	drawPlanetOne();
 	drawPlanetTwo();
 	model = matrixStack.top();
@@ -254,12 +262,11 @@ void SunSystem::toggleLightsource() {
 	} else {
 		lightsource = L_POINT;
 	}
+	init();
 }
 
 void SunSystem::toggleShading() {
-	if (shading == FLAT) {
-		shading == GOURAUD;
-	} else {
-		shading = FLAT;
-	}
+	sun->toggleShading();
+	planet->toggleShading();
+	moon->toggleShading();
 }

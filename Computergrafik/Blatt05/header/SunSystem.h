@@ -6,11 +6,10 @@
 
 enum Direction {LEFT = -1, RIGHT = 1};
 enum Lightsource { L_POINT, L_DIRECTION };
-enum Shading { FLAT, GOURAUD };
 
 class SunSystem {
 public:
-	SunSystem(cg::GLSLProgram* prog);
+	SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg);
 	~SunSystem();
 	void init();
 	void draw();
@@ -35,7 +34,7 @@ public:
 
 private:
 	std::stack <glm::mat4x4> matrixStack;
-
+	cg::GLSLProgram* programShaded;
 	cg::GLSLProgram* program;
 
 	glm::mat4x4 view;
@@ -48,7 +47,6 @@ private:
 	Sphere* moon;
 
 	Lightsource lightsource = L_POINT;
-	Shading shading = FLAT;
 
 	void drawPlanetOne();
 	void drawPlanetOneMoons();
@@ -79,5 +77,10 @@ private:
 	Direction direction = RIGHT;
 
 	float scale = 1.0f;
+	unsigned int lightIndex = 0;
+	glm::vec4 lights[2] = {
+	{ 0.0f,  0.0f, 0.0f, 1.0f },
+	{ 0.0f, -1.0f, 0.0f, 0.0f }
+	};
 
 };
