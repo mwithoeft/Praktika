@@ -21,8 +21,8 @@ void deleteJob(Job *job);
 
 char *getFullPath(const char *base, const char *name);
 char *get_file_content(const char *filename);
-
-
+void getFile(void *arguments);
+void cmprFile(Job *job);
 
 #endif
 

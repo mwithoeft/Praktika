@@ -32,7 +32,7 @@ void *readerThread(void *arguments) {
         }
         job->path = strdup(fullPath);
         job->content = get_file_content(fullPath);
-
+	
 
 
         /* Sperre holen */
@@ -62,14 +62,16 @@ void *readerThread(void *arguments) {
 
     }
 
-    /* Nur zum Testen Anfang */
+    /* Nur zum Testen Anfang*/
     while (!queue_empty(queue->queue)) {
-        Job *test = queue_head(queue->queue);
+	printf("in der test while\n");
+	getFile(arguments);
+ /*       Job *test = queue_head(queue->queue);
         printf("%s\n", test->path);
-        queue_delete(queue->queue);
+        queue_delete(queue->queue);*/
     }
-    /* Nur zum Testen Ende */
-
+    /*Nur zum Testen Ende */
+	sleep(1);
 }
 
 
@@ -146,3 +148,75 @@ char *get_file_content(const char *filename) {
     return buffer;
 }
 
+void getFile(void *arguments){
+	printf("in der Funktion getFile\n");
+	ReaderArgs *args = (ReaderArgs *) arguments;
+	MutexQueue *queue = args->queue;
+
+	int haveJob = 0;
+	Job *job;
+	//Solange bis ein Job aus der Que geholt wurde
+	while(!haveJob){
+		
+		//Que sperren
+		if(pthread_mutex_lock(queue->mutex)){
+			perror("Queue konnten icht gesperrt werden");
+			return;
+		}
+	
+		//Wenn die Que nicht leer ist
+		job = (Job*) queue_head(queue->queue);
+
+		haveJob = 1;
+		if(job == 0){
+			haveJob = 0;
+		}else{
+			if(!queue_delete(queue->queue)){
+				perror("Element konnte nicht aus Queue entfernt werden");
+			}
+		}
+
+		//Sperre Aufheben
+		if(pthread_mutex_unlock(queue->mutex)){
+			perror("Fehler beim Entsperren der Queue");
+			return;
+		}
+	}
+	cmprFile(job);
+	sleep(3);
+}
+void cmprFile(Job *job){
+
+	//Komprimiere den inhalt der datei
+	Result *result;
+	if(job->content != NULL){
+		result = compress_string(job->content);
+	}else{
+		printf("Datei hat keinen inhalt\n");
+		return;
+	}
+	
+	if(result == NULL){
+		perror("Fehler bei der Komprimierung");
+		return;
+	}
+	printf("Die Date %s mit einer groesse von %d Bytes wurde komprimiert und hat jetzt eine groesse von %d Bytes\n", job->path, strlen(job->content), result->length );
+	
+	//Erstelle eine Datei mit der endung .compr
+	char *fileEnd = ".compr";
+	char *fileName = malloc(strlen(job->path) + strlen(fileEnd));
+	printf("path: %s endung: %s\n",job->path, fileEnd);
+	sprintf(fileName, "%s%s", job->path, fileEnd);
+
+	//strcpy(fileName, job->path);
+	//strcpy(fileName, fileEnd);
+	
+	printf("File:%s\n", fileName);
+	FILE *fp = fopen(fileName,"w");
+	
+	//Schreibe die kompremierung in die datei
+	fwrite(result->data, sizeof(char), sizeof(result->data), fp);
+	free(result->data);
+	free(result);
+	fclose(fp);
+}
