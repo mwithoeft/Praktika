@@ -5,10 +5,11 @@
 #include "Axis.h"
 
 enum Direction {LEFT = -1, RIGHT = 1};
+enum Lightsource { L_POINT, L_DIRECTION };
 
 class SunSystem {
 public:
-	SunSystem(cg::GLSLProgram* prog);
+	SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg);
 	~SunSystem();
 	void init();
 	void draw();
@@ -26,12 +27,14 @@ public:
 	void toggleSunRotation();
 	void toggleNormals();
 	void toggleWireframe();
+	void toggleLightsource();
+	void toggleShading();
 	void scaleUp();
 	void scaleDown();
 
 private:
 	std::stack <glm::mat4x4> matrixStack;
-
+	cg::GLSLProgram* programShaded;
 	cg::GLSLProgram* program;
 
 	glm::mat4x4 view;
@@ -42,6 +45,8 @@ private:
 	Axis* axis;
 	Sphere* planet;
 	Sphere* moon;
+
+	Lightsource lightsource = L_POINT;
 
 	void drawPlanetOne();
 	void drawPlanetOneMoons();
@@ -72,5 +77,10 @@ private:
 	Direction direction = RIGHT;
 
 	float scale = 1.0f;
+	unsigned int lightIndex = 0;
+	glm::vec4 lights[2] = {
+	{ 0.0f,  0.0f, 0.0f, 1.0f },
+	{ 0.0f, -1.0f, 0.0f, 0.0f }
+	};
 
 };

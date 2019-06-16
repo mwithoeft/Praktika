@@ -3,14 +3,15 @@
 #include <GL/freeglut.h>
 #include <glm/gtc/constants.hpp>
 
-SunSystem::SunSystem(cg::GLSLProgram* prog)
+SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	: program(prog),
+	programShaded(shProg),
 	model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(prog, planetStacks, 100);
+	sun = new Sphere(prog, shProg, planetStacks, 100);
 	axis = new Axis(prog);
-	planet = new Sphere(prog, planetStacks, 50);
-	moon = new Sphere(prog, planetStacks, 25);
+	planet = new Sphere(prog, shProg, planetStacks, 50);
+	moon = new Sphere(prog, shProg, planetStacks, 25);
 
 }
 SunSystem::~SunSystem()
@@ -22,14 +23,20 @@ SunSystem::~SunSystem()
 }
 
 void SunSystem::init() {
+	//sun->setColor(YELLOW);
 	sun->init();
-	axis->init();
-	planet->setColor(GREEN);
+
+	//planet->setColor(GREEN);
 	planet->init();
 
-	moon->setColor(WHITE);
+	//moon->setColor(WHITE);
 	moon->init();
-
+	
+	axis->init();
+	
+	sun->setLightVector(lights[lightsource]);
+	planet->setLightVector(lights[lightsource]);
+	moon->setLightVector(lights[lightsource]);
 }
 void SunSystem::draw() {
 	/* Monde drehen sich doppelt so schnell, um den Unterschied zu sehen */
@@ -48,23 +55,24 @@ void SunSystem::draw() {
 
 	float rad = alpha * (PI / 180);
 	model = glm::rotate(model, rad, zAxis);
-	axis->draw(projection * view * model);
+	axis->draw(model, view, projection);
 
 	if (sunRotation) {
 		matrixStack.push(model);
 		rad = rotationAngle * (PI / 180);
 		model = glm::rotate(model, direction * rad, yAxis);
-		sun->draw(projection * view * model);
+		sun->draw(model, view, projection);
 		model = matrixStack.top();
 		matrixStack.pop();
 	}
 	else {
-		sun->draw(projection * view * model);
+		sun->draw(model, view, projection);
 	}
 
 	matrixStack.push(model);
 	rad = rotationAngle * (PI / 180);
 	model = glm::rotate(model, direction * rad, yAxis);
+
 	drawPlanetOne();
 	drawPlanetTwo();
 	model = matrixStack.top();
@@ -114,14 +122,14 @@ void SunSystem::drawPlanetOne() {
 	/* Zeichnen der Achse von Planet 1 */
 	matrixStack.push(model);
 	model = glm::translate(model, {3.0f, 0.0f, 0.0f});
-	axis->draw(projection * view * model);
+	axis->draw(model, view, projection);
 
 		/* Zeichen von Planet 1 mit Rotation um sich selbst */
 		matrixStack.push(model);
 		float rad = rotationAngle * (PI / 180);
 		model = glm::rotate(model, direction * rad, yAxis);
 		model = glm::translate(model, { 0.0f, planetOneLift, 0.0f });
-		planet->draw(projection * view * model);
+		planet->draw(model, view, projection);
 		model = matrixStack.top();
 		matrixStack.pop();
 		
@@ -144,7 +152,7 @@ void SunSystem::drawPlanetOneMoons() {
 		float rad = (i*90) * (PI / 180);
 		model = glm::rotate(model, direction * rad, yAxis);
 		model = glm::translate(model, { 1.0f, 0.0f, 0.0f });
-		moon->draw(projection * view * model);
+		moon->draw(model, view, projection);
 		model = matrixStack.top();
 		matrixStack.pop();
 	}
@@ -162,7 +170,7 @@ void SunSystem::drawPlanetTwo() {
 		model = glm::rotate(model, rad, zAxis);
 		rad = rotationAngle * (PI / 180) *2;
 		model = glm::rotate(model, direction * rad, yAxis);
-		planet->draw(projection * view * model);
+		planet->draw(model, view, projection);
 		model = matrixStack.top();
 		matrixStack.pop();
 
@@ -172,7 +180,7 @@ void SunSystem::drawPlanetTwo() {
 		model = glm::rotate(model, rad, zAxis);
 		rad = rotationMoonAngle * (PI / 180) *2;
 		model = glm::rotate(model, direction * rad, yAxis);
-		axis->draw(projection * view * model);
+		axis->draw(model, view, projection);
 		drawPlanetTwoMoons();
 		model = matrixStack.top();
 		matrixStack.pop();
@@ -191,7 +199,7 @@ void SunSystem::drawPlanetTwoMoons() {
 		matrixStack.push(model);
 		model = glm::translate(model, { 1.0f, 0.0f, 0.0f });
 
-		moon->draw(projection * view * model);
+		moon->draw(model, view, projection);
 
 		model = matrixStack.top();
 		matrixStack.pop();
@@ -213,7 +221,7 @@ void SunSystem::drawPlanetTwoMoons() {
 		matrixStack.push(model);
 		model = glm::translate(model, { 0.0f, 0.0f, 1.0f });
 
-		moon->draw(projection * view * model);
+		moon->draw(model, view, projection);
 
 		model = matrixStack.top();
 		matrixStack.pop();
@@ -246,4 +254,19 @@ void SunSystem::toggleWireframe() {
 	sun->renderWireframe = !sun->renderWireframe;
 	planet->renderWireframe = !planet->renderWireframe;
 	moon->renderWireframe = !moon->renderWireframe;
+}
+
+void SunSystem::toggleLightsource() {
+	if (lightsource == L_POINT) {
+		lightsource = L_DIRECTION;
+	} else {
+		lightsource = L_POINT;
+	}
+	init();
+}
+
+void SunSystem::toggleShading() {
+	sun->toggleShading();
+	planet->toggleShading();
+	moon->toggleShading();
 }

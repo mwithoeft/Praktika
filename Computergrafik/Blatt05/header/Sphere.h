@@ -3,16 +3,17 @@
 #include "Object.h"
 
 enum Color { RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
+enum Shading { FLAT, GOURAUD };
+
 
 class Sphere {
 
 public:
-	Sphere(cg::GLSLProgram* prog);
-	Sphere(cg::GLSLProgram* prog, int s, int r);
+	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r);
 	~Sphere();
 	void init();
-	void draw(glm::mat4x4 mvp);
-
+	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
+	void setLightVector(const glm::vec4& v);
 	int getAngleX();
 	int getAngleY();
 	int getAngleZ();
@@ -36,22 +37,21 @@ public:
 
 	bool renderNormals = false;
 	bool renderWireframe = false;
-
+	void toggleShading();
+	void initShader();
 
 private :
+	Shading shading = GOURAUD;
+	cg::GLSLProgram* programShaded;
 	cg::GLSLProgram* program;
 
+	Object objSphere;
 	Object objNormals;
 
 	Color color = YELLOW;
 	Color normalsColor = CYAN;
-	GLuint vao;
-	GLuint positionBuffer;
-	GLuint colorBuffer;
-	GLuint indexBuffer;
-	GLuint normalBuffer;
 
-	GLuint indexCount;
+
 
 	const float PI = 3.141592653589793;
 
@@ -87,11 +87,22 @@ private :
 	void rotateSphereZ();
 
 	void buildNormalVector();
-
 	void calcPoints();
+	
+	void initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag);
 
 	int sumVerticesForN(int n);
 	int sumVerticesForNUntil(int n, int limit);
 	int calcAmountTriangles(int n);
 	glm::vec3 computeNormal(glm::vec3 const&, glm::vec3 const&, glm::vec3 const&);
+
+	//#version 330 core
+	struct Material {
+		GLfloat ambient[4] = { 0.24, 0.19, 0.07, 1.0 };
+		GLfloat diffuse[4] = { 0.75f, 0.60f, 0.22f, 1.0f };
+		GLfloat specular[4] = { 0.62f, 0.55f, 0.36f, 1.0f };
+		GLfloat shininess = 51.2f;
+	};
+
+	Material material;
 };

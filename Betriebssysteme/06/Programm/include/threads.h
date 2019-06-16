@@ -15,14 +15,20 @@ typedef struct ReaderArgs {
     MutexQueue *queue;
 } ReaderArgs;
 
+typedef struct CompressArgs {
+    MutexQueue *queue;
+    int id;
+} CompressArgs;
 
 void *readerThread(void *arguments);
+void *compressThread(void *arguments);
 void deleteJob(Job *job);
 
 char *getFullPath(const char *base, const char *name);
 char *get_file_content(const char *filename);
 void getFile(void *arguments);
-void cmprFile(Job *job);
+void cmprFile(Job *job, int);
+char *get_filename_ext(const char *filename);
 
 #endif
 

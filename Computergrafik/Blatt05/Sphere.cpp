@@ -1,20 +1,32 @@
 #include "header/Sphere.h"
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
-Sphere::Sphere(cg::GLSLProgram* prog) : program(prog) {}
-
-Sphere::Sphere(cg::GLSLProgram* prog, int s, int r) : program(prog), stacks(s),	radius(r) {}
+Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r) : program(prog), programShaded(shProg), stacks(s),	radius(r) {
+	
+}
 
 Sphere::~Sphere()
 {
-	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &indexBuffer);
-	glDeleteBuffers(1, &colorBuffer);
-	glDeleteBuffers(1, &positionBuffer);
-	glDeleteBuffers(1, &normalBuffer);
 }
 
+void Sphere::initShader() {
+	/* Hier muss noch umgeschaltet werden. Eventuell auch nicht aus dem Konstruktor aufrufen, wegen umschalten*/
+	
+	initShader(*program, "shader/simple.vert", "shader/simple.frag");
+	initShader(*programShaded, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
+
+
+	programShaded->use();
+	programShaded->setUniform("light", glm::vec3(0, 0, 0));
+	programShaded->setUniform("lightI", float(1.0f));
+	programShaded->setUniform("surfKa", glm::vec3(0.1f, 0.1f, 0.1f));
+	programShaded->setUniform("surfKd", glm::vec3(0.8f, 0.1f, 0.1f));
+	programShaded->setUniform("surfKs", glm::vec3(1, 1, 1));
+	programShaded->setUniform("surfShininess", float(8.0f));
+
+}
 
 void Sphere::calcPoints() {
 
@@ -96,13 +108,15 @@ void Sphere::calcPoints() {
 }
 
 void Sphere::init() {
-
+	
+	initShader();
 	if (!initialized) {
 		calcPoints();
 		initialized = true;
 	}
+	buildNormalVector();
 
-	GLuint programId = program->getHandle();
+	GLuint programId = programShaded->getHandle();
 	GLuint pos;
 
 
@@ -112,41 +126,60 @@ void Sphere::init() {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
-	// Step 0: Create vertex array object.
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
 
-	// Step 1: Create vertex buffer object for position attribute and bind it to the associated "shader attribute".
-	glGenBuffers(1, &positionBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, positionBuffer);
+
+	// Vertex array object.
+	glGenVertexArrays(1, &objSphere.vao);
+	glBindVertexArray(objSphere.vao);
+
+	// Position buffer.
+	glGenBuffers(1, &objSphere.positionBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objSphere.positionBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
 
-	// Bind it to position.
 	pos = glGetAttribLocation(programId, "position");
 	glEnableVertexAttribArray(pos);
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	// Step 2: Create vertex buffer object for color attribute and bind it to...
-	glGenBuffers(1, &colorBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	//Material
+	glShadeModel(GL_SMOOTH);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, material.diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular);
+	glMaterialf(GL_FRONT, GL_SHININESS, material.shininess);
+	/* Color buffer.
+	glGenBuffers(1, &objSphere.colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objSphere.colorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
 
-	// Bind it to color.
 	pos = glGetAttribLocation(programId, "color");
 	glEnableVertexAttribArray(pos);
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	*/
+	// Index buffer.
+	objSphere.indexCount = (GLuint)indices.size();
 
-	// Step 3: Create vertex buffer object for indices. No binding needed here.
-	glGenBuffers(1, &indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &objSphere.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objSphere.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objSphere.indexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
-	// Unbind vertex array object (back to default).
-	glBindVertexArray(0);
+	// Normal buffer.
+	glGenBuffers(1, &objSphere.normalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objSphere.normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
 
-	/* Für die Normalen */
+	pos = glGetAttribLocation(programId, "normal");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	
+	// Build the normals.
+	programId = program->getHandle();
+	// Vertex array object.
 	glGenVertexArrays(1, &objNormals.vao);
 	glBindVertexArray(objNormals.vao);
+
 	// Position buffer.
 	glGenBuffers(1, &objNormals.positionBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, objNormals.positionBuffer);
@@ -173,12 +206,28 @@ void Sphere::init() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexCount * sizeof(GLuint), indices2.data(), GL_STATIC_DRAW);
 }
 
-void Sphere::draw(glm::mat4x4 mvp) {
-	program->use();
-	program->setUniform("mvp", mvp);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	glBindVertexArray(vao);
+void Sphere::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
+	
+	glm::mat4 mv = view * model;
+	// Create mvp.
+	glm::mat4 mvp = projection * mv;
+
+	// Create normal matrix (nm) from model matrix.
+	glm::mat3 nm = glm::inverseTranspose(glm::mat3(model));
+	
+	programShaded->use();
+
+	/* Dieses kann weg, wenn der Shader importiert ist */
+	//program->setUniform("mvp", mvp);
+
+	/* Hier wird in der Konsole noch ein Fehler ausgegeben, weil die Uniform nicht gefunden wurde, weil der Shader noch nicht drin ist*/
+	programShaded->setUniform("modelviewMatrix", mv);
+	programShaded->setUniform("projectionMatrix", projection);
+	programShaded->setUniform("normalMatrix", nm);
+
+	glBindVertexArray(objSphere.vao);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objSphere.indexBuffer);
+	//glBindVertexArray(objSphere.vao);
 	glDrawElements(GL_TRIANGLES, 8 * calcAmountTriangles(stacks) * 3, GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
 
@@ -193,69 +242,77 @@ void Sphere::draw(glm::mat4x4 mvp) {
 	
 }
 
-void Sphere::buildNormalVector() {
-
-	/* Berechne immer für 3 Punkte die Normale */
-	/* Alte Version für die 3 Normalen an einem Vertex */
-	//for (int i = 0; i < indices.size() ; i+=3) {
-	//	glm::vec3 p1 = vertices[indices[i]];
-	//	glm::vec3 p2 = vertices[indices[i+1]];
-	//	glm::vec3 p3 = vertices[indices[i+2]];
-
-	//	/* p2 zuerst, weil die Normalen sonst nach innen zeigen */
-	//	glm::vec3 normal = computeNormal(p2, p1, p3);
-
-	//	/* Reihenfolge wichtig */
-	//	indices2.push_back(positions2.size());
-	//	positions2.push_back(p1);
-	//	indices2.push_back(positions2.size());
-	//	positions2.push_back(p1 + normal * normalScale);
-
-	//	indices2.push_back(positions2.size());
-	//	positions2.push_back(p2);
-	//	indices2.push_back(positions2.size());
-	//	positions2.push_back(p2 + normal * normalScale);
-
-	//	indices2.push_back(positions2.size());
-	//	positions2.push_back(p3);
-	//	indices2.push_back(positions2.size());
-	//	positions2.push_back(p3 + normal * normalScale);
-
-	//	colors2.push_back(getNormalsColor());
-	//	colors2.push_back(getNormalsColor());
-	//	colors2.push_back(getNormalsColor());
-	//	colors2.push_back(getNormalsColor());
-	//	colors2.push_back(getNormalsColor());
-	//	colors2.push_back(getNormalsColor());
-	//}
-
-	/*Zeichne Normale mit Hilfe des Mittelpunkts*/
-	for (int i = 0; i < vertices.size(); i++) {
-		glm::vec3 p1 = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 p2 = vertices[i];
-		
-		glm::vec3 normal = { p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2] };
-		normal = glm::normalize(normal);
-		normals.push_back(normal);
-
-		/* Reihenfolge wichtig */
-		indices2.push_back(positions2.size());
-		positions2.push_back(p2);
-		indices2.push_back(positions2.size());
-		positions2.push_back(p2 + normal * normalScale);
-
-		colors2.push_back(getNormalsColor());
-		colors2.push_back(getNormalsColor());
-	}
-
-
-
+void Sphere::setLightVector(const glm::vec4& v)
+{
+	programShaded->use();
+	programShaded->setUniform("light", v);
 }
 
+void Sphere::buildNormalVector() {
+	if (shading) {
+		printf("\n\n\n neue Normalen\n\n\n");
+		// Zeichne Normale mit Hilfe des Mittelpunkts
+		for (int i = 0; i < vertices.size(); i++) {
+			glm::vec3 p1 = { 0.0f, 0.0f, 0.0f };
+			glm::vec3 p2 = vertices[i];
+		
+			glm::vec3 normal = { p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2] };
+			normal = glm::normalize(normal);
+			normals.push_back(normal);
+
+			// Reihenfolge wichtig //
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2 + normal * normalScale);
+
+			colors2.push_back(getNormalsColor());
+			colors2.push_back(getNormalsColor());
+		}
+
+	}
+	else {
+		printf("\n\n\n alte Normalen\n\n\n");
+		// Berechne immer für 3 Punkte die Normale 
+		// Alte Version für die 3 Normalen an einem Vertex 
+		for (int i = 0; i < indices.size(); i += 3) {
+			glm::vec3 p1 = vertices[indices[i]];
+			glm::vec3 p2 = vertices[indices[i + 1]];
+			glm::vec3 p3 = vertices[indices[i + 2]];
+
+			// p2 zuerst, weil die Normalen sonst nach innen zeigen
+			glm::vec3 normal = computeNormal(p2, p1, p3);
+
+			// Reihenfolge wichtig 
+			indices2.push_back(positions2.size());
+			positions2.push_back(p1);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p1 + normal * normalScale);
+
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2 + normal * normalScale);
+
+			indices2.push_back(positions2.size());
+			positions2.push_back(p3);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p3 + normal * normalScale);
+
+			colors2.push_back(getNormalsColor());
+			colors2.push_back(getNormalsColor());
+			colors2.push_back(getNormalsColor());
+			colors2.push_back(getNormalsColor());
+			colors2.push_back(getNormalsColor());
+			colors2.push_back(getNormalsColor());
+		}
+	}
+}
 
 void Sphere::setColor(Color c) {
 	color = c;
 }
+
 glm::vec3 Sphere::getColor() {
 	switch (color) {
 		case RED: return { 1.0f, 0.0f, 0.0f }; break;
@@ -267,9 +324,11 @@ glm::vec3 Sphere::getColor() {
 		case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
 	}
 }
+
 void Sphere::setNormalsColor(Color c) {
 	normalsColor = c;
 }
+
 glm::vec3 Sphere::getNormalsColor() {
 	switch (normalsColor) {
 	case RED: return { 1.0f, 0.0f, 0.0f }; break;
@@ -281,7 +340,6 @@ glm::vec3 Sphere::getNormalsColor() {
 	case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
 	}
 }
-
 
 /*
  * Rotate a vertice on the X axis
@@ -372,7 +430,6 @@ void Sphere::rotateSphereZ() {
 	}
 }
 
-
 /*
  * Calc the amount of triangles of one qadrant in recursive way.
  * Example returns are 1 for n=0, 4 for n=1, 9 for n=2, 16 for n=3
@@ -403,30 +460,37 @@ int Sphere::sumVerticesForNUntil(int n, int limit) {
 int Sphere::getAngleX() {
 	return xAngle;
 }
+
 int Sphere::getAngleY() {
 	return yAngle;
 }
+
 int Sphere::getAngleZ() {
 	return zAngle;
 }
+
 void Sphere::setAngleX(int angle) {
 	xAngle = angle;
 	rotateSphereX();
 	init();
 }
+
 void Sphere::setAngleY(int angle) {
 	yAngle = angle;
 	rotateSphereY();
 	init();
 }
+
 void Sphere::setAngleZ(int angle) {
 	zAngle = angle;
 	rotateSphereZ();
 	init();
 }
+
 void Sphere::setAngleChange(int angle) {
 	angleChange = angle;
 }
+
 int Sphere::getAngleChange() {
 	return angleChange;
 }
@@ -434,12 +498,15 @@ int Sphere::getAngleChange() {
 int Sphere::getStacks() {
 	return stacks;
 }
+
 void Sphere::setStacks(int s) {
 	stacks = s;
 }
+
 int Sphere::getRadius() {
 	return radius;
 }
+
 void Sphere::setRadius(int r) {
 	radius = r;
 }
@@ -448,3 +515,29 @@ glm::vec3 Sphere::computeNormal (glm::vec3 const& a, glm::vec3 const& b, glm::ve
 	return glm::normalize(glm::cross(c - a, b - a));
 }
 
+void Sphere::initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag) {
+	if (!program.compileShaderFromFile(vert.c_str(), cg::GLSLShader::VERTEX))
+	{
+		throw std::runtime_error("COMPILE VERTEX: " + program.log());
+	}
+
+	if (!program.compileShaderFromFile(frag.c_str(), cg::GLSLShader::FRAGMENT))
+	{
+		throw std::runtime_error("COMPILE FRAGMENT: " + program.log());
+	}
+
+	if (!program.link())
+	{
+		throw std::runtime_error("LINK: " + program.log());
+	}
+}
+
+void Sphere::toggleShading() {
+	if (shading == FLAT) {
+		shading = GOURAUD;
+	}
+	else {
+		shading = FLAT;
+	}
+	printf("\n\n\n\n\ntoggleShading %d\n",shading);
+}

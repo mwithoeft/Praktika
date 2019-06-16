@@ -181,6 +181,12 @@
     <ClInclude Include="header\SunSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\shaded.frag" />
+    <None Include="shader\shaded.vert" />
+    <None Include="shader\shadedGouraud.frag" />
+    <None Include="shader\shadedGouraud.vert" />
+    <None Include="shader\shadedPhong.frag" />
+    <None Include="shader\shadedPhong.vert" />
     <None Include="shader\simple.frag" />
     <None Include="shader\simple.vert" />
   </ItemGroup>

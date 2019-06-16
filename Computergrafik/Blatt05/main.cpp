@@ -21,11 +21,12 @@ const int WINDOW_HEIGHT = 480;
 int glutID = 0;
 
 cg::GLSLProgram program;
+cg::GLSLProgram programShaded;
 
 glm::mat4x4 view;
 glm::mat4x4 projection;
 
-SunSystem *sunSystem = new SunSystem(&program);
+SunSystem *sunSystem = new SunSystem(&program, &programShaded);
 
 float zNear = 0.1f;
 float zFar  = 100.0f;
@@ -47,28 +48,13 @@ bool init()
   glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
   
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
+  glDepthFunc(GL_LEQUAL);
+  //glEnable(GL_CULL_FACE);
   
   // Construct view matrix.
   
   view = glm::lookAt(eye, center, up);
   
-  // Create a shader program and set light direction.
-  if (!program.compileShaderFromFile("shader/simple.vert", cg::GLSLShader::VERTEX)) {
-    std::cerr << program.log();
-    return false;
-  }
-  
-  if (!program.compileShaderFromFile("shader/simple.frag", cg::GLSLShader::FRAGMENT)) {
-    std::cerr << program.log();
-    return false;
-  }
-  
-  if (!program.link()) {
-    std::cerr << program.log();
-    return false;
-  }
-
   // Create all objects.
   sunSystem->init();
   sunSystem->setView(view);
@@ -148,6 +134,14 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  break;
   case 'm':
 	  sunSystem->toggleWireframe();
+	  init();
+	  glutDisplay();
+	  break;
+  case 'l':
+	  sunSystem->toggleLightsource();
+	  break;
+  case 'k':
+	  sunSystem->toggleShading();
 	  init();
 	  glutDisplay();
 	  break;

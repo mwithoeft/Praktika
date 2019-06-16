@@ -51,8 +51,12 @@ void Axis::init()
 	glBindVertexArray(0);
 }
 
-void Axis::draw(glm::mat4x4 mvp)
+void Axis::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection)
 {
+	glm::mat4 mv = view * model;
+	// Create mvp.
+	glm::mat4 mvp = projection * mv;
+
 	program->use();
 	program->setUniform("mvp", mvp);
 
