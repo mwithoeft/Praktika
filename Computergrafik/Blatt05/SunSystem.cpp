@@ -8,10 +8,10 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	programShaded(shProg),
 	model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(prog, shProg, planetStacks, 100);
+	sun = new Sphere(prog, shProg, planetStacks, 100, YELLOW);
 	axis = new Axis(prog);
-	planet = new Sphere(prog, shProg, planetStacks, 50);
-	moon = new Sphere(prog, shProg, planetStacks, 25);
+	moon = new Sphere(prog, shProg, planetStacks, 25, WHITE);
+	planet = new Sphere(prog, shProg, planetStacks, 50, GREEN);
 
 }
 SunSystem::~SunSystem()
@@ -27,10 +27,10 @@ void SunSystem::init() {
 	sun->init();
 
 	//planet->setColor(GREEN);
+	moon->init();
 	planet->init();
 
-	//moon->setColor(WHITE);
-	moon->init();
+	//moon->setColor(BLUE);
 	
 	axis->init();
 	

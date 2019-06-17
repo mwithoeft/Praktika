@@ -3,7 +3,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r) : program(prog), programShaded(shProg), stacks(s),	radius(r) {
+Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r, Color c) : program(prog), programShaded(shProg), stacks(s),	radius(r) {
+	setColor(c);
+	getColor();
 	
 }
 
@@ -21,10 +23,10 @@ void Sphere::initShader() {
 	programShaded->use();
 	programShaded->setUniform("light", glm::vec3(0, 0, 0));
 	programShaded->setUniform("lightI", float(1.0f));
-	programShaded->setUniform("surfKa", glm::vec3(0.1f, 0.1f, 0.1f));
-	programShaded->setUniform("surfKd", glm::vec3(0.8f, 0.1f, 0.1f));
-	programShaded->setUniform("surfKs", glm::vec3(1, 1, 1));
-	programShaded->setUniform("surfShininess", float(8.0f));
+	programShaded->setUniform("surfKa", colorStr.surfKa);
+	programShaded->setUniform("surfKd", colorStr.surfKd);
+	programShaded->setUniform("surfKs", colorStr.surfKs);
+	programShaded->setUniform("surfShininess", colorStr.surfShininess);
 
 }
 
@@ -61,7 +63,7 @@ void Sphere::calcPoints() {
 				}
 
 				vertices.push_back(rotatedAngle);
-				colors.push_back(getColor()); // yellow
+				//colors.push_back(getColor()); // yellow
 
 				if (i != verticesCounter - 1 && j != verticesCounter - i - 1) {
 					int left = indicesOffset + sumVerticesForNUntil(verticesCounter, verticesCounter - i + 1) + j;
@@ -108,7 +110,6 @@ void Sphere::calcPoints() {
 }
 
 void Sphere::init() {
-	
 	initShader();
 	if (!initialized) {
 		calcPoints();
@@ -141,23 +142,7 @@ void Sphere::init() {
 	glEnableVertexAttribArray(pos);
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	//Material
-	glShadeModel(GL_SMOOTH);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, material.diffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular);
-	glMaterialf(GL_FRONT, GL_SHININESS, material.shininess);
-	/* Color buffer.
-	glGenBuffers(1, &objSphere.colorBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, objSphere.colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
-
-	pos = glGetAttribLocation(programId, "color");
-	glEnableVertexAttribArray(pos);
-	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	*/
+	
 	// Index buffer.
 	objSphere.indexCount = (GLuint)indices.size();
 
@@ -313,15 +298,62 @@ void Sphere::setColor(Color c) {
 	color = c;
 }
 
-glm::vec3 Sphere::getColor() {
+void Sphere::getColor() {
 	switch (color) {
-		case RED: return { 1.0f, 0.0f, 0.0f }; break;
-		case GREEN: return { 0.0f, 1.0f, 0.0f }; break;
-		case BLUE: return { 0.0f, 0.0f, 1.0f }; break;
-		case WHITE: return { 1.0f, 1.0f, 1.0f }; break;
-		case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
-		case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
-		case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
+	case RUBY:
+		colorStr.surfKa = glm::vec3{ 0.1745f, 0.01175f, 0.01175f };
+		colorStr.surfKd = glm::vec3{ 0.61424f, 0.04136f, 0.04136f };
+		colorStr.surfKs = glm::vec3{ 0.727811f, 0.626959f, 0.626959f };
+		colorStr.surfShininess = 0.6f;
+		break;
+	case EMERALD:
+		colorStr.surfKa = glm::vec3{ 0.0215f, 0.1745f, 0.0215f };
+		colorStr.surfKd = glm::vec3{ 0.07568f, 0.61424f, 0.07568f };
+		colorStr.surfKs = glm::vec3{ 0.633f, 0.727811f, 0.633f };
+		colorStr.surfShininess = 0.6f;
+		break;
+	case YELLOW:
+		colorStr.surfKa = glm::vec3{ 0.5f, 0.5f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.5f, 0.5f, 0.0f };
+		colorStr.surfKs = glm::vec3{ 0.6f, 0.6f, 0.5f };
+		colorStr.surfShininess = 0.32f;
+		break;
+	case BLUE:
+		colorStr.surfKa = glm::vec3{ 0.0f, 0.0f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.0f, 0.0f, 0.5f };
+		colorStr.surfKs = glm::vec3{ 0.6f, 0.6f, 0.7f };
+		colorStr.surfShininess = 0.25f;
+		break;
+	case GREEN:
+		colorStr.surfKa = glm::vec3{ 0.0f, 0.0f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.1f, 0.35f, 0.1f };
+		colorStr.surfKs = glm::vec3{ 0.45f, 0.55f, 0.45f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case WHITE:
+		colorStr.surfKa = glm::vec3{ 0.0f, 0.0f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.55f,0.55f,0.55f };
+		colorStr.surfKs = glm::vec3{ 0.70f,0.70f,0.70f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case CYAN:
+		colorStr.surfKa = glm::vec3{ 0.0f,0.1f,0.06f };
+		colorStr.surfKd = glm::vec3{ 0.0f,0.50980392f,0.50980392f };
+		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case MAGENTA:
+		colorStr.surfKa = glm::vec3{ 0.6f,0.0f,0.3f };
+		colorStr.surfKd = glm::vec3{ 0.50980392f,0.50980392f, 0.0f };
+		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case RED:
+		colorStr.surfKa = glm::vec3{ 0.0f,0.0f,0.06f };
+		colorStr.surfKd = glm::vec3{ 0.5f,0.0f,0.0f };
+		colorStr.surfKs = glm::vec3{ 0.7f,0.6f,0.6f };
+		colorStr.surfShininess = 32.0f;
+		break;
 	}
 }
 
