@@ -2,14 +2,16 @@
 #include "GLSLProgram.h"
 #include "Object.h"
 
-enum Color { RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
+enum Color { EMERALD, RUBY, RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
 enum Shading { FLAT, GOURAUD };
+
+
 
 
 class Sphere {
 
 public:
-	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r);
+	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r, Color c);
 	~Sphere();
 	void init();
 	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
@@ -30,7 +32,7 @@ public:
 	int getRadius();
 	void setRadius(int r);
 
-	glm::vec3 getColor();
+	void getColor();
 	void setColor(Color color);
 	glm::vec3 getNormalsColor();
 	void setNormalsColor(Color color);
@@ -96,13 +98,13 @@ private :
 	int calcAmountTriangles(int n);
 	glm::vec3 computeNormal(glm::vec3 const&, glm::vec3 const&, glm::vec3 const&);
 
-	//#version 330 core
-	struct Material {
-		GLfloat ambient[4] = { 0.24, 0.19, 0.07, 1.0 };
-		GLfloat diffuse[4] = { 0.75f, 0.60f, 0.22f, 1.0f };
-		GLfloat specular[4] = { 0.62f, 0.55f, 0.36f, 1.0f };
-		GLfloat shininess = 51.2f;
+	
+	struct ColorStr {
+		glm::vec3 surfKa;
+		glm::vec3 surfKd;
+		glm::vec3 surfKs;
+		float surfShininess;
 	};
 
-	Material material;
+	ColorStr colorStr;
 };
