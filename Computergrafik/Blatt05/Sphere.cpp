@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r) : program(prog), programShaded(shProg), stacks(s), radius(r) {
+Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong,  int s, int r): program(prog), programFlat(flat), programGouraud(gouraud), programPhong(phong), stacks(s), radius(r) {
 }
 
 Sphere::~Sphere()
@@ -12,19 +12,23 @@ Sphere::~Sphere()
 
 void Sphere::initShader() {
 	/* Hier muss noch umgeschaltet werden. Eventuell auch nicht aus dem Konstruktor aufrufen, wegen umschalten*/
-	//initShader(*program, "shader/simple.vert", "shader/simple.frag");
 	//initShader(*program, "shader/shadedGouraud.vert", "shader/shadedGouraud.frag");
-	//cg::GLSLProgram neuesProgram;
-	//programShaded = &neuesProgram;
+	initShader(*program, "shader/simple.vert", "shader/simple.frag");
 	switch (shading) {
 		case FLAT:
-			initShader(*programShaded, "shader/shadedGouraud.vert", "shader/shadedGouraud.frag");
+			initShader(*programFlat, "shader/shaded.vert", "shader/shaded.frag");
+			//initShader(*programFlat, "shader/simple.vert", "shader/simple.frag");
+			shader = programFlat;
 			break;
 		case GOURAUD:
-			initShader(*programShaded, "shader/simple.vert", "shader/simple.frag");
+			initShader(*programGouraud, "shader/shadedGouraud.vert", "shader/shadedGouraud.frag" );
+			shader = programGouraud;
+			break;
+		case PHONG:
+			initShader(*programPhong, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
+			shader = programPhong;
 			break;
 	}
-	//initMaterial();
 }
 
 void Sphere::initMaterial() {
@@ -33,13 +37,13 @@ void Sphere::initMaterial() {
 	myfile.open("LOG.txt");
 	myfile << "setzt die Farbe auf:" << color;
 	myfile.close();
-	programShaded->use();
+	shader->use();
 	//programShaded->setUniform("light", glm::vec3(0, 0, 0));
 	//programShaded->setUniform("lightI", float(1.0f));
-	programShaded->setUniform("surfKa", colorStr.surfKa);
-	programShaded->setUniform("surfKd", colorStr.surfKd);
-	programShaded->setUniform("surfKs", colorStr.surfKs);
-	programShaded->setUniform("surfShininess", colorStr.surfShininess);
+	shader->setUniform("surfKa", colorStr.surfKa);
+	shader->setUniform("surfKd", colorStr.surfKd);
+	shader->setUniform("surfKs", colorStr.surfKs);
+	shader->setUniform("surfShininess", colorStr.surfShininess);
 }
 
 void Sphere::calcPoints() {
@@ -51,7 +55,6 @@ void Sphere::calcPoints() {
 	int indicesOffset = 0;
 
 	int verticesCounter = stacks + 2;
-
 
 	for (int sphereEighth = 0; sphereEighth < 8; sphereEighth++) {
 		for (int i = 0; i < verticesCounter; i++) {
@@ -75,7 +78,7 @@ void Sphere::calcPoints() {
 				}
 
 				vertices.push_back(rotatedAngle);
-				//colors.push_back(getColor()); // yellow
+				colors.push_back(getColor(color)); // yellow
 
 				if (i != verticesCounter - 1 && j != verticesCounter - i - 1) {
 					int left = indicesOffset + sumVerticesForNUntil(verticesCounter, verticesCounter - i + 1) + j;
@@ -123,15 +126,16 @@ void Sphere::calcPoints() {
 
 void Sphere::init() {
 	initShader();
-	if (!initialized) {
+	if (shading != FLAT) {
 		initMaterial();
-	initMaterial();
+	}
+	if (!initialized) {
 		calcPoints();
 		initialized = true;
 	}
 	buildNormalVector();
 
-	GLuint programId = programShaded->getHandle();
+	GLuint programId = shader->getHandle();
 	GLuint pos;
 
 
@@ -156,13 +160,22 @@ void Sphere::init() {
 	glEnableVertexAttribArray(pos);
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	
 	// Index buffer.
 	objSphere.indexCount = (GLuint)indices.size();
 
 	glGenBuffers(1, &objSphere.indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objSphere.indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objSphere.indexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+
+	// Step 2: Create vertex buffer object for color attribute and bind it to...
+	glGenBuffers(1, &objSphere.colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objSphere.colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
+
+	// Bind it to color.
+	pos = glGetAttribLocation(programId, "color");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	// Normal buffer.
 	glGenBuffers(1, &objSphere.normalBuffer);
@@ -215,15 +228,19 @@ void Sphere::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4
 	// Create normal matrix (nm) from model matrix.
 	glm::mat3 nm = glm::inverseTranspose(glm::mat3(model));
 	
-	programShaded->use();
+	shader->use();
 
-	/* Dieses kann weg, wenn der Shader importiert ist */
-	//program->setUniform("mvp", mvp);
-
-	/* Hier wird in der Konsole noch ein Fehler ausgegeben, weil die Uniform nicht gefunden wurde, weil der Shader noch nicht drin ist*/
-	programShaded->setUniform("modelviewMatrix", mv);
-	programShaded->setUniform("projectionMatrix", projection);
-	programShaded->setUniform("normalMatrix", nm);
+	// Dieses kann weg, wenn der Shader importiert ist
+	if(shading == FLAT){
+		shader->setUniform("mvp", mvp);
+		shader->setUniform("nm", nm);
+	}
+	else {
+		/* Hier wird in der Konsole noch ein Fehler ausgegeben, weil die Uniform nicht gefunden wurde, weil der Shader noch nicht drin ist*/
+		shader->setUniform("modelviewMatrix", mv);
+		shader->setUniform("projectionMatrix", projection);
+		shader->setUniform("normalMatrix", nm);
+	}
 
 	glBindVertexArray(objSphere.vao);
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objSphere.indexBuffer);
@@ -242,32 +259,88 @@ void Sphere::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4
 	
 }
 
-void Sphere::setLightVector(const glm::vec4& v)
+void Sphere::setLightVector(const glm::vec4& eye, Lightsource lightsource)
 {
-	programShaded->use();
-	programShaded->setUniform("light", v);
-	programShaded->setUniform("lightI", float(1.0f));
-	//init();
+	shader->use();
+	if (shading == FLAT) {
+		if (lightsource) {
+			shader->setUniform("lightDirection", glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+		else {
+			shader->setUniform("lightDirection", (glm::vec3) eye);
+		}
+	}
+	else {
+		if (lightsource) {
+			shader->setUniform("light",glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+		}
+		else {
+			shader->setUniform("light", eye);
+		}
+		shader->setUniform("lightI", float(1.0f));
+	}
+
+
 }
 
 void Sphere::buildNormalVector() {
 	// Zeichne Normale mit Hilfe des Mittelpunkts
-	for (int i = 0; i < vertices.size(); i++) {
-		glm::vec3 p1 = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 p2 = vertices[i];
+	normals.clear();
+	indices2.clear();
+	positions2.clear();
+	colors2.clear();
+	if (normale) {
+		for (int i = 0; i < vertices.size(); i++) {
+			glm::vec3 p1 = { 0.0f, 0.0f, 0.0f };
+			glm::vec3 p2 = vertices[i];
 
-		glm::vec3 normal = { p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2] };
-		normal = glm::normalize(normal);
-		normals.push_back(normal);
+			glm::vec3 normal = { p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2] };
+			normal = glm::normalize(normal);
+			normals.push_back(normal);
 
-		// Reihenfolge wichtig //
-		indices2.push_back(positions2.size());
-		positions2.push_back(p2);
-		indices2.push_back(positions2.size());
-		positions2.push_back(p2 + normal * normalScale);
+			// Reihenfolge wichtig //
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2 + normal * normalScale);
 
-		colors2.push_back(getNormalsColor());
-		colors2.push_back(getNormalsColor());
+			colors2.push_back(getColor(normalsColor));
+			colors2.push_back(getColor(normalsColor));
+		}
+	}
+	else {
+
+		for (int i = 0; i < indices.size(); i += 3) {
+			glm::vec3 p1 = vertices[indices[i]];
+			glm::vec3 p2 = vertices[indices[i+1]];
+			glm::vec3 p3 = vertices[indices[i+2]];
+
+			/* p2 zuerst, weil die Normalen sonst nach innen zeigen */
+			glm::vec3 normal = computeNormal(p2, p1, p3);
+
+			/* Reihenfolge wichtig */
+			indices2.push_back(positions2.size());
+			positions2.push_back(p1);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p1 + normal * normalScale);
+
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p2 + normal * normalScale);
+
+			indices2.push_back(positions2.size());
+			positions2.push_back(p3);
+			indices2.push_back(positions2.size());
+			positions2.push_back(p3 + normal * normalScale);
+
+			colors2.push_back(getColor(normalsColor));
+			colors2.push_back(getColor(normalsColor));
+			colors2.push_back(getColor(normalsColor));
+			colors2.push_back(getColor(normalsColor));
+			colors2.push_back(getColor(normalsColor));
+			colors2.push_back(getColor(normalsColor));
+			}
 	}
 }
 
@@ -338,8 +411,9 @@ void Sphere::setNormalsColor(Color c) {
 	normalsColor = c;
 }
 
-glm::vec3 Sphere::getNormalsColor() {
-	switch (normalsColor) {
+glm::vec3 Sphere::getColor(Color c) {
+	switch (c) {
+	case EMERALD: return { 0.0f, 1.0f, 0.0f }; break;
 	case RED: return { 1.0f, 0.0f, 0.0f }; break;
 	case GREEN: return { 0.0f, 1.0f, 0.0f }; break;
 	case BLUE: return { 0.0f, 0.0f, 1.0f }; break;
@@ -347,6 +421,7 @@ glm::vec3 Sphere::getNormalsColor() {
 	case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
 	case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
 	case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
+
 	}
 }
 
@@ -545,8 +620,14 @@ void Sphere::toggleShading() {
 	if (shading == FLAT) {
 		shading = GOURAUD;
 	}
+	else if (shading == GOURAUD) {
+		shading = PHONG;
+	}
 	else {
 		shading = FLAT;
 	}
 	std::ofstream myfile;
+}
+void Sphere::toggleNormal() {
+	normale = !normale;
 }

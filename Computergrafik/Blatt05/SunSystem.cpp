@@ -6,10 +6,10 @@
 SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	:model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(&sunProgram, &sunProgramShaded, planetStacks, 100);
+	sun = new Sphere(&program , &sunProgram, &sunProgramShaded, &sunProgramPhong, planetStacks, 100);
 	axis = new Axis(&program);
-	moon = new Sphere(&moonProgram, &moonProgramShaded, planetStacks, 25);
-	planet = new Sphere(&planetProgram, &planetProgramShaded, planetStacks, 50);
+	moon = new Sphere(&program , &moonProgram, &moonProgramShaded, &moonProgramPhong, planetStacks, 25);
+	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, planetStacks, 50);
 
 }
 SunSystem::~SunSystem()
@@ -20,7 +20,7 @@ SunSystem::~SunSystem()
 	delete moon;
 }
 
-void SunSystem::init() {
+void SunSystem::init(glm::vec3 eye) {
 	sun->setColor(YELLOW);
 	sun->init();
 	planet->setColor(EMERALD);
@@ -29,10 +29,10 @@ void SunSystem::init() {
 	moon->init();
 	
 	axis->init();
-	
-	sun->setLightVector(lights[lightsource]);
-	planet->setLightVector(lights[lightsource]);
-	moon->setLightVector(lights[lightsource]);
+	glm::vec4 eyeVec4 = glm::vec4(eye[0], eye[1], eye[2], 1.0f);
+	sun->setLightVector(eyeVec4, lightsource);
+	planet->setLightVector(eyeVec4, lightsource);
+	moon->setLightVector(eyeVec4, lightsource);
 }
 void SunSystem::draw() {
 	/* Monde drehen sich doppelt so schnell, um den Unterschied zu sehen */
@@ -264,4 +264,9 @@ void SunSystem::toggleShading() {
 	sun->toggleShading();
 	planet->toggleShading();
 	moon->toggleShading();
+}
+void SunSystem::toggleNormalMode() {
+	sun->toggleNormal();
+	planet->toggleNormal();
+	moon->toggleNormal();
 }

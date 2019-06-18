@@ -2,8 +2,11 @@
 #include "GLSLProgram.h"
 #include "Object.h"
 
+
+
 enum Color { EMERALD, RUBY, RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
-enum Shading { FLAT, GOURAUD };
+enum Shading { FLAT, GOURAUD, PHONG};
+enum Lightsource { L_POINT, L_DIRECTION };
 
 
 
@@ -11,12 +14,12 @@ enum Shading { FLAT, GOURAUD };
 class Sphere {
 
 public:
-	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r);
+	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, int s, int r);
 	~Sphere();
 	void init();
 	void initMaterial();
 	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
-	void setLightVector(const glm::vec4& v);
+	void setLightVector(const glm::vec4& v, Lightsource lightsource);
 	int getAngleX();
 	int getAngleY();
 	int getAngleZ();
@@ -35,17 +38,22 @@ public:
 
 	void getColor();
 	void setColor(Color color);
-	glm::vec3 getNormalsColor();
+	glm::vec3 getColor(Color c);
 	void setNormalsColor(Color color);
 
 	bool renderNormals = false;
 	bool renderWireframe = false;
 	void toggleShading();
 	void initShader();
+	void toggleNormal();
 
 private :
 	cg::GLSLProgram *program;
-	cg::GLSLProgram *programShaded;
+	cg::GLSLProgram *shader;
+	cg::GLSLProgram *programFlat;
+	cg::GLSLProgram *programGouraud;
+	cg::GLSLProgram *programPhong;
+
 	//Shading shading = GOURAUD;
 	Shading shading = FLAT;
 
@@ -55,7 +63,7 @@ private :
 	Color color = YELLOW;
 	Color normalsColor = CYAN;
 
-
+	bool normale = true;
 
 	const float PI = 3.141592653589793;
 
