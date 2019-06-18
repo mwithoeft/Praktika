@@ -11,6 +11,7 @@ Axis::~Axis() {
 
 void Axis::init()
 {
+	initShader(*program, "shader/simple.vert", "shader/simple.frag");
 	std::vector<glm::vec3> vertices = { {0.0f, yP1, 0.0f}, { 0.0f, yP2, 0.0f } };
 	std::vector<glm::vec3> colors = { { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } };
 	std::vector<GLushort> indices = { 0, 1 };
@@ -53,6 +54,7 @@ void Axis::init()
 
 void Axis::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection)
 {
+	
 	glm::mat4 mv = view * model;
 	// Create mvp.
 	glm::mat4 mvp = projection * mv;
@@ -67,4 +69,20 @@ void Axis::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 	glDrawElements(GL_LINES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
+}
+void Axis::initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag) {
+	if (!program.compileShaderFromFile(vert.c_str(), cg::GLSLShader::VERTEX))
+	{
+		throw std::runtime_error("COMPILE VERTEX: " + program.log());
+	}
+
+	if (!program.compileShaderFromFile(frag.c_str(), cg::GLSLShader::FRAGMENT))
+	{
+		throw std::runtime_error("COMPILE FRAGMENT: " + program.log());
+	}
+
+	if (!program.link())
+	{
+		throw std::runtime_error("LINK: " + program.log());
+	}
 }

@@ -34,8 +34,13 @@ public:
 
 private:
 	std::stack <glm::mat4x4> matrixStack;
-	cg::GLSLProgram* programShaded;
-	cg::GLSLProgram* program;
+	cg::GLSLProgram sunProgramShaded;
+	cg::GLSLProgram planetProgramShaded;
+	cg::GLSLProgram moonProgramShaded;
+	cg::GLSLProgram program;
+	cg::GLSLProgram sunProgram;
+	cg::GLSLProgram planetProgram;
+	cg::GLSLProgram moonProgram;
 
 	glm::mat4x4 view;
 	glm::mat4x4 projection;

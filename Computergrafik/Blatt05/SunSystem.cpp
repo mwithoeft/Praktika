@@ -4,14 +4,12 @@
 #include <glm/gtc/constants.hpp>
 
 SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
-	: program(prog),
-	programShaded(shProg),
-	model(glm::mat4x4(1.0f))
+	:model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(prog, shProg, planetStacks, 100, YELLOW);
-	axis = new Axis(prog);
-	moon = new Sphere(prog, shProg, planetStacks, 25, WHITE);
-	planet = new Sphere(prog, shProg, planetStacks, 50, GREEN);
+	sun = new Sphere(&sunProgram, &sunProgramShaded, planetStacks, 100);
+	axis = new Axis(&program);
+	moon = new Sphere(&moonProgram, &moonProgramShaded, planetStacks, 25);
+	planet = new Sphere(&planetProgram, &planetProgramShaded, planetStacks, 50);
 
 }
 SunSystem::~SunSystem()
@@ -23,14 +21,12 @@ SunSystem::~SunSystem()
 }
 
 void SunSystem::init() {
-	//sun->setColor(YELLOW);
+	sun->setColor(YELLOW);
 	sun->init();
-
-	//planet->setColor(GREEN);
-	moon->init();
+	planet->setColor(EMERALD);
 	planet->init();
-
-	//moon->setColor(BLUE);
+	moon->setColor(WHITE);
+	moon->init();
 	
 	axis->init();
 	
@@ -262,7 +258,6 @@ void SunSystem::toggleLightsource() {
 	} else {
 		lightsource = L_POINT;
 	}
-	init();
 }
 
 void SunSystem::toggleShading() {

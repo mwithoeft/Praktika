@@ -11,9 +11,10 @@ enum Shading { FLAT, GOURAUD };
 class Sphere {
 
 public:
-	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r, Color c);
+	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* shProg, int s, int r);
 	~Sphere();
 	void init();
+	void initMaterial();
 	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
 	void setLightVector(const glm::vec4& v);
 	int getAngleX();
@@ -43,9 +44,10 @@ public:
 	void initShader();
 
 private :
-	Shading shading = GOURAUD;
-	cg::GLSLProgram* programShaded;
-	cg::GLSLProgram* program;
+	cg::GLSLProgram *program;
+	cg::GLSLProgram *programShaded;
+	//Shading shading = GOURAUD;
+	Shading shading = FLAT;
 
 	Object objSphere;
 	Object objNormals;

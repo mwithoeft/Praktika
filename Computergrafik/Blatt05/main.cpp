@@ -134,16 +134,13 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  break;
   case 'm':
 	  sunSystem->toggleWireframe();
-	  init();
-	  glutDisplay();
+	  
 	  break;
   case 'l':
 	  sunSystem->toggleLightsource();
 	  break;
   case 'k':
 	  sunSystem->toggleShading();
-	  init();
-	  glutDisplay();
 	  break;
   case '+':
 	  sunSystem->scaleUp();
@@ -152,6 +149,8 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  sunSystem->scaleDown();
 	  break;
   }
+  init();
+  glutDisplay();
   glutPostRedisplay();
 }
 
@@ -166,8 +165,6 @@ int main(int argc, char** argv)
   glutInitWindowPosition(40,40);
   glutInit(&argc, argv);
 
-
-  
   // GLUT: Create a window and opengl context (version 4.3 core profile).
   glutInitContextVersion(4, 3);
   glutInitContextFlags  (GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
@@ -176,8 +173,6 @@ int main(int argc, char** argv)
   glutCreateWindow("Aufgabenblatt 05");
   glutID = glutGetWindow();
   
-
-
   // GLEW: Load opengl extensions
   //glewExperimental = GL_TRUE;
   if (glewInit() != GLEW_OK) {

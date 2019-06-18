@@ -19,4 +19,5 @@ private:
 
 	float yP1 = -1.5f;
 	float yP2 = 1.5f;
+	void initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag);
 };
