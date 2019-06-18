@@ -34,6 +34,4 @@ public class Project extends Project_User {
     }
     
     
-    
-    
 }

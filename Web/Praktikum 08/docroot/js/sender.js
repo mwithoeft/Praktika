@@ -5,7 +5,7 @@ class Sender {
     postInformation(url, data) {
         // Default options are marked with *
         return fetch(url, {
-            body: JSON.stringify(data), // must match 'Content-Type' header
+            body: data, // must match 'Content-Type' header
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'same-origin', // include, *omit
             headers: {

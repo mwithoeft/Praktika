@@ -6,17 +6,24 @@ window.addEventListener("load", fetchProjectById);
 window.addEventListener("load", fetchUserById);
 
 function fetchAllProjects() {
-    $.ajax({ 
-        type: "GET",
-        url: "http://localhost:8080/studboardREST/webresources/project/getMore",
-        success: function(data, textStatus, request){
-            let alleProjekte = data.allProjects;
-            console.log(alleProjekte);
-        },
-        error: function(){
-          console.log('Fehler');   
-        }
-    });
+    let storage = new Storage();
+    if (localStorage.length === 0) {
+        $.ajax({ 
+            type: "GET",
+            url: "http://localhost:8080/studboardREST/webresources/project/getMore",
+            success: function(data, textStatus, request){
+                let alleProjekte = data.allProjects;
+                console.log(alleProjekte);
+                for (let i = 0; i<alleProjekte.length; i++) {
+                    storage.writeProject(alleProjekte[i]);
+                }
+            },
+            error: function(){
+              console.log('Fehler');   
+            }
+        });
+        location.reload();
+    }
 }
 
 function fetchAllUsers() {

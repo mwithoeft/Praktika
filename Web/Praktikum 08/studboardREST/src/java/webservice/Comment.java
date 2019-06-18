@@ -26,4 +26,9 @@ public class Comment {
         return this.nutzer;
     }
     
+    @Override
+    public String toString() {
+        String s = "ID: " + id + " Kommentar: " + kommentar + " Nutzer: " + nutzer;
+        return s;
+    }
 }

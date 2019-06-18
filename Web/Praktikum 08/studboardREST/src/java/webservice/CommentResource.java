@@ -3,6 +3,8 @@ package webservice;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBException;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
@@ -70,7 +73,23 @@ public class CommentResource implements Serializable {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(String comment) {
-        System.out.println(comment);
+        ObjectMapper mapper = new ObjectMapper();
+        
+        Comment commentObj = null;
+        
+        try {
+            JsonNode jsonNode = mapper.readTree(comment);
+            int id = jsonNode.get("id").asInt();
+            String kommentar = jsonNode.get("kommentar").asText();
+            String nutzer = jsonNode.get("nutzer").asText();
+            commentObj = new Comment(id, kommentar, nutzer);
+        } catch (IOException ex) {
+            Logger.getLogger(CommentResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        System.out.println(commentObj);
+        
+
 
         Response.ResponseBuilder rb = Response.ok(comment);
 
