@@ -65,7 +65,7 @@ class Storage {
         let fetched = [];
         for (let item in items) {
             let project = this.parser.jsonToProject(items[item]);
-            if (project.projektleiter) {
+            if (project.titel) {
                 fetched.push(project);
             }
         }
