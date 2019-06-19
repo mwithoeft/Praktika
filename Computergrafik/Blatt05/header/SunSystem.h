@@ -76,7 +76,7 @@ private:
 	const int betaStepSize = 3;
 	const float planetOneLiftStep = 0.125;
 	const float speedStep = 0.05f;
-	const int planetStacks = 0;
+	const int planetStacks = 4;
 
 	bool sunRotation = false;
 

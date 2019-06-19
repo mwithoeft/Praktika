@@ -26,7 +26,7 @@ vec3 ads (vec4 Light, float LightI,
     }
     vec3 v = normalize(vec3(-Position));
     vec3 r = reflect( -s, n );
-	vec3 h = (s + n)/length(s + v);
+	vec3 h = (s + v)/length(s + v);
 
     return LightI * ( 
            Kd * max( dot(s, n), 0.0 ) +

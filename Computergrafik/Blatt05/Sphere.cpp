@@ -270,7 +270,7 @@ void Sphere::setLightVector(const glm::vec4& eye, Lightsource lightsource)
 	shader->use();
 	if (shading == FLAT) {
 		if (lightsource) {
-			shader->setUniform("lightDirection", glm::vec3(0.0f, 1.0f, 0.0f));
+			shader->setUniform("lightDirection", glm::vec3(-1.0f, 0.0f, 0.0f));
 		}
 		else {
 			shader->setUniform("lightDirection", (glm::vec3) eye);
@@ -278,7 +278,7 @@ void Sphere::setLightVector(const glm::vec4& eye, Lightsource lightsource)
 	}
 	else {
 		if (lightsource) {
-			shader->setUniform("light",glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+			shader->setUniform("light",glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
 		}
 		else {
 			shader->setUniform("light", eye);
