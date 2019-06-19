@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong,  int s, int r): program(prog), programFlat(flat), programGouraud(gouraud), programPhong(phong), stacks(s), radius(r) {
+Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong, int s, int r)
+	: program(prog), programFlat(flat), programGouraud(gouraud), programPhong(phong), programBlinnPhong(blinnphong), stacks(s), radius(r) {
 }
 
 Sphere::~Sphere()
@@ -28,6 +29,11 @@ void Sphere::initShader() {
 			initShader(*programPhong, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
 			shader = programPhong;
 			break;
+		case BLINNPHONG:
+			initShader(*programBlinnPhong, "shader/shadedBlinnPhong.vert", "shader/shadedBlinnPhong.frag");
+			shader = programBlinnPhong;
+			break;
+
 	}
 }
 
@@ -622,6 +628,9 @@ void Sphere::toggleShading() {
 	}
 	else if (shading == GOURAUD) {
 		shading = PHONG;
+	}
+	else if (shading == PHONG) {
+		shading = BLINNPHONG;
 	}
 	else {
 		shading = FLAT;

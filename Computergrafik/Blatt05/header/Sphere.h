@@ -5,7 +5,7 @@
 
 
 enum Color { EMERALD, RUBY, RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
-enum Shading { FLAT, GOURAUD, PHONG};
+enum Shading { FLAT, GOURAUD, PHONG, BLINNPHONG};
 enum Lightsource { L_POINT, L_DIRECTION };
 
 
@@ -14,7 +14,7 @@ enum Lightsource { L_POINT, L_DIRECTION };
 class Sphere {
 
 public:
-	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, int s, int r);
+	Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong, int s, int r);
 	~Sphere();
 	void init();
 	void initMaterial();
@@ -53,6 +53,7 @@ private :
 	cg::GLSLProgram *programFlat;
 	cg::GLSLProgram *programGouraud;
 	cg::GLSLProgram *programPhong;
+	cg::GLSLProgram* programBlinnPhong;
 
 	//Shading shading = GOURAUD;
 	Shading shading = FLAT;

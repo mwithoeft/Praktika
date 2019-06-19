@@ -6,10 +6,10 @@
 SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	:model(glm::mat4x4(1.0f))
 {
-	sun = new Sphere(&program , &sunProgram, &sunProgramShaded, &sunProgramPhong, planetStacks, 100);
+	sun = new Sphere(&program , &sunProgram, &sunProgramShaded, &sunProgramPhong, &sunProgramBlinnPhong, planetStacks, 100);
 	axis = new Axis(&program);
-	moon = new Sphere(&program , &moonProgram, &moonProgramShaded, &moonProgramPhong, planetStacks, 25);
-	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, planetStacks, 50);
+	moon = new Sphere(&program , &moonProgram, &moonProgramShaded, &moonProgramPhong, &moonProgramBlinnPhong, planetStacks, 25);
+	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, &planetProgramBlinnPhong, planetStacks, 50);
 
 }
 SunSystem::~SunSystem()
