@@ -3,6 +3,8 @@
 #include "GLSLProgram.h"
 #include "Sphere.h"
 #include "Axis.h"
+#include "Mesh.h"
+#include "ObjParser.h"
 
 enum Direction {LEFT = -1, RIGHT = 1};
 
@@ -50,6 +52,7 @@ private:
 	cg::GLSLProgram moonProgramPhong;
 	cg::GLSLProgram moonProgramBlinnPhong;
 
+
 	glm::mat4x4 view;
 	glm::mat4x4 projection;
 	glm::mat4x4 model;
@@ -58,6 +61,10 @@ private:
 	Axis* axis;
 	Sphere* planet;
 	Sphere* moon;
+
+	ObjParser* objParser;
+	Mesh* mesh;
+	cg::GLSLProgram meshProgram;
 
 	Lightsource lightsource = L_POINT;
 

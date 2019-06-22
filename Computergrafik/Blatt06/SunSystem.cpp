@@ -11,13 +11,20 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	moon = new Sphere(&program , &moonProgram, &moonProgramShaded, &moonProgramPhong, &moonProgramBlinnPhong, planetStacks, 25);
 	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, &planetProgramBlinnPhong, planetStacks, 50);
 
+	objParser = new ObjParser();
+	mesh = new Mesh(&meshProgram);
+	objParser->parseObj("test.obj", *mesh);
 }
+
 SunSystem::~SunSystem()
 {
 	delete sun;
 	delete axis;
 	delete planet;
 	delete moon;
+
+	delete mesh;
+	delete objParser;
 }
 
 void SunSystem::init(glm::vec3 eye) {
@@ -33,6 +40,8 @@ void SunSystem::init(glm::vec3 eye) {
 	sun->setLightVector(eyeVec4, lightsource);
 	planet->setLightVector(eyeVec4, lightsource);
 	moon->setLightVector(eyeVec4, lightsource);
+
+	mesh->makeDrawable();
 }
 void SunSystem::draw() {
 	/* Monde drehen sich doppelt so schnell, um den Unterschied zu sehen */
@@ -57,12 +66,12 @@ void SunSystem::draw() {
 		matrixStack.push(model);
 		rad = rotationAngle * (PI / 180);
 		model = glm::rotate(model, direction * rad, yAxis);
-		sun->draw(model, view, projection);
+		mesh->draw(model, view, projection);
 		model = matrixStack.top();
 		matrixStack.pop();
 	}
 	else {
-		sun->draw(model, view, projection);
+		mesh->draw(model, view, projection);
 	}
 
 	matrixStack.push(model);
