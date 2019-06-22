@@ -118,3 +118,60 @@ int writeFromBuffer(const int filedescriptor, const char* buffer, size_t nBytes)
     }
     return 0;
 }
+
+void writeFile(const int input, const int output){
+	int size = getFileSize(input);
+	char buff[size];
+	ssize_t nBytes = read(input, buff, (size_t)size);
+	
+	if(nBytes < 0){
+		char *error = "Fehler beim lesen\n";
+		write(IOERR, error, strlen(error));
+	}
+	
+	writeFromBuffer(output, buff, nBytes);
+		
+}
+
+void squeezeFile(const int input, const int output){
+	/* Buffer für die ersten 11 und die letzten 10 Characters + EOF */
+	char buffLead[SQUEEZE_LEAD];
+	char buffEnd[SQUEEZE_END + 1];
+	
+	/* Liest die ersten 11 Characters */
+	ssize_t nBytes = read(input, buffLead, (size_t)SQUEEZE_LEAD);
+	if(nBytes < 0){
+		char *error = "Fehler beim Lesen der Datei\n";
+		write(IOERR, error, strlen(error));
+		return;
+	}
+	
+	
+	/* Gehe an das Ende der Datei */
+	if (lseek(input, -SQUEEZE_END - 1, SEEK_END) < (off_t)0)
+	{
+		char *error = "Fehler beim Setzen des Dateizeigers\n";
+		write(IOERR, error, strlen(error));
+		return;
+	}
+	
+	/* Liest die letzten 10 Characters und das Ende der Datei*/
+	nBytes = read(input, buffEnd, (size_t)SQUEEZE_END+1);
+	if(nBytes < 0){
+		char *error = "Fehler beim Lesen der Datei\n";
+		write(IOERR, error, strlen(error));
+		return;
+	}
+	
+	/* Schreibt die ersten 11 Characters in die output Datei*/
+	int ret = writeFromBuffer(output, buffLead, strlen(buffLead));
+	if(ret < 0){
+		return;
+	}
+	
+	/* Schreibt die letzten 10 Characters + EOF in die output Datei*/
+	ret = writeFromBuffer(output, buffEnd, strlen(buffEnd));
+	if(ret < 0){
+		return;
+	}
+}
