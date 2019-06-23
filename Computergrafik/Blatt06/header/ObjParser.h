@@ -13,4 +13,6 @@ public:
 private:
 	std::ofstream logfile;
 
+
+	bool triangulateObj(Mesh& mesh);
 };

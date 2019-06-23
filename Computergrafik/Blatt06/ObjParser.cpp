@@ -104,4 +104,23 @@ bool ObjParser::parseObj(const std::string &path, Mesh& mesh) {
 		}
 	}
 	std::cout << "Einlesen beendet." << std::endl;
+
+	return triangulateObj(mesh);
+}
+
+bool ObjParser::triangulateObj(Mesh& mesh) {
+	//Im Grunde müssen nur die Faces im Mesh verändert werden, da man keine neuen Punkte hinzufügen muss. Dazu gehört dann auch die Indexe auf die Vertices, Normalen und, wenn dann verwendet, Texturen zu verändern
+
+	std::cout << "Beginne Triangulierung..." << std::endl;
+
+	//Referenz auf die Faces
+	std::vector<Face*>& faces = mesh.faces;
+
+	for (int i = 0; i < faces.size(); i++) {
+		Face& face = *(faces.at(i));
+		//Jetzt hat man schonmal ein Face und kann das Prüfen
+	}
+
+	std::cout << "Triangulierung beendet." << std::endl;
+
 }
