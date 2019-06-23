@@ -1,0 +1,46 @@
+{
+    "projects": [
+        {
+            "id": 0,
+            "kurzbeschreibung": "Beim StudBoard Projekt geht es um eine Website, die von Studierenden für Studierende erstellt worden ist, um ihre Projekte zu präsentieren.",
+            "langbeschreibung": "<h1>Allgemeines</h1>Beim StudBoard Projekt geht es um eine Website, die von Studierenden für Studierende erstellt worden ist, um ihre Projekte zu präsentieren. <h1>Weiteres</h1>Weiterhin können Projekte bewertet und Verbesserungsvorschläge eingereicht werden. Dieses Projekt entwickelt sich stetig weiter, sodass immer wieder neue Features hinzukommen. Das StudBoard richtet sich ausschließlich an Studierende, damit sie ihr bestmögliches Potenzial entfalten können.",
+            "ziele": [
+                "Studierende motivieren ihre Projekte zu veröffentlichen",
+                "Das größte an Potential aus jedem Entwickler herausholen"
+            ],
+            "bild": "http://localhost:8080/studfileserver/projectlogos/Projektlogo.png",
+            "titel": "StudBoard",
+            "startzeitpunkt": "2019/03/02",
+            "endzeitpunkt": "2019/07/05",
+            "projektleiter": "Florian Fehring"
+        },
+        {
+            "id": 1,
+            "kurzbeschreibung": "Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen von Häusern eine dreidimensionale Figur des Hauses zu schaffen.",
+            "langbeschreibung": "<h1>Allgemeines</h1>Beim Projekt der Geodatenverarbeitung geht es darum aus Punktwolken in Kombination mit Grundplänen von Häusern eine dreidimensionale Figur des Hauses zu schaffen. <h2>Nützliches</h2>Aus diesen Informationen werden für jedes Haus bzw. Grundstück Dateien erzeugt, die die Informationen beinhalten. <h1>Weiteres</h1>Mit diesen Informationen kann hinterher weiter gearbeitet werden. Es wird außerdem angestrebt, dass diese Funktion Bestandteil eines größeren Programms wird.",
+            "ziele": [
+                "Daten anschaulich darstellen und zur Verfügung stellen",
+                "Das größte an Potential aus jedem Entwickler herausholen"
+            ],
+            "bild": "http://localhost:8080/studfileserver/projectlogos/Projektlogo.png",
+            "titel": "Geodatenverarbeitung",
+            "startzeitpunkt": "2019/04/07",
+            "endzeitpunkt": "2019/07/03",
+            "projektleiter": "Justin Drögemeier"
+        },
+        {
+            "id": 2,
+            "kurzbeschreibung": "Test",
+            "langbeschreibung": "Test",
+            "ziele": [
+                "Test",
+                "Test"
+            ],
+            "bild": "http://localhost:8080/studfileserver/projectlogos/Projektlogo.png",
+            "titel": "Test",
+            "startzeitpunkt": "2019/03/31",
+            "endzeitpunkt": "2019/04/03",
+            "projektleiter": "Justin Drögemeier"
+        }
+    ]
+}

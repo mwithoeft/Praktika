@@ -38,15 +38,17 @@ private:
 	cg::GLSLProgram sunProgram;
 	cg::GLSLProgram sunProgramShaded;
 	cg::GLSLProgram sunProgramPhong;
+	cg::GLSLProgram sunProgramBlinnPhong;
 
 	cg::GLSLProgram planetProgram;
 	cg::GLSLProgram planetProgramShaded;
 	cg::GLSLProgram planetProgramPhong;
+	cg::GLSLProgram planetProgramBlinnPhong;
 
 	cg::GLSLProgram moonProgram;
 	cg::GLSLProgram moonProgramShaded;
 	cg::GLSLProgram moonProgramPhong;
-
+	cg::GLSLProgram moonProgramBlinnPhong;
 
 	glm::mat4x4 view;
 	glm::mat4x4 projection;
@@ -74,7 +76,7 @@ private:
 	const int betaStepSize = 3;
 	const float planetOneLiftStep = 0.125;
 	const float speedStep = 0.05f;
-	const int planetStacks = 0;
+	const int planetStacks = 4;
 
 	bool sunRotation = false;
 
