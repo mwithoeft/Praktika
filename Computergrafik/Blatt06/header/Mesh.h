@@ -25,7 +25,9 @@ public:
 	std::vector<Vertex*> vertices;
 	std::vector<Face*> faces;
 	std::vector<glm::vec3> normals;
-	std::vector<glm::vec2> vt;
+	std::vector<glm::vec2> textures;
+
+
 
 	void makeDrawable(); //Quasi das, was vorher das Init war
 	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);

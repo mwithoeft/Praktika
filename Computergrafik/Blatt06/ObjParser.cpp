@@ -45,7 +45,7 @@ bool ObjParser::parseObj(const std::string &path, Mesh& mesh) {
 		else if (Name == "vt") {// Textur
 			glm::vec2 vt;
 			sscanf_s(Line.c_str(), "%*s %f %f", &vt.x, &vt.y);
-			mesh.vt.push_back(vt);
+			mesh.textures.push_back(vt);
 			logfile << "Textur eingelesen: " << vt.x << " " << vt.y << std::endl;
 		}
 
