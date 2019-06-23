@@ -10,13 +10,14 @@ Mesh::~Mesh(){
 			vertices.at(i) = nullptr;
 		}
 	}
+	vertices.clear();
 
 	for (int i = 0; i < faces.size(); i++) {
 		if (faces.at(i)) {
 			delete faces.at(i);
-			faces.at(i) = nullptr;
 		}
 	}
+	faces.clear();
 }
 
 
@@ -28,13 +29,13 @@ void Mesh::makeDrawable() {
 	for (int i = 0; i < vertices.size(); i++) {
 		drawVertices.push_back(vertices.at(i)->position);
 		drawColors.push_back({ 1.0f, 1.0f, 0.0f }); //Testfarbe
-		std::cout << "V: " << vertices.at(i)->position[0] << " " << vertices.at(i)->position[1] << " " << vertices.at(i)->position[2] << std::endl;
+		//Debug: std::cout << "V: " << vertices.at(i)->position[0] << " " << vertices.at(i)->position[1] << " " << vertices.at(i)->position[2] << std::endl;
 	}
 	//Funktioniert nur unter der Vorraussetzung, dass jedes Face bereits trianguliert wurde
 	for (int i = 0; i < faces.size(); i++) {
 		for (int j = 0; j < faces.at(i)->v.size(); j++) {
 			drawIndices.push_back(faces.at(i)->v[j]-1);
-			std::cout << "I: " << faces.at(i)->v[j] - 1 << std::endl;
+			//Debug: std::cout << "I: " << faces.at(i)->v[j] - 1 << std::endl;
 		}
 	}
 
@@ -76,7 +77,75 @@ void Mesh::makeDrawable() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawIndices.size() * sizeof(GLushort), drawIndices.data(), GL_STATIC_DRAW);
 
 
-	
+	initNormals();
+}
+
+
+void Mesh::initNormals() {
+
+	normalIndices.clear();
+	normalPositions.clear();
+	normalColors.clear();
+
+	for (int i = 0; i < faces.size(); i++) {
+		for (int j = 0; j < faces.at(i)->vn.size(); j++) {
+			glm::vec3 p1 = vertices.at(faces.at(i)->v[j] - 1)->position;
+			glm::vec3 p2 = {p1 + normals[faces.at(i)->vn[j] - 1] * normalScale };
+
+			// Reihenfolge wichtig //
+			normalIndices.push_back(normalPositions.size());
+			normalPositions.push_back(p1);
+			normalIndices.push_back(normalPositions.size());
+			normalPositions.push_back(p2);
+
+			normalColors.push_back({0.0f, 1.0f, 0.0f});
+			normalColors.push_back({ 0.0f, 1.0f, 0.0f });
+		}
+	}
+
+	GLuint programId = program->getHandle();
+	GLuint pos;
+
+	// Normal buffer.
+	glGenBuffers(1, &objNormals.normalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objNormals.normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
+
+	pos = glGetAttribLocation(programId, "normal");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	//glEnableClientState(GL_COLOR_ARRAY);
+
+	// Build the normals.
+	programId = program->getHandle();
+	// Vertex array object.
+	glGenVertexArrays(1, &objNormals.vao);
+	glBindVertexArray(objNormals.vao);
+
+	// Position buffer.
+	glGenBuffers(1, &objNormals.positionBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objNormals.positionBuffer);
+	glBufferData(GL_ARRAY_BUFFER, normalPositions.size() * sizeof(glm::vec3), normalPositions.data(), GL_STATIC_DRAW);
+
+	pos = glGetAttribLocation(programId, "position");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Color buffer.
+	glGenBuffers(1, &objNormals.colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objNormals.colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, normalColors.size() * sizeof(glm::vec3), normalColors.data(), GL_STATIC_DRAW);
+
+	pos = glGetAttribLocation(programId, "color");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Index buffer.
+	objNormals.indexCount = (GLuint)normalIndices.size();
+
+	glGenBuffers(1, &objNormals.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexCount * sizeof(GLuint), normalIndices.data(), GL_STATIC_DRAW);
 }
 
 void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
@@ -92,8 +161,16 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objMesh.indexBuffer);
 	int size;
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	glDrawElements(GL_LINES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
+
+	if (renderNormals) {
+		program->use();
+		program->setUniform("mvp", mvp);
+		glBindVertexArray(objNormals.vao);
+		glDrawElements(GL_LINES, objNormals.indexCount, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
 }
 
 
