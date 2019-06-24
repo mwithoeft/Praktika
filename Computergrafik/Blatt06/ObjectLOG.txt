@@ -1,79 +1,29 @@
-Vertex eingelesen: 1 -1 -1
-Vertex eingelesen: 1 -1 1
-Vertex eingelesen: -1 -1 1
-Vertex eingelesen: -1 -1 -1
-Vertex eingelesen: 1 1 -1
-Vertex eingelesen: 0.999999 1 1
-Vertex eingelesen: -1 1 1
-Vertex eingelesen: -1 1 -1
-Textur eingelesen: 0.748573 0.750412
-Textur eingelesen: 0.749279 0.501284
-Textur eingelesen: 0.99911 0.501077
-Textur eingelesen: 0.999455 0.75038
-Textur eingelesen: 0.250471 0.500702
-Textur eingelesen: 0.249682 0.749677
-Textur eingelesen: 0.001085 0.75038
-Textur eingelesen: 0.001517 0.499994
-Textur eingelesen: 0.499422 0.500239
-Textur eingelesen: 0.500149 0.750166
-Textur eingelesen: 0.748355 0.99823
-Textur eingelesen: 0.500193 0.998728
-Textur eingelesen: 0.498993 0.250415
-Textur eingelesen: 0.748953 0.25092
-Normale eingelesen: 0 0 -1
-Normale eingelesen: -1 -0 -0
-Normale eingelesen: -0 -0 1
-Normale eingelesen: -1e-06 0 1
-Normale eingelesen: 1 -0 0
-Normale eingelesen: 1 0 1e-06
-Normale eingelesen: 0 1 -0
-Normale eingelesen: -0 -1 0
-Smoothing gropus werden aktuell ignoriert!
+Vertex eingelesen: 0 0 0
+Vertex eingelesen: 1 0 0
+Vertex eingelesen: 1 1 0
+Vertex eingelesen: 0 1 0
+Vertex eingelesen: 0.5 0.5 1.6
 Neues Face:
-FaceToken eingelesen: 5 1 1
-FaceToken eingelesen: 1 2 1
-FaceToken eingelesen: 4 3 1
+FaceToken eingelesen: 5 0 0
+FaceToken eingelesen: 2 0 0
+FaceToken eingelesen: 3 0 0
 Neues Face:
-FaceToken eingelesen: 5 1 1
-FaceToken eingelesen: 4 3 1
-FaceToken eingelesen: 8 4 1
+FaceToken eingelesen: 4 0 0
+FaceToken eingelesen: 5 0 0
+FaceToken eingelesen: 3 0 0
 Neues Face:
-FaceToken eingelesen: 3 5 2
-FaceToken eingelesen: 7 6 2
-FaceToken eingelesen: 8 7 2
+FaceToken eingelesen: 6 0 0
+FaceToken eingelesen: 3 0 0
+FaceToken eingelesen: 2 0 0
 Neues Face:
-FaceToken eingelesen: 3 5 2
-FaceToken eingelesen: 8 7 2
-FaceToken eingelesen: 4 8 2
+FaceToken eingelesen: 5 0 0
+FaceToken eingelesen: 6 0 0
+FaceToken eingelesen: 2 0 0
 Neues Face:
-FaceToken eingelesen: 2 9 3
-FaceToken eingelesen: 6 10 3
-FaceToken eingelesen: 3 5 3
+FaceToken eingelesen: 4 0 0
+FaceToken eingelesen: 6 0 0
+FaceToken eingelesen: 5 0 0
 Neues Face:
-FaceToken eingelesen: 6 10 4
-FaceToken eingelesen: 7 6 4
-FaceToken eingelesen: 3 5 4
-Neues Face:
-FaceToken eingelesen: 1 2 5
-FaceToken eingelesen: 5 1 5
-FaceToken eingelesen: 2 9 5
-Neues Face:
-FaceToken eingelesen: 5 1 6
-FaceToken eingelesen: 6 10 6
-FaceToken eingelesen: 2 9 6
-Neues Face:
-FaceToken eingelesen: 5 1 7
-FaceToken eingelesen: 8 11 7
-FaceToken eingelesen: 6 10 7
-Neues Face:
-FaceToken eingelesen: 8 11 7
-FaceToken eingelesen: 7 12 7
-FaceToken eingelesen: 6 10 7
-Neues Face:
-FaceToken eingelesen: 1 2 8
-FaceToken eingelesen: 2 9 8
-FaceToken eingelesen: 3 13 8
-Neues Face:
-FaceToken eingelesen: 1 2 8
-FaceToken eingelesen: 3 13 8
-FaceToken eingelesen: 4 14 8
+FaceToken eingelesen: 6 0 0
+FaceToken eingelesen: 4 0 0
+FaceToken eingelesen: 3 0 0

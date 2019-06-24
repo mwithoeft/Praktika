@@ -13,7 +13,7 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 
 	objParser = new ObjParser();
 	mesh = new Mesh(&meshProgram);
-	objParser->parseObj("test.obj", *mesh);
+	objParser->parseObj("pyramid.obj", *mesh);
 }
 
 SunSystem::~SunSystem()

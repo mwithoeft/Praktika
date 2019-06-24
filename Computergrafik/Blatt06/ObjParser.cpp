@@ -118,9 +118,30 @@ bool ObjParser::triangulateObj(Mesh& mesh) {
 
 	for (int i = 0; i < faces.size(); i++) {
 		Face& face = *(faces.at(i));
-		//Jetzt hat man schonmal ein Face und kann das Prüfen
+		
+		if (face.v.size() == 3) continue; //Face besteht schon aus nur 3 Punkten
+		else { //Face muss trianguliert werden
+			if (checkConvex(mesh, face)) {
+
+			}
+		}
 	}
 
 	std::cout << "Triangulierung beendet." << std::endl;
 
+	return true;
+}
+
+bool ObjParser::checkConvex(Mesh &mesh, Face& face) {
+
+	std::vector<glm::vec3> points = {};
+
+	for (int i = 0; i < face.v.size(); i++) {
+		points.push_back(mesh.vertices.at(face.v[i] - 1)->position);
+		std::cout << "Test: " << points[i].x <<" " <<  points[i].y << " " <<  points[i].z << std::endl;
+	}
+
+
+
+	return true;
 }

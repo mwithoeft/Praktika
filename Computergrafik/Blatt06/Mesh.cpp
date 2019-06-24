@@ -31,6 +31,7 @@ void Mesh::makeDrawable() {
 		drawColors.push_back({ 1.0f, 1.0f, 0.0f }); //Testfarbe
 		//Debug: std::cout << "V: " << vertices.at(i)->position[0] << " " << vertices.at(i)->position[1] << " " << vertices.at(i)->position[2] << std::endl;
 	}
+	drawColors.push_back({ 1.0f, 1.0f, 0.0f });
 	//Funktioniert nur unter der Vorraussetzung, dass jedes Face bereits trianguliert wurde
 	for (int i = 0; i < faces.size(); i++) {
 		for (int j = 0; j < faces.at(i)->v.size(); j++) {
@@ -89,8 +90,11 @@ void Mesh::initNormals() {
 
 	for (int i = 0; i < faces.size(); i++) {
 		for (int j = 0; j < faces.at(i)->vn.size(); j++) {
+			int k = (faces.at(i)->vn[j] - 1);
+			if (k <= 0) continue; // Prüfen, ob es die Normale überhaupt gibt
+
 			glm::vec3 p1 = vertices.at(faces.at(i)->v[j] - 1)->position;
-			glm::vec3 p2 = {p1 + normals[faces.at(i)->vn[j] - 1] * normalScale };
+			glm::vec3 p2 = {p1 + normals[k] * normalScale };
 
 			// Reihenfolge wichtig //
 			normalIndices.push_back(normalPositions.size());
