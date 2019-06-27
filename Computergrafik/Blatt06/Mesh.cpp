@@ -324,4 +324,12 @@ void Mesh::calcBoundingBox() {
 	boundingBox->min_x = min_x;
 	boundingBox->min_y = min_y;
 	boundingBox->min_z = min_z;
+
+	boundingBox->sizeX = max_x - min_x;
+	boundingBox->sizeY = max_y - min_y;
+	boundingBox->sizeZ = max_z - min_z;
+
+	boundingBox->centerX = (min_x + max_x) / 2;
+	boundingBox->centerY = (min_y + max_y) / 2;
+	boundingBox->centerZ = (min_z + max_z) / 2;
 }
