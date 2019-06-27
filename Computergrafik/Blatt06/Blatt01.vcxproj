@@ -166,6 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Axis.cpp" />
+    <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Colors.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
@@ -178,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Axis.h" />
+    <ClInclude Include="header\BoundingBox.h" />
     <ClInclude Include="header\Colors.h" />
     <ClInclude Include="header\Face.h" />
     <ClInclude Include="header\GLSLProgram.h" />

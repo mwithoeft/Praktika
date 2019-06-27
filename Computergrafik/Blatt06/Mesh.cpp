@@ -1,6 +1,8 @@
 #include "header/Mesh.h"
 
 Mesh::Mesh(cg::GLSLProgram* program) : program(program){
+	
+	boundingBox = new BoundingBox();
 }
 
 Mesh::~Mesh(){
@@ -18,6 +20,8 @@ Mesh::~Mesh(){
 		}
 	}
 	faces.clear();
+
+	delete boundingBox;
 }
 
 
@@ -77,8 +81,8 @@ void Mesh::makeDrawable() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objMesh.indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawIndices.size() * sizeof(GLushort), drawIndices.data(), GL_STATIC_DRAW);
 
-
 	initNormals();
+	initBoundingBox();
 }
 
 
@@ -87,8 +91,6 @@ void Mesh::initNormals() {
 	normalIndices.clear();
 	normalPositions.clear();
 	normalColors.clear();
-
-
 
 	for (int i = 0; i < faces.size(); i++) {
 		for (int j = 0; j < faces.at(i)->vn.size(); j++) {
@@ -158,6 +160,88 @@ void Mesh::initNormals() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexCount * sizeof(GLuint), normalIndices.data(), GL_STATIC_DRAW);
 }
 
+void Mesh::initBoundingBox() {
+	boundingBoxIndices.clear();
+	boundingBoxPositions.clear();
+	boundingBoxColors.clear();
+
+	//Unten
+	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->min_y, boundingBox->min_z });
+	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->min_y, boundingBox->min_z });
+	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->min_y, boundingBox->max_z });
+	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->min_y, boundingBox->max_z });
+	//Oben
+	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->max_y, boundingBox->min_z });
+	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->max_y, boundingBox->min_z });
+	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->max_y, boundingBox->max_z });
+	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->max_y, boundingBox->max_z });
+
+	boundingBoxIndices.push_back(0);
+	boundingBoxIndices.push_back(1);
+	boundingBoxIndices.push_back(3);
+	boundingBoxIndices.push_back(2);
+	boundingBoxIndices.push_back(0);
+	boundingBoxIndices.push_back(3);
+	boundingBoxIndices.push_back(1);
+	boundingBoxIndices.push_back(2);
+
+	boundingBoxIndices.push_back(0);
+	boundingBoxIndices.push_back(4);
+	boundingBoxIndices.push_back(3);
+	boundingBoxIndices.push_back(7);
+	boundingBoxIndices.push_back(1);
+	boundingBoxIndices.push_back(5);
+	boundingBoxIndices.push_back(2);
+	boundingBoxIndices.push_back(6);
+
+	boundingBoxIndices.push_back(4);
+	boundingBoxIndices.push_back(5);
+	boundingBoxIndices.push_back(7);
+	boundingBoxIndices.push_back(6);
+	boundingBoxIndices.push_back(4);
+	boundingBoxIndices.push_back(7);
+	boundingBoxIndices.push_back(5);
+	boundingBoxIndices.push_back(6);
+
+	for (int i = 0; i < 8; i++) {
+		boundingBoxColors.push_back({ 1.0f, 1.0f, 0.0f });
+	}
+
+	GLuint programId = program->getHandle();
+	GLuint pos;
+
+	// Step 0: Create vertex array object.
+	glGenVertexArrays(1, &objBoundingBox.vao);
+	glBindVertexArray(objBoundingBox.vao);
+
+	// Step 1: Create vertex buffer object for position attribute and bind it to the associated "shader attribute".
+	glGenBuffers(1, &objBoundingBox.positionBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objBoundingBox.positionBuffer);
+	glBufferData(GL_ARRAY_BUFFER, boundingBoxPositions.size() * sizeof(glm::vec3), boundingBoxPositions.data(), GL_STATIC_DRAW);
+
+	// Bind it to position.
+	pos = glGetAttribLocation(programId, "position");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Step 2: Create vertex buffer object for color attribute and bind it to...
+	glGenBuffers(1, &objBoundingBox.colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objBoundingBox.colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, boundingBoxColors.size() * sizeof(glm::vec3), boundingBoxColors.data(), GL_STATIC_DRAW);
+
+	// Bind it to color.
+	pos = glGetAttribLocation(programId, "color");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Index buffer.
+	objBoundingBox.indexCount = (GLuint)boundingBoxIndices.size();
+
+	glGenBuffers(1, &objBoundingBox.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objBoundingBox.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objBoundingBox.indexCount * sizeof(GLuint), boundingBoxIndices.data(), GL_STATIC_DRAW);
+}
+
 void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
 	glm::mat4 mv = view * model;
 	// Create mvp.
@@ -181,6 +265,15 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 		glDrawElements(GL_LINES, objNormals.indexCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
+
+	if (renderBoundingBox) {
+		program->use();
+		program->setUniform("mvp", mvp);
+		glBindVertexArray(objBoundingBox.vao);
+		glDrawElements(GL_LINES, objBoundingBox.indexCount, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+
 }
 
 
@@ -200,4 +293,35 @@ void Mesh::initShader(cg::GLSLProgram& program, const std::string& vert, const s
 	{
 		throw std::runtime_error("LINK: " + program.log());
 	}
+}
+
+void Mesh::calcBoundingBox() {
+	float max_x = -INFINITY;
+	float max_y = -INFINITY;
+	float max_z = -INFINITY;
+	float min_x = INFINITY;
+	float min_y = INFINITY;
+	float min_z = INFINITY;
+
+	std::cout << "Berechne BoundingBox..." << std::endl;
+
+	for (int i = 0; i < vertices.size(); i++) {
+		glm::vec3 p = vertices[i]->position;
+		if (p.x > max_x) max_x = p.x;
+		if (p.y > max_y) max_y = p.y;
+		if (p.z > max_z) max_z = p.z;
+
+		if (p.x < min_x) min_x = p.x;
+		if (p.y < min_y) min_y = p.y;
+		if (p.z < min_z) min_z = p.z;
+	}
+
+	std::cout << "Bounding Box berechnet." << std::endl;
+
+	boundingBox->max_x = max_x;
+	boundingBox->max_y = max_y;
+	boundingBox->max_z = max_z;
+	boundingBox->min_x = min_x;
+	boundingBox->min_y = min_y;
+	boundingBox->min_z = min_z;
 }

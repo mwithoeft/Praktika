@@ -106,6 +106,8 @@ bool ObjParser::parseObj(const std::string &path, Mesh& mesh) {
 	}
 	std::cout << "Einlesen beendet." << std::endl;
 
+	mesh.calcBoundingBox();
+
 	return triangulateObj(mesh);
 }
 

@@ -147,8 +147,8 @@ void glutKeyboard (unsigned char keycode, int x, int y)
   case '-':
 	  sunSystem->scaleDown();
 	  break;
-  case 'b': // Boundring box
-	  //sunSystem->scaleDown();
+  case 'b':
+	  sunSystem->toggleBoundingBox();
 	  break;
   case ',':
 		sunSystem->toggleMeshNormals();

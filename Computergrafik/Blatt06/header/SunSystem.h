@@ -29,6 +29,7 @@ public:
 	void toggleWireframe();
 	void toggleLightsource();
 	void toggleShading();
+	void toggleBoundingBox();
 	void scaleUp();
 	void scaleDown();
 	void toggleNormalMode();

@@ -13,7 +13,7 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 
 	objParser = new ObjParser();
 	exSun = new Mesh(&exSunProgram);
-	objParser->parseObj("lamp.obj", *exSun);
+	objParser->parseObj("Raumschiff.obj", *exSun);
 }
 
 SunSystem::~SunSystem()
@@ -285,6 +285,10 @@ void SunSystem::toggleMeshNormals() {
 	else {
 		std::cout << "Das Mesh hat keine Normalen!" << std::endl;
 	}
+}
+
+void SunSystem::toggleBoundingBox() {
+	exSun->renderBoundingBox = !exSun->renderBoundingBox;
 }
 
 void SunSystem::rotateExSunX() {
