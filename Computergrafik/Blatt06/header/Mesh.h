@@ -32,7 +32,8 @@ public:
 	void makeDrawable(); //Quasi das, was vorher das Init war
 	void draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
 
-	bool renderNormals = true;
+	bool renderNormals = false;
+	bool hasNormals = false;
 
 private:
 
@@ -49,7 +50,6 @@ private:
 	std::vector<GLuint> normalIndices;
 
 	float normalScale = 0.2f;
-
 
 	void initNormals();
 	void initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag);

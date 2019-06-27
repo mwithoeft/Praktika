@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdio>
 #include <iterator>
+#include <glm/gtx/vector_angle.hpp>
 
 ObjParser::ObjParser() {
 	logfile.open("ObjectLOG.txt");
@@ -78,18 +79,18 @@ bool ObjParser::parseObj(const std::string &path, Mesh& mesh) {
 				}
 				else if (sscanf_s(tokens[i].c_str(), "%d//%d", &v, &vn) == 2) {
 					f->v.push_back(v);
-					f->vt.push_back(0); //Nicht sicher, ob das richtig ist, wird sich später rausstellen
+					f->vt.push_back(0);
 					f->vn.push_back(vn);
 				}
 				else if (sscanf_s(tokens[i].c_str(), "%d/%d", &v, &vt) == 2) {
 					f->v.push_back(v);
 					f->vt.push_back(vt);
-					f->vn.push_back(0); //Nicht sicher, ob das richtig ist, wird sich später rausstellen
+					f->vn.push_back(0); 
 				}
 				else if (sscanf_s(tokens[i].c_str(), "%d", &v) == 1) {
 					f->v.push_back(v);
-					f->vt.push_back(0); //Nicht sicher, ob das richtig ist, wird sich später rausstellen
-					f->vn.push_back(0); //Nicht sicher, ob das richtig ist, wird sich später rausstellen
+					f->vt.push_back(0);
+					f->vn.push_back(0);
 				} else {
 					logfile << "Token " << tokens[i] << " in Zeile: " << Line << " konnte nicht geparsed werden.." << std::endl;
 				}
@@ -120,27 +121,43 @@ bool ObjParser::triangulateObj(Mesh& mesh) {
 		Face& face = *(faces.at(i));
 		
 		if (face.v.size() == 3) continue; //Face besteht schon aus nur 3 Punkten
-		else { //Face muss trianguliert werden
-			if (checkConvex(mesh, face)) {
+		else {
+			while (face.v.size() != 3) {
+				Face* f = new Face();
+				f->v.push_back(face.v[0]);
+				f->vt.push_back(face.vt[0]);
+				f->vn.push_back(face.vn[0]);
 
+				f->v.push_back(face.v[1]);
+				f->vt.push_back(face.vt[1]);
+				f->vn.push_back(face.vn[1]);
+
+				f->v.push_back(face.v[2]);
+				f->vt.push_back(face.vt[2]);
+				f->vn.push_back(face.vn[2]);
+
+				face.v.erase(face.v.begin() + 1);
+				face.vt.erase(face.vt.begin() + 1);
+				face.vn.erase(face.vn.begin() + 1);
+
+				faces.push_back(f);
 			}
 		}
 	}
 
+	//DEBUG
+	/*for (int i = 0; i < faces.size(); i++) {
+		logfile << "Face:" << std::endl;
+		for (int j = 0; j < faces[i]->v.size(); j++) {
+			logfile << "V:" << faces[i]->v[j] << std::endl;
+			logfile << "T:" << faces[i]->vt[j] << std::endl;
+			logfile << "N:" << faces[i]->vn[j] << std::endl;
+		}
+		logfile << std::endl;
+		logfile << std::endl;
+	}*/
+
 	std::cout << "Triangulierung beendet." << std::endl;
-
-	return true;
-}
-
-bool ObjParser::checkConvex(Mesh &mesh, Face& face) {
-
-	std::vector<glm::vec3> points = {};
-
-	for (int i = 0; i < face.v.size(); i++) {
-		points.push_back(mesh.vertices.at(face.v[i] - 1)->position);
-		std::cout << "Test: " << points[i].x <<" " <<  points[i].y << " " <<  points[i].z << std::endl;
-	}
-
 
 
 	return true;

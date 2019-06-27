@@ -25,7 +25,6 @@ public:
 	void decreaseSpeed();
 	void liftUpPlanetOne();
 	void liftDownPlanetOne();
-	void toggleSunRotation();
 	void toggleNormals();
 	void toggleWireframe();
 	void toggleLightsource();
@@ -33,6 +32,11 @@ public:
 	void scaleUp();
 	void scaleDown();
 	void toggleNormalMode();
+	void toggleMeshNormals();
+
+	void rotateExSunX();
+	void rotateExSunY();
+	void rotateExSunZ();
 
 private:
 	std::stack <glm::mat4x4> matrixStack;
@@ -63,8 +67,8 @@ private:
 	Sphere* moon;
 
 	ObjParser* objParser;
-	Mesh* mesh;
-	cg::GLSLProgram meshProgram;
+	Mesh* exSun;
+	cg::GLSLProgram exSunProgram;
 
 	Lightsource lightsource = L_POINT;
 
@@ -85,8 +89,6 @@ private:
 	const float speedStep = 0.05f;
 	const int planetStacks = 4;
 
-	bool sunRotation = false;
-
 
 	int alpha = 0;
 	int beta = -45;
@@ -95,6 +97,11 @@ private:
 	float rotationAngle = 0.0f;
 	float rotationMoonAngle = 0.0f;
 	Direction direction = RIGHT;
+
+	float exSunX = 0.0f;
+	float exSunY = 0.0f;
+	float exSunZ = 0.0f;
+
 
 	float scale = 1.0f;
 	unsigned int lightIndex = 0;

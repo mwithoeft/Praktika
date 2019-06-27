@@ -12,8 +12,8 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, &planetProgramBlinnPhong, planetStacks, 50);
 
 	objParser = new ObjParser();
-	mesh = new Mesh(&meshProgram);
-	objParser->parseObj("pyramid.obj", *mesh);
+	exSun = new Mesh(&exSunProgram);
+	objParser->parseObj("lamp.obj", *exSun);
 }
 
 SunSystem::~SunSystem()
@@ -23,7 +23,7 @@ SunSystem::~SunSystem()
 	delete planet;
 	delete moon;
 
-	delete mesh;
+	delete exSun;
 	delete objParser;
 }
 
@@ -41,7 +41,7 @@ void SunSystem::init(glm::vec3 eye) {
 	planet->setLightVector(eyeVec4, lightsource);
 	moon->setLightVector(eyeVec4, lightsource);
 
-	mesh->makeDrawable();
+	exSun->makeDrawable();
 }
 void SunSystem::draw() {
 	/* Monde drehen sich doppelt so schnell, um den Unterschied zu sehen */
@@ -62,17 +62,17 @@ void SunSystem::draw() {
 	model = glm::rotate(model, rad, zAxis);
 	axis->draw(model, view, projection);
 
-	if (sunRotation) {
+	/* Malen der ehemaligen Sonne*/
 		matrixStack.push(model);
-		rad = rotationAngle * (PI / 180);
+		rad = exSunX * (PI / 180);
+		model = glm::rotate(model, direction * rad, xAxis);
+		rad = exSunY * (PI / 180);
 		model = glm::rotate(model, direction * rad, yAxis);
-		mesh->draw(model, view, projection);
+		rad = exSunZ * (PI / 180);
+		model = glm::rotate(model, direction * rad, zAxis);
+		exSun->draw(model, view, projection);
 		model = matrixStack.top();
 		matrixStack.pop();
-	}
-	else {
-		mesh->draw(model, view, projection);
-	}
 
 	matrixStack.push(model);
 	rad = rotationAngle * (PI / 180);
@@ -120,9 +120,7 @@ void SunSystem::liftUpPlanetOne() {
 void SunSystem::liftDownPlanetOne() {
 	if (planetOneLift > -1.5) planetOneLift -= planetOneLiftStep;
 }
-void SunSystem::toggleSunRotation() {
-	sunRotation = !sunRotation;
-}
+
 void SunSystem::drawPlanetOne() {
 	/* Zeichnen der Achse von Planet 1 */
 	matrixStack.push(model);
@@ -278,4 +276,23 @@ void SunSystem::toggleNormalMode() {
 	sun->toggleNormal();
 	planet->toggleNormal();
 	moon->toggleNormal();
+}
+
+void SunSystem::toggleMeshNormals() {
+	if (exSun->hasNormals) {
+		exSun->renderNormals = !exSun->renderNormals;
+	}
+	else {
+		std::cout << "Das Mesh hat keine Normalen!" << std::endl;
+	}
+}
+
+void SunSystem::rotateExSunX() {
+	exSunX += 3;
+}
+void SunSystem::rotateExSunY() {
+	exSunY += 3;
+}
+void SunSystem::rotateExSunZ() {
+	exSunZ += 3;
 }
