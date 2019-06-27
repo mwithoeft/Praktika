@@ -14,5 +14,4 @@ private:
 	std::ofstream logfile;
 
 	bool triangulateObj(Mesh& mesh);
-	bool checkConvex(Mesh &mesh, Face& face);
 };

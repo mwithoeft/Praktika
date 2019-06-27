@@ -65,13 +65,14 @@ void SunSystem::draw() {
 	/* Malen der ehemaligen Sonne*/
 		matrixStack.push(model);
 		rad = exSunX * (PI / 180);
-		model = glm::rotate(model, direction * rad, xAxis);
+		model = glm::rotate(model, rad, xAxis);
 		rad = exSunY * (PI / 180);
-		model = glm::rotate(model, direction * rad, yAxis);
+		model = glm::rotate(model, rad, yAxis);
 		rad = exSunZ * (PI / 180);
-		model = glm::rotate(model, direction * rad, zAxis);
+		model = glm::rotate(model, rad, zAxis);
 		exSun->draw(model, view, projection);
 		model = matrixStack.top();
+
 		matrixStack.pop();
 
 	matrixStack.push(model);

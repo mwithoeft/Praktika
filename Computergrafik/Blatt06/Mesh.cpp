@@ -82,7 +82,6 @@ void Mesh::makeDrawable() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawIndices.size() * sizeof(GLushort), drawIndices.data(), GL_STATIC_DRAW);
 
 	initNormals();
-	initBoundingBox();
 }
 
 
@@ -160,21 +159,23 @@ void Mesh::initNormals() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexCount * sizeof(GLuint), normalIndices.data(), GL_STATIC_DRAW);
 }
 
-void Mesh::initBoundingBox() {
+void Mesh::initBoundingBox(const glm::mat4& model) {
+	calcBoundingBox(model);
+
 	boundingBoxIndices.clear();
 	boundingBoxPositions.clear();
 	boundingBoxColors.clear();
 
 	//Unten
-	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->min_y, boundingBox->min_z });
-	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->min_y, boundingBox->min_z });
-	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->min_y, boundingBox->max_z });
-	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->min_y, boundingBox->max_z });
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->min_x, boundingBox->min_y, boundingBox->min_z, 1.0f));
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->max_x, boundingBox->min_y, boundingBox->min_z, 1.0f));
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->max_x, boundingBox->min_y, boundingBox->max_z, 1.0f));
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->min_x, boundingBox->min_y, boundingBox->max_z, 1.0f));
 	//Oben
-	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->max_y, boundingBox->min_z });
-	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->max_y, boundingBox->min_z });
-	boundingBoxPositions.push_back({ boundingBox->max_x, boundingBox->max_y, boundingBox->max_z });
-	boundingBoxPositions.push_back({ boundingBox->min_x, boundingBox->max_y, boundingBox->max_z });
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->min_x, boundingBox->max_y, boundingBox->min_z, 1.0f));
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->max_x, boundingBox->max_y, boundingBox->min_z, 1.0f));
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->max_x, boundingBox->max_y, boundingBox->max_z, 1.0f));
+	boundingBoxPositions.push_back(glm::vec4(boundingBox->min_x, boundingBox->max_y, boundingBox->max_z, 1.0f));
 
 	boundingBoxIndices.push_back(0);
 	boundingBoxIndices.push_back(1);
@@ -267,8 +268,9 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	}
 
 	if (renderBoundingBox) {
+		initBoundingBox(model);
 		program->use();
-		program->setUniform("mvp", mvp);
+		program->setUniform("mvp", projection* view);
 		glBindVertexArray(objBoundingBox.vao);
 		glDrawElements(GL_LINES, objBoundingBox.indexCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
@@ -295,7 +297,7 @@ void Mesh::initShader(cg::GLSLProgram& program, const std::string& vert, const s
 	}
 }
 
-void Mesh::calcBoundingBox() {
+void Mesh::calcBoundingBox(const glm::mat4& model) {
 	float max_x = -INFINITY;
 	float max_y = -INFINITY;
 	float max_z = -INFINITY;
@@ -306,7 +308,7 @@ void Mesh::calcBoundingBox() {
 	std::cout << "Berechne BoundingBox..." << std::endl;
 
 	for (int i = 0; i < vertices.size(); i++) {
-		glm::vec3 p = vertices[i]->position;
+		glm::vec4 p = model * glm::vec4(vertices[i]->position, 1.0f);
 		if (p.x > max_x) max_x = p.x;
 		if (p.y > max_y) max_y = p.y;
 		if (p.z > max_z) max_z = p.z;

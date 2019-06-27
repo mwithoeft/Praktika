@@ -26,7 +26,7 @@ public:
 	bool hasNormals = false;
 	bool renderBoundingBox = false;
 
-	void calcBoundingBox();
+	void calcBoundingBox(const glm::mat4& model);
 
 private:
 
@@ -53,6 +53,6 @@ private:
 	float normalScale = 0.2f;
 
 	void initNormals();
-	void initBoundingBox();
+	void initBoundingBox(const glm::mat4& model);
 	void initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag);
 };
