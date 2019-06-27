@@ -28,10 +28,10 @@ void Mesh::makeDrawable() {
 
 	for (int i = 0; i < vertices.size(); i++) {
 		drawVertices.push_back(vertices.at(i)->position);
-		drawColors.push_back({ 1.0f, 1.0f, 0.0f }); //Testfarbe
+		drawColors.push_back({ 0.8f, 0.8f, 0.8f }); //Testfarbe
 		//Debug: std::cout << "V: " << vertices.at(i)->position[0] << " " << vertices.at(i)->position[1] << " " << vertices.at(i)->position[2] << std::endl;
 	}
-	drawColors.push_back({ 1.0f, 1.0f, 0.0f });
+	drawColors.push_back({ 0.8f, 0.8f, 0.8f });
 	//Funktioniert nur unter der Vorraussetzung, dass jedes Face bereits trianguliert wurde
 	for (int i = 0; i < faces.size(); i++) {
 		for (int j = 0; j < faces.at(i)->v.size(); j++) {
@@ -88,6 +88,8 @@ void Mesh::initNormals() {
 	normalPositions.clear();
 	normalColors.clear();
 
+
+
 	for (int i = 0; i < faces.size(); i++) {
 		for (int j = 0; j < faces.at(i)->vn.size(); j++) {
 			int k = (faces.at(i)->vn[j] - 1);
@@ -104,8 +106,12 @@ void Mesh::initNormals() {
 
 			normalColors.push_back({0.0f, 1.0f, 0.0f});
 			normalColors.push_back({ 0.0f, 1.0f, 0.0f });
+
+			hasNormals = true;
 		}
 	}
+
+	if (!hasNormals) return;
 
 	GLuint programId = program->getHandle();
 	GLuint pos;
@@ -168,7 +174,7 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
 
-	if (renderNormals) {
+	if (renderNormals && hasNormals) {
 		program->use();
 		program->setUniform("mvp", mvp);
 		glBindVertexArray(objNormals.vao);
