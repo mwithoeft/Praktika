@@ -58,6 +58,7 @@ private:
 	cg::GLSLProgram moonProgramBlinnPhong;
 
 
+
 	glm::mat4x4 view;
 	glm::mat4x4 projection;
 	glm::mat4x4 model;
@@ -70,6 +71,7 @@ private:
 	ObjParser* objParser;
 	Mesh* exSun;
 	cg::GLSLProgram exSunProgram;
+	cg::GLSLProgram exSunShader;
 
 	Lightsource lightsource = L_POINT;
 

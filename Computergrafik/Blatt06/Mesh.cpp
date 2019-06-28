@@ -1,6 +1,9 @@
 #include "header/Mesh.h"
+#include <glm/gtc/matrix_inverse.hpp>
+#include <GL/freeglut.h>
+#include <glm/glm.hpp>
 
-Mesh::Mesh(cg::GLSLProgram* program) : program(program){
+Mesh::Mesh(cg::GLSLProgram* program, cg::GLSLProgram* phong) : program(program), phong(phong){
 	
 	boundingBox = new BoundingBox();
 }
@@ -24,11 +27,23 @@ Mesh::~Mesh(){
 	delete boundingBox;
 }
 
+void Mesh::initShader() {
+	/* Hier muss noch umgeschaltet werden. Eventuell auch nicht aus dem Konstruktor aufrufen, wegen umschalten*/
+	//initShader(*program, "shader/shadedGouraud.vert", "shader/shadedGouraud.frag");
+	initShader(*program, "shader/simple.vert", "shader/simple.frag");
+	initShader(*phong, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
+	phong->use();
+	phong->setUniform("surfKa", { 0.19225f, 0.19225f, 0.19225 });
+	phong->setUniform("surfKd", { 0.50754f, 0.50754f, 0.50754f});
+	phong->setUniform("surfKs", { 0.508273, 0.508273f, 0.508273f });
+	phong->setUniform("surfShininess", 0.4f);
+}
 
 void Mesh::makeDrawable() {
 	drawColors.clear();
 	drawIndices.clear();
 	drawVertices.clear();
+	initShader();
 
 	for (int i = 0; i < vertices.size(); i++) {
 		drawVertices.push_back(vertices.at(i)->position);
@@ -44,9 +59,8 @@ void Mesh::makeDrawable() {
 		}
 	}
 
-	initShader(*program, "shader/simple.vert", "shader/simple.frag");
-
-	GLuint programId = program->getHandle();
+	initNormals();
+	GLuint programId = phong->getHandle();
 	GLuint pos;
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -81,9 +95,15 @@ void Mesh::makeDrawable() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objMesh.indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawIndices.size() * sizeof(GLushort), drawIndices.data(), GL_STATIC_DRAW);
 
-	initNormals();
-}
+	// Normal buffer.
+	glGenBuffers(1, &objMesh.normalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objMesh.normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
 
+	pos = glGetAttribLocation(programId, "normal");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
 
 void Mesh::initNormals() {
 
@@ -247,9 +267,14 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	glm::mat4 mv = view * model;
 	// Create mvp.
 	glm::mat4 mvp = projection * mv;
+	glm::mat3 nm = glm::inverseTranspose(glm::mat3(model));
 
-	program->use();
-	program->setUniform("mvp", mvp);
+	phong->use();
+	phong->setUniform("modelviewMatrix", mv);
+	phong->setUniform("projectionMatrix", projection);
+	phong->setUniform("normalMatrix", nm);
+	phong->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+	phong->setUniform("lightI", float(1.0f));
 
 
 	glBindVertexArray(objMesh.vao);
@@ -277,8 +302,6 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	}
 
 }
-
-
 
 void Mesh::initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag) {
 	if (!program.compileShaderFromFile(vert.c_str(), cg::GLSLShader::VERTEX))

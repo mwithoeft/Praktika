@@ -12,7 +12,7 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, &planetProgramBlinnPhong, planetStacks, 50);
 
 	objParser = new ObjParser();
-	exSun = new Mesh(&exSunProgram);
+	exSun = new Mesh(&exSunProgram, &exSunShader);
 	objParser->parseObj("Raumschiff.obj", *exSun);
 }
 

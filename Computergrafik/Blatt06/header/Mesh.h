@@ -11,7 +11,7 @@
 class Mesh {
 
 public:
-	Mesh(cg::GLSLProgram* program);
+	Mesh(cg::GLSLProgram* program, cg::GLSLProgram* phong);
 	~Mesh();
 
 	std::vector<Vertex*> vertices;
@@ -25,7 +25,7 @@ public:
 	bool renderNormals = false;
 	bool hasNormals = false;
 	bool renderBoundingBox = false;
-
+	void initShader();
 	void calcBoundingBox(const glm::mat4& model);
 
 private:
@@ -35,6 +35,7 @@ private:
 	std::vector<GLushort> drawIndices;
 
 	cg::GLSLProgram* program;
+	cg::GLSLProgram* phong;
 	Object objMesh;
 	Object objNormals;
 	Object objBoundingBox;

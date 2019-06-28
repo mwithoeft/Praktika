@@ -45,7 +45,7 @@ glm::vec3 up(0.0f, 1.0f, 0.0f);
 bool init()
 {
   // OpenGL: Set "background" color and enable depth testing.
-  glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+  glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
   
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);

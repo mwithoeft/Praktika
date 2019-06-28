@@ -39,13 +39,7 @@ void Sphere::initShader() {
 
 void Sphere::initMaterial() {
 	getColor();
-	std::ofstream myfile;
-	myfile.open("LOG.txt");
-	myfile << "setzt die Farbe auf:" << color;
-	myfile.close();
 	shader->use();
-	//programShaded->setUniform("light", glm::vec3(0, 0, 0));
-	//programShaded->setUniform("lightI", float(1.0f));
 	shader->setUniform("surfKa", colorStr.surfKa);
 	shader->setUniform("surfKd", colorStr.surfKd);
 	shader->setUniform("surfKs", colorStr.surfKs);
