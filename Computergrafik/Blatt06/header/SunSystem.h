@@ -34,6 +34,7 @@ public:
 	void scaleDown();
 	void toggleNormalMode();
 	void toggleMeshNormals();
+	void toggleMeshFaceNormals();
 
 	void rotateExSunX();
 	void rotateExSunY();

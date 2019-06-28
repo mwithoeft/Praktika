@@ -153,6 +153,9 @@ void glutKeyboard (unsigned char keycode, int x, int y)
   case ',':
 		sunSystem->toggleMeshNormals();
 	  break;
+  case '.':
+	  sunSystem->toggleMeshFaceNormals();
+	  break;
   case 'x':
 	  sunSystem->rotateExSunX();
 	  break;

@@ -277,8 +277,13 @@ void SunSystem::toggleMeshNormals() {
 		exSun->renderNormals = !exSun->renderNormals;
 	}
 	else {
-		std::cout << "Das Mesh hat keine Normalen!" << std::endl;
+		exSun->renderNormals = !exSun->renderNormals;
+		std::cout << "Das Mesh hat keine Normalen, aber wir haben mal eben welche berechnet!" << std::endl;
 	}
+}
+
+void SunSystem::toggleMeshFaceNormals() {
+	exSun->renderFaceNormals = !exSun->renderFaceNormals;
 }
 
 void SunSystem::toggleBoundingBox() {

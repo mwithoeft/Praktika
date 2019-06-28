@@ -130,10 +130,12 @@ void Mesh::initNormals() {
 			}
 		}
 		intialized = true;
+		calcFaceNormals();
+		if (!hasNormals) calcNormals();
 	}
 
 
-	if (!hasNormals) return;
+	initFaceNormals();
 
 	GLuint programId = program->getHandle();
 	GLuint pos;
@@ -178,6 +180,40 @@ void Mesh::initNormals() {
 	glGenBuffers(1, &objNormals.indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objNormals.indexCount * sizeof(GLuint), normalIndices.data(), GL_STATIC_DRAW);
+}
+
+void Mesh::initFaceNormals() {
+	GLuint programId = program->getHandle();
+	GLuint pos;
+
+	// Vertex array object.
+	glGenVertexArrays(1, &objFaceNormals.vao);
+	glBindVertexArray(objFaceNormals.vao);
+
+	// Position buffer.
+	glGenBuffers(1, &objFaceNormals.positionBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objFaceNormals.positionBuffer);
+	glBufferData(GL_ARRAY_BUFFER, faceNormalPositions.size() * sizeof(glm::vec3), faceNormalPositions.data(), GL_STATIC_DRAW);
+
+	pos = glGetAttribLocation(programId, "position");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Color buffer.
+	glGenBuffers(1, &objFaceNormals.colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, objFaceNormals.colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, faceNormalColors.size() * sizeof(glm::vec3), faceNormalColors.data(), GL_STATIC_DRAW);
+
+	pos = glGetAttribLocation(programId, "color");
+	glEnableVertexAttribArray(pos);
+	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Index buffer.
+	objFaceNormals.indexCount = (GLuint)faceNormalIndices.size();
+
+	glGenBuffers(1, &objFaceNormals.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objFaceNormals.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, objFaceNormals.indexCount * sizeof(GLuint), faceNormalIndices.data(), GL_STATIC_DRAW);
 }
 
 void Mesh::initBoundingBox(const glm::mat4& model) {
@@ -285,11 +321,19 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
 
-	if (renderNormals && hasNormals) {
+	if (renderNormals) {
 		program->use();
 		program->setUniform("mvp", mvp);
 		glBindVertexArray(objNormals.vao);
 		glDrawElements(GL_LINES, objNormals.indexCount, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+
+	if (renderFaceNormals) {
+		program->use();
+		program->setUniform("mvp", mvp);
+		glBindVertexArray(objFaceNormals.vao);
+		glDrawElements(GL_LINES, objFaceNormals.indexCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
 
@@ -319,6 +363,54 @@ void Mesh::initShader(cg::GLSLProgram& program, const std::string& vert, const s
 	{
 		throw std::runtime_error("LINK: " + program.log());
 	}
+}
+
+void Mesh::calcFaceNormals() {
+
+	std::cout << "Berechne Face Normalen..." << std::endl;
+
+	faceNormalIndices.clear();
+	faceNormalPositions.clear();
+	faceNormalColors.clear();
+
+	for (int i = 0; i < faces.size(); i++) {
+		Face& face = *(faces.at(i));
+
+		glm::vec3 p0 = vertices[face.v[0]-1]->position;
+		glm::vec3 p1 = vertices[face.v[1]-1]->position;
+		glm::vec3 p2 = vertices[face.v[2]-1]->position;
+		glm::vec3 normal = computeNormal(p0, p2, p1);
+
+		face.normal = normal;
+
+		faceNormalIndices.push_back(faceNormalPositions.size());
+		faceNormalPositions.push_back(p0);
+		faceNormalIndices.push_back(faceNormalPositions.size());
+		faceNormalPositions.push_back(p0 + normal * normalScale);
+
+		faceNormalIndices.push_back(faceNormalPositions.size());
+		faceNormalPositions.push_back(p1);
+		faceNormalIndices.push_back(faceNormalPositions.size());
+		faceNormalPositions.push_back(p1 + normal * normalScale);
+
+		faceNormalIndices.push_back(faceNormalPositions.size());
+		faceNormalPositions.push_back(p2);
+		faceNormalIndices.push_back(faceNormalPositions.size());
+		faceNormalPositions.push_back(p2 + normal * normalScale);
+
+		for (int i = 0; i < 6; i++) {
+			faceNormalColors.push_back({1.0f, 1.0f, 0.0f});
+		}
+	}
+
+	std::cout << "Face Normalen berechnet." << std::endl;
+
+}
+
+void Mesh::calcNormals() {
+
+
+
 }
 
 void Mesh::calcBoundingBox(const glm::mat4& model) {
@@ -364,11 +456,12 @@ void Mesh::rotateX() {
 	for (int i = 0; i < drawVertices.size(); i++) {
 		drawVertices[i] = glm::rotateX(drawVertices[i], angleChange * (PI / 180));
 	}
-	//Normalenpositionen müssen ja auch angepasst werden
 	for (int i = 0; i < normalPositions.size(); i++) {
 		normalPositions[i] = glm::rotateX(normalPositions[i], angleChange * (PI / 180));
 	}
-	//Shadernormalen müssen auch angepasst werden
+	for (int i = 0; i < faceNormalPositions.size(); i++) {
+		faceNormalPositions[i] = glm::rotateX(faceNormalPositions[i], angleChange * (PI / 180));
+	}
 	for (int i = 0; i < normals.size(); i++) {
 		normals[i] = glm::rotateX(normals[i], angleChange * (PI / 180));
 	}
@@ -378,11 +471,12 @@ void Mesh::rotateY() {
 	for (int i = 0; i < drawVertices.size(); i++) {
 		drawVertices[i] = glm::rotateY(drawVertices[i], angleChange * (PI / 180));
 	}
-	//Normalenpositionen müssen ja auch angepasst werden
 	for (int i = 0; i < normalPositions.size(); i++) {
 		normalPositions[i] = glm::rotateY(normalPositions[i], angleChange * (PI / 180));
 	}
-	//Shadernormalen müssen auch angepasst werden
+	for (int i = 0; i < faceNormalPositions.size(); i++) {
+		faceNormalPositions[i] = glm::rotateY(faceNormalPositions[i], angleChange * (PI / 180));
+	}
 	for (int i = 0; i < normals.size(); i++) {
 		normals[i] = glm::rotateY(normals[i], angleChange * (PI / 180));
 	}
@@ -392,12 +486,17 @@ void Mesh::rotateZ() {
 	for (int i = 0; i < drawVertices.size(); i++) {
 		drawVertices[i] = glm::rotateZ(drawVertices[i], angleChange * (PI / 180));
 	}
-	//Normalenpositionen müssen ja auch angepasst werden
 	for (int i = 0; i < normalPositions.size(); i++) {
 		normalPositions[i] = glm::rotateZ(normalPositions[i], angleChange * (PI / 180));
 	}
-	//Shadernormalen müssen auch angepasst werden
+	for (int i = 0; i < faceNormalPositions.size(); i++) {
+		faceNormalPositions[i] = glm::rotateZ(faceNormalPositions[i], angleChange * (PI / 180));
+	}
 	for (int i = 0; i < normals.size(); i++) {
 		normals[i] = glm::rotateZ(normals[i], angleChange * (PI / 180));
 	}
+}
+
+glm::vec3 Mesh::computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c) {
+	return glm::normalize(glm::cross(c - a, b - a));
 }
