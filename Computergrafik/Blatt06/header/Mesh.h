@@ -28,6 +28,10 @@ public:
 	void initShader();
 	void calcBoundingBox(const glm::mat4& model);
 
+	void rotateX();
+	void rotateY();
+	void rotateZ();
+
 private:
 
 	std::vector<glm::vec3> drawVertices;
@@ -51,7 +55,12 @@ private:
 
 	BoundingBox* boundingBox;
 
+	float angleChange = 3;
+
+	bool intialized = false;
+
 	float normalScale = 0.2f;
+	const float PI = 3.141592653589793;
 
 	void initNormals();
 	void initBoundingBox(const glm::mat4& model);

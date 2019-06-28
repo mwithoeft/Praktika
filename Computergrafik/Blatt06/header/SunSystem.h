@@ -101,10 +101,6 @@ private:
 	float rotationMoonAngle = 0.0f;
 	Direction direction = RIGHT;
 
-	float exSunX = 0.0f;
-	float exSunY = 0.0f;
-	float exSunZ = 0.0f;
-
 
 	float scale = 1.0f;
 	unsigned int lightIndex = 0;

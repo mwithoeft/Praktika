@@ -2,6 +2,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
+#include "libs/glm/glm/gtx/rotate_vector.hpp"
 
 Mesh::Mesh(cg::GLSLProgram* program, cg::GLSLProgram* phong) : program(program), phong(phong){
 	
@@ -40,24 +41,24 @@ void Mesh::initShader() {
 }
 
 void Mesh::makeDrawable() {
-	drawColors.clear();
-	drawIndices.clear();
-	drawVertices.clear();
 	initShader();
 
-	for (int i = 0; i < vertices.size(); i++) {
-		drawVertices.push_back(vertices.at(i)->position);
-		drawColors.push_back({ 0.8f, 0.8f, 0.8f }); //Testfarbe
-		//Debug: std::cout << "V: " << vertices.at(i)->position[0] << " " << vertices.at(i)->position[1] << " " << vertices.at(i)->position[2] << std::endl;
-	}
-	drawColors.push_back({ 0.8f, 0.8f, 0.8f });
-	//Funktioniert nur unter der Vorraussetzung, dass jedes Face bereits trianguliert wurde
-	for (int i = 0; i < faces.size(); i++) {
-		for (int j = 0; j < faces.at(i)->v.size(); j++) {
-			drawIndices.push_back(faces.at(i)->v[j]-1);
-			//Debug: std::cout << "I: " << faces.at(i)->v[j] - 1 << std::endl;
+	if (!intialized) {
+		for (int i = 0; i < vertices.size(); i++) {
+			drawVertices.push_back(vertices.at(i)->position);
+			drawColors.push_back({ 0.8f, 0.8f, 0.8f }); //Testfarbe
+			//Debug: std::cout << "V: " << vertices.at(i)->position[0] << " " << vertices.at(i)->position[1] << " " << vertices.at(i)->position[2] << std::endl;
+		}
+		drawColors.push_back({ 0.8f, 0.8f, 0.8f });
+		//Funktioniert nur unter der Vorraussetzung, dass jedes Face bereits trianguliert wurde
+		for (int i = 0; i < faces.size(); i++) {
+			for (int j = 0; j < faces.at(i)->v.size(); j++) {
+				drawIndices.push_back(faces.at(i)->v[j]-1);
+				//Debug: std::cout << "I: " << faces.at(i)->v[j] - 1 << std::endl;
+			}
 		}
 	}
+
 
 	initNormals();
 	GLuint programId = phong->getHandle();
@@ -107,30 +108,30 @@ void Mesh::makeDrawable() {
 
 void Mesh::initNormals() {
 
-	normalIndices.clear();
-	normalPositions.clear();
-	normalColors.clear();
+	if (!intialized) {
+		for (int i = 0; i < faces.size(); i++) {
+			for (int j = 0; j < faces.at(i)->vn.size(); j++) {
+				int k = (faces.at(i)->vn[j] - 1);
+				if (k <= 0) continue; // Prüfen, ob es die Normale überhaupt gibt
 
-	for (int i = 0; i < faces.size(); i++) {
-		for (int j = 0; j < faces.at(i)->vn.size(); j++) {
-			int k = (faces.at(i)->vn[j] - 1);
-			if (k <= 0) continue; // Prüfen, ob es die Normale überhaupt gibt
+				glm::vec3 p1 = vertices.at(faces.at(i)->v[j] - 1)->position;
+				glm::vec3 p2 = {p1 + normals[k] * normalScale };
 
-			glm::vec3 p1 = vertices.at(faces.at(i)->v[j] - 1)->position;
-			glm::vec3 p2 = {p1 + normals[k] * normalScale };
+				// Reihenfolge wichtig //
+				normalIndices.push_back(normalPositions.size());
+				normalPositions.push_back(p1);
+				normalIndices.push_back(normalPositions.size());
+				normalPositions.push_back(p2);
 
-			// Reihenfolge wichtig //
-			normalIndices.push_back(normalPositions.size());
-			normalPositions.push_back(p1);
-			normalIndices.push_back(normalPositions.size());
-			normalPositions.push_back(p2);
+				normalColors.push_back({0.0f, 1.0f, 0.0f});
+				normalColors.push_back({ 0.0f, 1.0f, 0.0f });
 
-			normalColors.push_back({0.0f, 1.0f, 0.0f});
-			normalColors.push_back({ 0.0f, 1.0f, 0.0f });
-
-			hasNormals = true;
+				hasNormals = true;
+			}
 		}
+		intialized = true;
 	}
+
 
 	if (!hasNormals) return;
 
@@ -330,8 +331,8 @@ void Mesh::calcBoundingBox(const glm::mat4& model) {
 
 	std::cout << "Berechne BoundingBox..." << std::endl;
 
-	for (int i = 0; i < vertices.size(); i++) {
-		glm::vec4 p = model * glm::vec4(vertices[i]->position, 1.0f);
+	for (int i = 0; i < drawVertices.size(); i++) {
+		glm::vec4 p = model * glm::vec4(drawVertices[i], 1.0f);
 		if (p.x > max_x) max_x = p.x;
 		if (p.y > max_y) max_y = p.y;
 		if (p.z > max_z) max_z = p.z;
@@ -357,4 +358,46 @@ void Mesh::calcBoundingBox(const glm::mat4& model) {
 	boundingBox->centerX = (min_x + max_x) / 2;
 	boundingBox->centerY = (min_y + max_y) / 2;
 	boundingBox->centerZ = (min_z + max_z) / 2;
+}
+
+void Mesh::rotateX() {
+	for (int i = 0; i < drawVertices.size(); i++) {
+		drawVertices[i] = glm::rotateX(drawVertices[i], angleChange * (PI / 180));
+	}
+	//Normalenpositionen müssen ja auch angepasst werden
+	for (int i = 0; i < normalPositions.size(); i++) {
+		normalPositions[i] = glm::rotateX(normalPositions[i], angleChange * (PI / 180));
+	}
+	//Shadernormalen müssen auch angepasst werden
+	for (int i = 0; i < normals.size(); i++) {
+		normals[i] = glm::rotateX(normals[i], angleChange * (PI / 180));
+	}
+}
+
+void Mesh::rotateY() {
+	for (int i = 0; i < drawVertices.size(); i++) {
+		drawVertices[i] = glm::rotateY(drawVertices[i], angleChange * (PI / 180));
+	}
+	//Normalenpositionen müssen ja auch angepasst werden
+	for (int i = 0; i < normalPositions.size(); i++) {
+		normalPositions[i] = glm::rotateY(normalPositions[i], angleChange * (PI / 180));
+	}
+	//Shadernormalen müssen auch angepasst werden
+	for (int i = 0; i < normals.size(); i++) {
+		normals[i] = glm::rotateY(normals[i], angleChange * (PI / 180));
+	}
+}
+
+void Mesh::rotateZ() {
+	for (int i = 0; i < drawVertices.size(); i++) {
+		drawVertices[i] = glm::rotateZ(drawVertices[i], angleChange * (PI / 180));
+	}
+	//Normalenpositionen müssen ja auch angepasst werden
+	for (int i = 0; i < normalPositions.size(); i++) {
+		normalPositions[i] = glm::rotateZ(normalPositions[i], angleChange * (PI / 180));
+	}
+	//Shadernormalen müssen auch angepasst werden
+	for (int i = 0; i < normals.size(); i++) {
+		normals[i] = glm::rotateZ(normals[i], angleChange * (PI / 180));
+	}
 }

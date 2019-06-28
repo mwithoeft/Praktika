@@ -64,15 +64,8 @@ void SunSystem::draw() {
 
 	/* Malen der ehemaligen Sonne*/
 		matrixStack.push(model);
-		rad = exSunX * (PI / 180);
-		model = glm::rotate(model, rad, xAxis);
-		rad = exSunY * (PI / 180);
-		model = glm::rotate(model, rad, yAxis);
-		rad = exSunZ * (PI / 180);
-		model = glm::rotate(model, rad, zAxis);
 		exSun->draw(model, view, projection);
 		model = matrixStack.top();
-
 		matrixStack.pop();
 
 	matrixStack.push(model);
@@ -293,11 +286,11 @@ void SunSystem::toggleBoundingBox() {
 }
 
 void SunSystem::rotateExSunX() {
-	exSunX += 3;
+	exSun->rotateX();
 }
 void SunSystem::rotateExSunY() {
-	exSunY += 3;
+	exSun->rotateY();
 }
 void SunSystem::rotateExSunZ() {
-	exSunZ += 3;
+	exSun->rotateZ();
 }
