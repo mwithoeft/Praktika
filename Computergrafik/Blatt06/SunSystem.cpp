@@ -13,7 +13,7 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 
 	objParser = new ObjParser();
 	exSun = new Mesh(&exSunProgram, &exSunShader);
-	objParser->parseObj("Raumschiff.obj", *exSun);
+	objParser->parseObj("lamp.obj", *exSun);
 }
 
 SunSystem::~SunSystem()

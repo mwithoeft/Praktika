@@ -31,8 +31,8 @@ SunSystem *sunSystem = new SunSystem(&program, &programShaded);
 float zNear = 0.1f;
 float zFar  = 100.0f;
 float eyeX = 0.0f;
-float eyeY = 50.0f;
-float eyeZ = 40.0f; // for view matrix (zoom)
+float eyeY = 20.0f;
+float eyeZ = 12.0f; // for view matrix (zoom)
 
 glm::vec3 eye(eyeX, eyeY, eyeZ);
 glm::vec3 center(0.0f, 0.0f, 0.0f);

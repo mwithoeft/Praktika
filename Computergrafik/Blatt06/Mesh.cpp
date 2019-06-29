@@ -408,8 +408,33 @@ void Mesh::calcFaceNormals() {
 }
 
 void Mesh::calcNormals() {
+	//Schreibe in jeden Vertex die anliegenden Normalen rein
+	for (int i = 0; i < faces.size(); i++) {
+		Face& face = *(faces.at(i));
+		for (int j = 0; j < face.v.size(); j++) {
+			Vertex& v = *(vertices[face.v[j]-1]);
+			v.faceNormals.push_back(face.normal);
+		}
+	}
+	//Berechne die Normale an jedem Vertex
+	for (int i = 0; i < vertices.size(); i++) {
+		Vertex& v = *(vertices[i]);
+		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
+		for (int j = 0; j < v.faceNormals.size(); j++) {
+			normal = normal + v.faceNormals[j];
+		}
+		normal = glm::normalize(normal);
+		normals.push_back(normal);
 
+		normalIndices.push_back(normalPositions.size());
+		normalPositions.push_back(v.position);
+		normalIndices.push_back(normalPositions.size());
+		normalPositions.push_back(v.position + normal * normalScale);
 
+		normalColors.push_back({ 0.0f, 1.0f, 0.0f });
+		normalColors.push_back({ 0.0f, 1.0f, 0.0f });
+
+	}
 
 }
 
