@@ -301,7 +301,7 @@ void Mesh::initBoundingBox(const glm::mat4& model) {
 }
 
 void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
-	glm::mat4 mv = view * model;
+	glm::mat4 mv = view * glm::scale(model, glm::vec3(scaleObj, scaleObj, scaleObj));
 	// Create mvp.
 	glm::mat4 mvp = projection * mv;
 	glm::mat3 nm = glm::inverseTranspose(glm::mat3(model));
@@ -313,7 +313,7 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	phong->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
 	phong->setUniform("lightI", float(1.0f));
 
-
+	glScalef(0.5f, 0.5f, 0.5f);
 	glBindVertexArray(objMesh.vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objMesh.indexBuffer);
 	int size;
@@ -499,4 +499,8 @@ void Mesh::rotateZ() {
 
 glm::vec3 Mesh::computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c) {
 	return glm::normalize(glm::cross(c - a, b - a));
+}
+
+void Mesh::scale(float value) {
+	scaleObj = value;
 }

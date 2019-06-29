@@ -40,6 +40,9 @@ public:
 	void rotateExSunY();
 	void rotateExSunZ();
 
+	void scaleObjUp();
+	void scaleObjDown();
+
 private:
 	std::stack <glm::mat4x4> matrixStack;
 	cg::GLSLProgram program;
@@ -104,6 +107,7 @@ private:
 
 
 	float scale = 1.0f;
+	float scaleObj = 0.1f;
 	unsigned int lightIndex = 0;
 	glm::vec4 lights[2] = {
 	{ 0.0f,  0.0f, 0.0f, 1.0f },

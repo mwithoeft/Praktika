@@ -29,6 +29,7 @@ public:
 	bool renderBoundingBox = false;
 	void initShader();
 	void calcBoundingBox(const glm::mat4& model);
+	void scale(float value);
 
 	void rotateX();
 	void rotateY();
@@ -68,6 +69,8 @@ private:
 
 	float normalScale = 0.2f;
 	const float PI = 3.141592653589793;
+
+	float scaleObj = 0.1;
 
 	void initNormals();
 	void initBoundingBox(const glm::mat4& model);

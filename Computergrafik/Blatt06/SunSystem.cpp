@@ -1,3 +1,4 @@
+
 #include "header/SunSystem.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/freeglut.h>
@@ -298,4 +299,18 @@ void SunSystem::rotateExSunY() {
 }
 void SunSystem::rotateExSunZ() {
 	exSun->rotateZ();
+}
+
+void SunSystem::scaleObjUp() {
+	if (scaleObj < 0.1) {
+		scaleObj += 0.01;
+		exSun->scale(scaleObj);
+	}
+
+}
+void SunSystem::scaleObjDown() {
+	if (scaleObj > 0.02) {
+		scaleObj -= 0.01;
+		exSun->scale(scaleObj);
+	}
 }
