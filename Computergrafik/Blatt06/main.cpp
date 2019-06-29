@@ -59,6 +59,7 @@ float eyeX = 0.0f;
 float eyeY = 3.0f;
 float eyeZ = 6.0f; // for view matrix (zoom)
 
+
 glm::vec3 eye(eyeX, eyeY, eyeZ);
 glm::vec3 center(0.0f, 0.0f, 0.0f);
 glm::vec3 up(0.0f, 1.0f, 0.0f);
