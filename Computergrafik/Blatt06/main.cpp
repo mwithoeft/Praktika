@@ -164,9 +164,6 @@ void glutKeyboard (unsigned char keycode, int x, int y)
   case 'k':
 	  sunSystem->toggleShading();
 	  break;
-  case 'j':
-	  sunSystem->toggleNormalMode();
-	  break;
   case '+':
 	  sunSystem->scaleUp();
 	  break;

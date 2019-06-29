@@ -61,6 +61,11 @@ private:
 	cg::GLSLProgram moonProgramPhong;
 	cg::GLSLProgram moonProgramBlinnPhong;
 
+	cg::GLSLProgram exSunProgram;
+	cg::GLSLProgram exSunShader;
+
+	cg::GLSLProgram schiffProgram;
+	cg::GLSLProgram schiffShader;
 
 
 	glm::mat4x4 view;
@@ -73,9 +78,9 @@ private:
 	Sphere* moon;
 
 	ObjParser* objParser;
+	ObjParser* schiffParser;
 	Mesh* exSun;
-	cg::GLSLProgram exSunProgram;
-	cg::GLSLProgram exSunShader;
+	Mesh* schiff;
 
 	Lightsource lightsource = L_POINT;
 
@@ -84,6 +89,8 @@ private:
 
 	void drawPlanetTwo();
 	void drawPlanetTwoMoons();
+
+	void drawSchiff();
 	
 	const glm::vec3 xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
 	const glm::vec3 yAxis = glm::vec3(0.0f, 1.0f, 0.0f);

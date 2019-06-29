@@ -3,6 +3,7 @@
 #include "Vertex.h"
 #include "Face.h"
 #include "Object.h"
+#include "Sphere.h"
 #include "GLSLProgram.h"
 #include "BoundingBox.h"
 
@@ -34,6 +35,8 @@ public:
 	void rotateX();
 	void rotateY();
 	void rotateZ();
+	void setColor(Color c);
+	void setLightVector(const glm::vec4& eye, Lightsource lightsource);
 
 private:
 
@@ -79,4 +82,13 @@ private:
 	void initFaceNormals();
 	void calcNormals();
 	glm::vec3 computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c);
+
+	struct ColorStr {
+		glm::vec3 surfKa;
+		glm::vec3 surfKd;
+		glm::vec3 surfKs;
+		float surfShininess;
+	};
+
+	ColorStr colorStr;
 };

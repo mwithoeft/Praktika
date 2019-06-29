@@ -34,10 +34,13 @@ void Mesh::initShader() {
 	initShader(*program, "shader/simple.vert", "shader/simple.frag");
 	initShader(*phong, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
 	phong->use();
-	phong->setUniform("surfKa", { 0.19225f, 0.19225f, 0.19225 });
-	phong->setUniform("surfKd", { 0.50754f, 0.50754f, 0.50754f});
-	phong->setUniform("surfKs", { 0.508273, 0.508273f, 0.508273f });
-	phong->setUniform("surfShininess", 0.4f);
+	phong->setUniform("surfKa", colorStr.surfKa);
+	phong->setUniform("surfKd", colorStr.surfKd);
+	phong->setUniform("surfKs", colorStr.surfKs);
+	phong->setUniform("surfShininess", colorStr.surfShininess);
+
+	
+
 }
 
 void Mesh::makeDrawable() {
@@ -310,8 +313,8 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	phong->setUniform("modelviewMatrix", mv);
 	phong->setUniform("projectionMatrix", projection);
 	phong->setUniform("normalMatrix", nm);
-	phong->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
-	phong->setUniform("lightI", float(1.0f));
+	//phong->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+	//phong->setUniform("lightI", float(1.0f));
 
 	glScalef(0.5f, 0.5f, 0.5f);
 	glBindVertexArray(objMesh.vao);
@@ -338,7 +341,7 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	}
 
 	if (renderBoundingBox) {
-		initBoundingBox(model);
+		initBoundingBox(glm::scale(model, glm::vec3(scaleObj, scaleObj, scaleObj)));
 		program->use();
 		program->setUniform("mvp", projection* view);
 		glBindVertexArray(objBoundingBox.vao);
@@ -528,4 +531,80 @@ glm::vec3 Mesh::computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 
 
 void Mesh::scale(float value) {
 	scaleObj = value;
+}
+
+void Mesh::setColor(Color c) {
+	switch (c) {
+	case RUBY:
+		colorStr.surfKa = glm::vec3{ 0.1745f, 0.01175f, 0.01175f };
+		colorStr.surfKd = glm::vec3{ 0.61424f, 0.04136f, 0.04136f };
+		colorStr.surfKs = glm::vec3{ 0.727811f, 0.626959f, 0.626959f };
+		colorStr.surfShininess = 0.6f;
+		break;
+	case EMERALD:
+		colorStr.surfKa = glm::vec3{ 0.0215f, 0.1745f, 0.0215f };
+		colorStr.surfKd = glm::vec3{ 0.07568f, 0.61424f, 0.07568f };
+		colorStr.surfKs = glm::vec3{ 0.633f, 0.727811f, 0.633f };
+		colorStr.surfShininess = 0.6f;
+		break;
+	case YELLOW:
+		colorStr.surfKa = glm::vec3{ 0.5f, 0.5f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.5f, 0.5f, 0.0f };
+		colorStr.surfKs = glm::vec3{ 0.6f, 0.6f, 0.5f };
+		colorStr.surfShininess = 0.32f;
+		break;
+	case BLUE:
+		colorStr.surfKa = glm::vec3{ 0.0f, 0.0f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.0f, 0.0f, 0.5f };
+		colorStr.surfKs = glm::vec3{ 0.6f, 0.6f, 0.7f };
+		colorStr.surfShininess = 0.25f;
+		break;
+	case GREEN:
+		colorStr.surfKa = glm::vec3{ 0.0f, 0.0f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.1f, 0.35f, 0.1f };
+		colorStr.surfKs = glm::vec3{ 0.45f, 0.55f, 0.45f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case WHITE:
+		colorStr.surfKa = glm::vec3{ 0.0f, 0.0f, 0.0f };
+		colorStr.surfKd = glm::vec3{ 0.55f,0.55f,0.55f };
+		colorStr.surfKs = glm::vec3{ 0.70f,0.70f,0.70f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case CYAN:
+		colorStr.surfKa = glm::vec3{ 0.0f,0.1f,0.06f };
+		colorStr.surfKd = glm::vec3{ 0.0f,0.50980392f,0.50980392f };
+		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case MAGENTA:
+		colorStr.surfKa = glm::vec3{ 0.6f,0.0f,0.3f };
+		colorStr.surfKd = glm::vec3{ 0.50980392f,0.50980392f, 0.0f };
+		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case RED:
+		colorStr.surfKa = glm::vec3{ 0.0f,0.0f,0.06f };
+		colorStr.surfKd = glm::vec3{ 0.5f,0.0f,0.0f };
+		colorStr.surfKs = glm::vec3{ 0.7f,0.6f,0.6f };
+		colorStr.surfShininess = 32.0f;
+		break;
+	case SILVER:
+		colorStr.surfKa = glm::vec3{ 0.19225f, 0.19225f, 0.19225 };
+		colorStr.surfKd = glm::vec3{ 0.50754f, 0.50754f, 0.50754f };
+		colorStr.surfKs = glm::vec3{ 0.508273, 0.508273f, 0.508273f };
+		colorStr.surfShininess = 0.4f;
+	}
+}
+void Mesh::setLightVector(const glm::vec4& eye, Lightsource lightsource)
+{
+	phong->use();
+	if (lightsource) {
+		phong->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+	}
+	else {
+		phong->setUniform("light", eye);
+	}
+	phong->setUniform("lightI", float(1.0f));
+	
 }
