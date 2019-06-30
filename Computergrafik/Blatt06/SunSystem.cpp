@@ -18,7 +18,7 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 
 	schiffParser = new ObjParser();
 	schiff = new Mesh(&schiffProgram, &schiffFlat, &schiffGouraud, &schiffPhong, &schiffBlinnPhong);
-	schiffParser->parseObj("Raumschiff.obj", *schiff);
+	schiffParser->parseObj("Waluigi.obj", *schiff);
 }
 
 SunSystem::~SunSystem()
