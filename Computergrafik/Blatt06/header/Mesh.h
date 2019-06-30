@@ -12,7 +12,7 @@
 class Mesh {
 
 public:
-	Mesh(cg::GLSLProgram* program, cg::GLSLProgram* phong);
+	Mesh(cg::GLSLProgram* program, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong);
 	~Mesh();
 
 	std::vector<Vertex*> vertices;
@@ -36,7 +36,10 @@ public:
 	void rotateY();
 	void rotateZ();
 	void setColor(Color c);
+	glm::vec3 getColor();
 	void setLightVector(const glm::vec4& eye, Lightsource lightsource);
+
+	void toggleShading();
 
 private:
 
@@ -44,8 +47,12 @@ private:
 	std::vector<glm::vec3> drawColors;
 	std::vector<GLushort> drawIndices;
 
+	cg::GLSLProgram* shader;
 	cg::GLSLProgram* program;
+	cg::GLSLProgram* flat;
+	cg::GLSLProgram* gouraud;
 	cg::GLSLProgram* phong;
+	cg::GLSLProgram* blinnphong;
 	Object objMesh;
 	Object objNormals;
 	Object objFaceNormals;
@@ -66,6 +73,8 @@ private:
 
 	BoundingBox* boundingBox;
 
+	Color color = YELLOW;
+
 	float angleChange = 3;
 
 	bool intialized = false;
@@ -73,7 +82,7 @@ private:
 	float normalScale = 0.2f;
 	const float PI = 3.141592653589793;
 
-	float scaleObj = 0.1;
+	float scaleObj = 0.05;
 
 	void initNormals();
 	void initBoundingBox(const glm::mat4& model);
@@ -81,6 +90,7 @@ private:
 	void calcFaceNormals();
 	void initFaceNormals();
 	void calcNormals();
+	void setMaterial();
 	glm::vec3 computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c);
 
 	struct ColorStr {
@@ -91,4 +101,5 @@ private:
 	};
 
 	ColorStr colorStr;
+	Shading shading;
 };

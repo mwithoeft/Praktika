@@ -22,6 +22,8 @@ y: Rotieren des Obj um y
 z: Rotieren des Obj um z
 *: Zoom Obj rein
 #: Zoom Obj raus
+t: Raumschiff kleiner
+g: Raumschiff größer
 */
 #include <iostream>
 #include <vector>
@@ -193,6 +195,12 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  break;
   case '#':
 	  sunSystem->scaleObjDown();
+	  break;
+  case 't':
+	  sunSystem->scaleSchiffUp();
+	  break;
+  case 'g':
+	  sunSystem->scaleSchiffDown();
 	  break;
   }
 

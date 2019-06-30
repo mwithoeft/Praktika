@@ -35,6 +35,8 @@ public:
 	void toggleNormalMode();
 	void toggleMeshNormals();
 	void toggleMeshFaceNormals();
+	void scaleSchiffUp();
+	void scaleSchiffDown();
 
 	void rotateExSunX();
 	void rotateExSunY();
@@ -62,10 +64,16 @@ private:
 	cg::GLSLProgram moonProgramBlinnPhong;
 
 	cg::GLSLProgram exSunProgram;
-	cg::GLSLProgram exSunShader;
+	cg::GLSLProgram exSunFlat;
+	cg::GLSLProgram exSunGouraud;
+	cg::GLSLProgram exSunPhong;
+	cg::GLSLProgram exSunBlinnPhong;
 
 	cg::GLSLProgram schiffProgram;
-	cg::GLSLProgram schiffShader;
+	cg::GLSLProgram schiffFlat;
+	cg::GLSLProgram schiffGouraud;
+	cg::GLSLProgram schiffPhong;
+	cg::GLSLProgram schiffBlinnPhong;
 
 
 	glm::mat4x4 view;
@@ -114,7 +122,8 @@ private:
 
 
 	float scale = 1.0f;
-	float scaleObj = 0.1f;
+	float scaleObj = 0.05f;
+	float scaleSchiff = 0.05;
 	unsigned int lightIndex = 0;
 	glm::vec4 lights[2] = {
 	{ 0.0f,  0.0f, 0.0f, 1.0f },

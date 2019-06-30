@@ -4,7 +4,8 @@
 #include <glm/glm.hpp>
 #include "libs/glm/glm/gtx/rotate_vector.hpp"
 
-Mesh::Mesh(cg::GLSLProgram* program, cg::GLSLProgram* phong) : program(program), phong(phong){
+Mesh::Mesh(cg::GLSLProgram* program, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong) 
+	:program(program), gouraud(gouraud), flat(flat), phong(phong),  blinnphong(blinnphong) {
 	
 	boundingBox = new BoundingBox();
 }
@@ -32,24 +33,46 @@ void Mesh::initShader() {
 	/* Hier muss noch umgeschaltet werden. Eventuell auch nicht aus dem Konstruktor aufrufen, wegen umschalten*/
 	//initShader(*program, "shader/shadedGouraud.vert", "shader/shadedGouraud.frag");
 	initShader(*program, "shader/simple.vert", "shader/simple.frag");
-	initShader(*phong, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
-	phong->use();
-	phong->setUniform("surfKa", colorStr.surfKa);
-	phong->setUniform("surfKd", colorStr.surfKd);
-	phong->setUniform("surfKs", colorStr.surfKs);
-	phong->setUniform("surfShininess", colorStr.surfShininess);
+	switch (shading) {
+	case FLAT:
+		initShader(*flat, "shader/shaded.vert", "shader/shaded.frag");
+		//initShader(*programFlat, "shader/simple.vert", "shader/simple.frag");
+		shader = flat;
+		break;
+	case GOURAUD:
+		initShader(*gouraud, "shader/shadedGouraud.vert", "shader/shadedGouraud.frag");
+		shader = gouraud;
+		break;
+	case PHONG:
+		initShader(*phong, "shader/shadedPhong.vert", "shader/shadedPhong.frag");
+		shader = phong;
+		break;
+	case BLINNPHONG:
+		initShader(*blinnphong, "shader/shadedBlinnPhong.vert", "shader/shadedBlinnPhong.frag");
+		shader = blinnphong;
+		break;
 
+	}
 	
-
+}
+void Mesh::setMaterial() {
+	shader->use();
+	if (shading != FLAT) {
+		shader->setUniform("surfKa", colorStr.surfKa);
+		shader->setUniform("surfKd", colorStr.surfKd);
+		shader->setUniform("surfKs", colorStr.surfKs);
+		shader->setUniform("surfShininess", colorStr.surfShininess);
+	}
 }
 
 void Mesh::makeDrawable() {
 	initShader();
+	setMaterial();
 
 	if (!intialized) {
 		for (int i = 0; i < vertices.size(); i++) {
 			drawVertices.push_back(vertices.at(i)->position);
-			drawColors.push_back({ 0.8f, 0.8f, 0.8f }); //Testfarbe
+			drawColors.push_back(getColor()); //Testfarbe
 			//Debug: std::cout << "V: " << vertices.at(i)->position[0] << " " << vertices.at(i)->position[1] << " " << vertices.at(i)->position[2] << std::endl;
 		}
 		drawColors.push_back({ 0.8f, 0.8f, 0.8f });
@@ -64,7 +87,7 @@ void Mesh::makeDrawable() {
 
 
 	initNormals();
-	GLuint programId = phong->getHandle();
+	GLuint programId = shader->getHandle();
 	GLuint pos;
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -309,12 +332,18 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	glm::mat4 mvp = projection * mv;
 	glm::mat3 nm = glm::inverseTranspose(glm::mat3(model));
 
-	phong->use();
-	phong->setUniform("modelviewMatrix", mv);
-	phong->setUniform("projectionMatrix", projection);
-	phong->setUniform("normalMatrix", nm);
-	//phong->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
-	//phong->setUniform("lightI", float(1.0f));
+	shader->use();
+	// Dieses kann weg, wenn der Shader importiert ist
+	if (shading == FLAT) {
+		shader->setUniform("mvp", mvp);
+		shader->setUniform("nm", nm);
+	}
+	else {
+		/* Hier wird in der Konsole noch ein Fehler ausgegeben, weil die Uniform nicht gefunden wurde, weil der Shader noch nicht drin ist*/
+		shader->setUniform("modelviewMatrix", mv);
+		shader->setUniform("projectionMatrix", projection);
+		shader->setUniform("normalMatrix", nm);
+	}
 
 	glScalef(0.5f, 0.5f, 0.5f);
 	glBindVertexArray(objMesh.vao);
@@ -534,6 +563,7 @@ void Mesh::scale(float value) {
 }
 
 void Mesh::setColor(Color c) {
+	color = c;
 	switch (c) {
 	case RUBY:
 		colorStr.surfKa = glm::vec3{ 0.1745f, 0.01175f, 0.01175f };
@@ -602,15 +632,56 @@ void Mesh::setColor(Color c) {
 		colorStr.surfShininess = 0.4f;
 	}
 }
+
 void Mesh::setLightVector(const glm::vec4& eye, Lightsource lightsource)
 {
-	phong->use();
-	if (lightsource) {
-		phong->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+	shader->use();
+	if (shading == FLAT) {
+		if (lightsource) {
+			shader->setUniform("lightDirection", glm::vec3(-1.0f, 0.0f, 0.0f));
+		}
+		else {
+			shader->setUniform("lightDirection", (glm::vec3) eye);
+		}
 	}
 	else {
-		phong->setUniform("light", eye);
+		if (lightsource) {
+			shader->setUniform("light", glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+		}
+		else {
+			shader->setUniform("light", eye);
+		}
+		shader->setUniform("lightI", float(1.0f));
 	}
-	phong->setUniform("lightI", float(1.0f));
 	
+}
+
+void Mesh::toggleShading() {
+	if (shading == FLAT) {
+		shading = GOURAUD;
+	}
+	else if (shading == GOURAUD) {
+		shading = PHONG;
+	}
+	else if (shading == PHONG) {
+		shading = BLINNPHONG;
+	}
+	else {
+		shading = FLAT;
+	}
+}
+glm::vec3 Mesh::getColor() {
+	switch (color) {
+	case EMERALD: return { 0.0f, 1.0f, 0.0f }; break;
+	case RED: return { 1.0f, 0.0f, 0.0f }; break;
+	case GREEN: return { 0.0f, 1.0f, 0.0f }; break;
+	case BLUE: return { 0.0f, 0.0f, 1.0f }; break;
+	case WHITE: return { 1.0f, 1.0f, 1.0f }; break;
+	case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
+	case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
+	case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
+	case SILVER: return{ 0.75f, 0.75f, 0.75f }; break;
+	case PURPLE: return{ 0.19f,0.0f,0.51f }; break;
+
+	}
 }

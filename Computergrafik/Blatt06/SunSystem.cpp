@@ -13,11 +13,11 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, &planetProgramBlinnPhong, planetStacks, 50);
 
 	objParser = new ObjParser();
-	exSun = new Mesh(&exSunProgram, &exSunShader);
+	exSun = new Mesh(&exSunProgram, &exSunFlat , &exSunGouraud, &exSunPhong, &exSunBlinnPhong);
 	objParser->parseObj("lamp.obj", *exSun);
 
 	schiffParser = new ObjParser();
-	schiff = new Mesh(&schiffProgram, &schiffShader);
+	schiff = new Mesh(&schiffProgram, &schiffFlat, &schiffGouraud, &schiffPhong, &schiffBlinnPhong);
 	schiffParser->parseObj("Raumschiff.obj", *schiff);
 }
 
@@ -47,6 +47,7 @@ void SunSystem::init(glm::vec3 eye) {
 	exSun->setColor(PURPLE);
 	exSun->makeDrawable();
 
+	//schiff->scale(0.05);
 	schiff->setColor(SILVER);
 	schiff->makeDrawable();
 
@@ -86,9 +87,17 @@ void SunSystem::draw() {
 	matrixStack.push(model);
 	rad = rotationAngle * (PI / 180);
 	model = glm::rotate(model, direction * rad, yAxis);
-	drawSchiff();
+
+
 	drawPlanetOne();
 	drawPlanetTwo();
+
+
+	rad = 2 * rotationMoonAngle * (PI / 180);
+	model = glm::rotate(model, direction * rad, yAxis);
+	model = glm::translate(model, { 0.0f, planetOneLift, 0.0f });
+	drawSchiff();
+
 	model = matrixStack.top();
 	matrixStack.pop();
 
@@ -128,14 +137,13 @@ void SunSystem::liftUpPlanetOne() {
 void SunSystem::liftDownPlanetOne() {
 	if (planetOneLift > -1.5) planetOneLift -= planetOneLiftStep;
 }
-void SunSystem::drawSchiff() {
+void SunSystem::drawSchiff(){
 	matrixStack.push(model);
 	float rad = 90 * (PI / 180);
-	model = glm::translate(model, { -3.0f, 0.0f, 0.0f });
+	model = glm::translate(model, { -1.5f, 0.0f, 0.0f });
 	model = glm::rotate(model, direction * rad, yAxis);
 
 	schiff->draw(model, view, projection);
-	schiff->scale(0.05);
 	model = matrixStack.top();
 	matrixStack.pop();
 }
@@ -289,6 +297,8 @@ void SunSystem::toggleShading() {
 	sun->toggleShading();
 	planet->toggleShading();
 	moon->toggleShading();
+	exSun->toggleShading();
+	schiff->toggleShading();
 }
 void SunSystem::toggleNormalMode() {
 	sun->toggleNormal();
@@ -339,5 +349,17 @@ void SunSystem::scaleObjDown() {
 	if (scaleObj > 0.02) {
 		scaleObj -= 0.01;
 		exSun->scale(scaleObj);
+	}
+}
+void SunSystem::scaleSchiffUp() {
+	if (scaleSchiff < 1) {
+		scaleSchiff += 0.01;
+		schiff->scale(scaleSchiff);
+	}
+}
+void SunSystem::scaleSchiffDown() {
+	if (scaleSchiff > 0.02) {
+		scaleSchiff -= 0.01;
+		schiff->scale(scaleSchiff);
 	}
 }

@@ -397,6 +397,12 @@ void Sphere::getColor() {
 		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
 		colorStr.surfShininess = 32.0f;
 		break;
+	case PURPLE:
+		colorStr.surfKa = glm::vec3{ 0.29f,0.0f,0.51f };
+		colorStr.surfKd = glm::vec3{ 0.50980392f,0.50980392f, 0.0f };
+		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
+		colorStr.surfShininess = 32.0f;
+		break;
 	case RED:
 		colorStr.surfKa = glm::vec3{ 0.0f,0.0f,0.06f };
 		colorStr.surfKd = glm::vec3{ 0.5f,0.0f,0.0f };
@@ -425,6 +431,8 @@ glm::vec3 Sphere::getColor(Color c) {
 	case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
 	case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
 	case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
+	case SILVER: return{0.75f, 0.75f, 0.75f}; break;
+	case PURPLE: return{ 0.29f,0.0f,0.51f }; break;
 
 	}
 }
