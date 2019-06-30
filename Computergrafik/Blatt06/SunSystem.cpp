@@ -44,7 +44,7 @@ void SunSystem::init(glm::vec3 eye) {
 	
 	axis->init();
 
-	exSun->setColor(YELLOW);
+	exSun->setColor(PURPLE);
 	exSun->makeDrawable();
 
 	schiff->setColor(SILVER);

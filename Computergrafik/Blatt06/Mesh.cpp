@@ -583,6 +583,12 @@ void Mesh::setColor(Color c) {
 		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
 		colorStr.surfShininess = 32.0f;
 		break;
+	case PURPLE:
+		colorStr.surfKa = glm::vec3{ 0.29f,0.0f,0.51f };
+		colorStr.surfKd = glm::vec3{ 0.50980392f,0.50980392f, 0.0f };
+		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
+		colorStr.surfShininess = 32.0f;
+		break;
 	case RED:
 		colorStr.surfKa = glm::vec3{ 0.0f,0.0f,0.06f };
 		colorStr.surfKd = glm::vec3{ 0.5f,0.0f,0.0f };
