@@ -630,6 +630,7 @@ void Mesh::setColor(Color c) {
 		colorStr.surfKd = glm::vec3{ 0.50754f, 0.50754f, 0.50754f };
 		colorStr.surfKs = glm::vec3{ 0.508273, 0.508273f, 0.508273f };
 		colorStr.surfShininess = 0.4f;
+		break;
 	}
 }
 
