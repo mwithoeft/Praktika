@@ -40,6 +40,13 @@ public:
 	void setLightVector(const glm::vec4& eye, Lightsource lightsource);
 
 	void toggleShading();
+	void calcScale();
+	glm::vec3 getScaleFactor();
+
+	float xSpace;
+	float ySpace;
+	float zSpace;
+
 
 private:
 
@@ -92,6 +99,8 @@ private:
 	void calcNormals();
 	void setMaterial();
 	glm::vec3 computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c);
+	float min(float x, float y, float z);
+
 
 	struct ColorStr {
 		glm::vec3 surfKa;
