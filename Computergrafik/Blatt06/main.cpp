@@ -56,10 +56,10 @@ glm::mat4x4 projection;
 SunSystem *sunSystem = new SunSystem(&program, &programShaded);
 
 float zNear = 0.1f;
-float zFar  = 10.0f;
+float zFar  = 40.0f;
 float eyeX = 0.0f;
 float eyeY = 3.0f;
-float eyeZ = 6.0f; // for view matrix (zoom)
+float eyeZ = 11.0f; // for view matrix (zoom)
 
 
 glm::vec3 eye(eyeX, eyeY, eyeZ);

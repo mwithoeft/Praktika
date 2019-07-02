@@ -3,10 +3,11 @@
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
 #include "libs/glm/glm/gtx/rotate_vector.hpp"
+#include <iostream>
+#include <fstream>
 
-Mesh::Mesh(cg::GLSLProgram* program, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong) 
-	:program(program), gouraud(gouraud), flat(flat), phong(phong),  blinnphong(blinnphong) {
-	
+Mesh::Mesh(float x, float y, float z, cg::GLSLProgram* program, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong)
+	:program(program), gouraud(gouraud), flat(flat), phong(phong), blinnphong(blinnphong), xSpace(x), ySpace(y), zSpace(z){
 	boundingBox = new BoundingBox();
 }
 
@@ -83,6 +84,7 @@ void Mesh::makeDrawable() {
 				//Debug: std::cout << "I: " << faces.at(i)->v[j] - 1 << std::endl;
 			}
 		}
+		initBoundingBox(glm::mat4x4(1.0f));
 	}
 
 
@@ -158,6 +160,7 @@ void Mesh::initNormals() {
 		intialized = true;
 		calcFaceNormals();
 		if (!hasNormals) calcNormals();
+		scale();
 	}
 
 
@@ -243,6 +246,7 @@ void Mesh::initFaceNormals() {
 }
 
 void Mesh::initBoundingBox(const glm::mat4& model) {
+
 	calcBoundingBox(model);
 
 	boundingBoxIndices.clear();
@@ -327,6 +331,7 @@ void Mesh::initBoundingBox(const glm::mat4& model) {
 }
 
 void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
+	
 	glm::mat4 mv = view * model;
 	// Create mvp.
 	glm::mat4 mvp = projection * mv;
@@ -344,8 +349,6 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 		shader->setUniform("projectionMatrix", projection);
 		shader->setUniform("normalMatrix", nm);
 	}
-
-	glScalef(0.5f, 0.5f, 0.5f);
 	glBindVertexArray(objMesh.vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objMesh.indexBuffer);
 	int size;
@@ -369,6 +372,7 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 		glBindVertexArray(0);
 	}
 
+	
 	if (renderBoundingBox) {
 		initBoundingBox(model);
 		program->use();
@@ -377,7 +381,7 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 		glDrawElements(GL_LINES, objBoundingBox.indexCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-
+	
 }
 
 void Mesh::initShader(cg::GLSLProgram& program, const std::string& vert, const std::string& frag) {
@@ -554,13 +558,27 @@ void Mesh::rotateZ() {
 	}
 }
 
+void Mesh::scale() {
+	calcScale();
+	for (int i = 0; i < drawVertices.size(); i++) {
+		drawVertices[i] = drawVertices[i] * getScaleFactor();
+	}
+	for (int i = 0; i < normalPositions.size(); i++) {
+		normalPositions[i] = normalPositions[i] * getScaleFactor();
+	}
+	for (int i = 0; i < faceNormalPositions.size(); i++) {
+		faceNormalPositions[i] = faceNormalPositions[i] * getScaleFactor();
+	}
+	for (int i = 0; i < normals.size(); i++) {
+		normals[i] = normals[i] * getScaleFactor();
+		normals[i] = glm::normalize(normals[i]);
+	}
+}
+
 glm::vec3 Mesh::computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c) {
 	return glm::normalize(glm::cross(c - a, b - a));
 }
 
-void Mesh::scale(float value) {
-	scaleObj = value;
-}
 
 void Mesh::setColor(Color c) {
 	color = c;
@@ -689,25 +707,41 @@ glm::vec3 Mesh::getColor() {
 
 glm::vec3 Mesh::getScaleFactor() {
 	return glm::vec3(scaleObj, scaleObj, scaleObj);
+	
 }
 
 void Mesh::calcScale() {
+	std::ofstream myfile;
+	myfile.open("LOG.txt");
 	float x = boundingBox->sizeX;
 	float y = boundingBox->sizeY;
 	float z = boundingBox->sizeZ;
-	
+	myfile << "x: " << x << "\n";
+	myfile << "y: " << y << "\n";
+	myfile << "z: " << z << "\n";
+
+	myfile << "xSpace: " << xSpace << "\n";
 	float space = (x * 100) / xSpace;
+	myfile << "space: " << space<< "\n";
 	float xfactor = (100 / space);
+	myfile << "xfactor: " << xfactor<< "\n";
 
 	space = (y * 100) / ySpace;
+	myfile << "space: " << space << "\n";
 	float yfactor = (100 / space);
+	myfile << "yfactor " << yfactor<< "\n";
 
 	space = (z * 100) / zSpace;
+	myfile << "space: " << space << "\n";
 	float zfactor = (100 / space);
+	myfile << "zfactor " << zfactor << "\n";
 
 	float min = Mesh::min(xfactor, yfactor, zfactor);
-	
+	myfile << "min " << min;
+	myfile.close();
+
 	scaleObj = min;
+	
 }
 float Mesh::min(float x, float y, float z) {
 	if (x < y && x < z) return x;

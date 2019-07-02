@@ -122,8 +122,8 @@ private:
 
 
 	float scale = 1.0f;
-	float scaleObj = 0.05f;
-	float scaleSchiff = 0.05;
+	float scaleExSun = 1.0f;
+	float scaleSchiff = 1.0f;
 	unsigned int lightIndex = 0;
 	glm::vec4 lights[2] = {
 	{ 0.0f,  0.0f, 0.0f, 1.0f },

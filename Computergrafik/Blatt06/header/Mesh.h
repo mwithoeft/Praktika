@@ -6,13 +6,12 @@
 #include "Sphere.h"
 #include "GLSLProgram.h"
 #include "BoundingBox.h"
-
 #include <vector>
 
 class Mesh {
 
 public:
-	Mesh(cg::GLSLProgram* program, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong);
+	Mesh(float x, float y, float z, cg::GLSLProgram* program, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong);
 	~Mesh();
 
 	std::vector<Vertex*> vertices;
@@ -30,7 +29,6 @@ public:
 	bool renderBoundingBox = false;
 	void initShader();
 	void calcBoundingBox(const glm::mat4& model);
-	void scale(float value);
 
 	void rotateX();
 	void rotateY();
@@ -89,7 +87,7 @@ private:
 	float normalScale = 0.2f;
 	const float PI = 3.141592653589793;
 
-	float scaleObj = 0.05;
+	float scaleObj;
 
 	void initNormals();
 	void initBoundingBox(const glm::mat4& model);
@@ -100,6 +98,7 @@ private:
 	void setMaterial();
 	glm::vec3 computeNormal(glm::vec3 const& a, glm::vec3 const& b, glm::vec3 const& c);
 	float min(float x, float y, float z);
+	void scale();
 
 
 	struct ColorStr {
