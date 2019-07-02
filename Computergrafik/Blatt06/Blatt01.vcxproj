@@ -171,6 +171,7 @@
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="header\Sphere.h" />
     <ClInclude Include="header\SunSystem.h" />
     <ClInclude Include="header\Vertex.h" />
+    <ClInclude Include="Material.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\shaded.frag" />

@@ -34,10 +34,16 @@ public:
 	void scaleDown();
 	void toggleNormalMode();
 	void toggleMeshNormals();
+	void toggleMeshFaceNormals();
+	void scaleSchiffUp();
+	void scaleSchiffDown();
 
 	void rotateExSunX();
 	void rotateExSunY();
 	void rotateExSunZ();
+
+	void scaleObjUp();
+	void scaleObjDown();
 
 private:
 	std::stack <glm::mat4x4> matrixStack;
@@ -57,6 +63,17 @@ private:
 	cg::GLSLProgram moonProgramPhong;
 	cg::GLSLProgram moonProgramBlinnPhong;
 
+	cg::GLSLProgram exSunProgram;
+	cg::GLSLProgram exSunFlat;
+	cg::GLSLProgram exSunGouraud;
+	cg::GLSLProgram exSunPhong;
+	cg::GLSLProgram exSunBlinnPhong;
+
+	cg::GLSLProgram schiffProgram;
+	cg::GLSLProgram schiffFlat;
+	cg::GLSLProgram schiffGouraud;
+	cg::GLSLProgram schiffPhong;
+	cg::GLSLProgram schiffBlinnPhong;
 
 
 	glm::mat4x4 view;
@@ -69,9 +86,9 @@ private:
 	Sphere* moon;
 
 	ObjParser* objParser;
+	ObjParser* schiffParser;
 	Mesh* exSun;
-	cg::GLSLProgram exSunProgram;
-	cg::GLSLProgram exSunShader;
+	Mesh* schiff;
 
 	Lightsource lightsource = L_POINT;
 
@@ -80,6 +97,8 @@ private:
 
 	void drawPlanetTwo();
 	void drawPlanetTwoMoons();
+
+	void drawSchiff();
 	
 	const glm::vec3 xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
 	const glm::vec3 yAxis = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -101,12 +120,10 @@ private:
 	float rotationMoonAngle = 0.0f;
 	Direction direction = RIGHT;
 
-	float exSunX = 0.0f;
-	float exSunY = 0.0f;
-	float exSunZ = 0.0f;
-
 
 	float scale = 1.0f;
+	float scaleObj = 0.05f;
+	float scaleSchiff = 0.05;
 	unsigned int lightIndex = 0;
 	glm::vec4 lights[2] = {
 	{ 0.0f,  0.0f, 0.0f, 1.0f },

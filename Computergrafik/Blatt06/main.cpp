@@ -1,3 +1,30 @@
+/*Tastenbelegung
+q: Sonnensystem um Z Achse gegen Uhrzeiger drehen
+w: Sonnensystem um Z Achse um Uhrzeiger drehen
+o: Linken Planeten um Z Achse gegen Uhrzeiger drehen
+p: Linken Planeten um Z Achse um Uhrzeiger drehen
+u: Rechten Planeten nach oben verschieben
+i: Rechten Planeten nach unten verschieben
+d: Drehgeschwindigkeit erhöhen
+f: Drehgeschwindigkeit verringern
+n: Normalen an/aus
+m: Wireframe an/aus
+l: Lichtwuelle wechseln
+k: Schatten wechseln
+j:sunSystem->toggleNormalMode();
++: Zoom rein
+-: Zoom raus
+b: Box an/aus
+,: Mesh Normalen an/aus
+.: Mesh Face Normalen an/aus
+x: Rotieren des Obj um x
+y: Rotieren des Obj um y
+z: Rotieren des Obj um z
+*: Zoom Obj rein
+#: Zoom Obj raus
+t: Raumschiff kleiner
+g: Raumschiff größer
+*/
 #include <iostream>
 #include <vector>
 
@@ -29,10 +56,11 @@ glm::mat4x4 projection;
 SunSystem *sunSystem = new SunSystem(&program, &programShaded);
 
 float zNear = 0.1f;
-float zFar  = 100.0f;
+float zFar  = 10.0f;
 float eyeX = 0.0f;
-float eyeY = 50.0f;
-float eyeZ = 40.0f; // for view matrix (zoom)
+float eyeY = 3.0f;
+float eyeZ = 6.0f; // for view matrix (zoom)
+
 
 glm::vec3 eye(eyeX, eyeY, eyeZ);
 glm::vec3 center(0.0f, 0.0f, 0.0f);
@@ -138,9 +166,6 @@ void glutKeyboard (unsigned char keycode, int x, int y)
   case 'k':
 	  sunSystem->toggleShading();
 	  break;
-  case 'j':
-	  sunSystem->toggleNormalMode();
-	  break;
   case '+':
 	  sunSystem->scaleUp();
 	  break;
@@ -153,6 +178,9 @@ void glutKeyboard (unsigned char keycode, int x, int y)
   case ',':
 		sunSystem->toggleMeshNormals();
 	  break;
+  case '.':
+	  sunSystem->toggleMeshFaceNormals();
+	  break;
   case 'x':
 	  sunSystem->rotateExSunX();
 	  break;
@@ -161,6 +189,18 @@ void glutKeyboard (unsigned char keycode, int x, int y)
 	  break;
   case 'z':
 	  sunSystem->rotateExSunZ();
+	  break;
+  case '*':
+	  sunSystem->scaleObjUp();
+	  break;
+  case '#':
+	  sunSystem->scaleObjDown();
+	  break;
+  case 't':
+	  sunSystem->scaleSchiffUp();
+	  break;
+  case 'g':
+	  sunSystem->scaleSchiffDown();
 	  break;
   }
 

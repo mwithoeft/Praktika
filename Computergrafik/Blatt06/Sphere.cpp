@@ -5,6 +5,7 @@
 
 Sphere::Sphere(cg::GLSLProgram* prog, cg::GLSLProgram* flat, cg::GLSLProgram* gouraud, cg::GLSLProgram* phong, cg::GLSLProgram* blinnphong, int s, int r)
 	: program(prog), programFlat(flat), programGouraud(gouraud), programPhong(phong), programBlinnPhong(blinnphong), stacks(s), radius(r) {
+	
 }
 
 Sphere::~Sphere()
@@ -279,8 +280,6 @@ void Sphere::setLightVector(const glm::vec4& eye, Lightsource lightsource)
 		}
 		shader->setUniform("lightI", float(1.0f));
 	}
-
-
 }
 
 void Sphere::buildNormalVector() {
@@ -398,11 +397,23 @@ void Sphere::getColor() {
 		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
 		colorStr.surfShininess = 32.0f;
 		break;
+	case PURPLE:
+		colorStr.surfKa = glm::vec3{ 0.29f,0.0f,0.51f };
+		colorStr.surfKd = glm::vec3{ 0.50980392f,0.50980392f, 0.0f };
+		colorStr.surfKs = glm::vec3{ 0.50196078f,0.50196078f,0.50196078f };
+		colorStr.surfShininess = 32.0f;
+		break;
 	case RED:
 		colorStr.surfKa = glm::vec3{ 0.0f,0.0f,0.06f };
 		colorStr.surfKd = glm::vec3{ 0.5f,0.0f,0.0f };
 		colorStr.surfKs = glm::vec3{ 0.7f,0.6f,0.6f };
 		colorStr.surfShininess = 32.0f;
+		break;
+	case SILVER:
+		colorStr.surfKa = glm::vec3{ 0.19225f, 0.19225f, 0.19225 };
+		colorStr.surfKd = glm::vec3{ 0.50754f, 0.50754f, 0.50754f };
+		colorStr.surfKs = glm::vec3{ 0.508273, 0.508273f, 0.508273f };
+		colorStr.surfShininess = 0.4f;
 		break;
 	}
 }
@@ -421,6 +432,8 @@ glm::vec3 Sphere::getColor(Color c) {
 	case YELLOW: return { 1.0f, 1.0f, 0.0f }; break;
 	case CYAN: return { 0.0f, 1.0f, 1.0f }; break;
 	case MAGENTA: return { 1.0f, 0.0f, 1.0f }; break;
+	case SILVER: return{0.75f, 0.75f, 0.75f}; break;
+	case PURPLE: return{ 0.29f,0.0f,0.51f }; break;
 
 	}
 }

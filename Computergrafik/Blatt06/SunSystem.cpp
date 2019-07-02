@@ -1,3 +1,4 @@
+
 #include "header/SunSystem.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/freeglut.h>
@@ -12,8 +13,12 @@ SunSystem::SunSystem(cg::GLSLProgram* prog, cg::GLSLProgram* shProg)
 	planet = new Sphere(&program , &planetProgram, &planetProgramShaded, &planetProgramPhong, &planetProgramBlinnPhong, planetStacks, 50);
 
 	objParser = new ObjParser();
-	exSun = new Mesh(&exSunProgram, &exSunShader);
-	objParser->parseObj("Raumschiff.obj", *exSun);
+	exSun = new Mesh(&exSunProgram, &exSunFlat , &exSunGouraud, &exSunPhong, &exSunBlinnPhong);
+	objParser->parseObj("lamp.obj", *exSun);
+
+	schiffParser = new ObjParser();
+	schiff = new Mesh(&schiffProgram, &schiffFlat, &schiffGouraud, &schiffPhong, &schiffBlinnPhong);
+	schiffParser->parseObj("Waluigi.obj", *schiff);
 }
 
 SunSystem::~SunSystem()
@@ -25,6 +30,8 @@ SunSystem::~SunSystem()
 
 	delete exSun;
 	delete objParser;
+	delete schiff;
+	delete schiffParser;
 }
 
 void SunSystem::init(glm::vec3 eye) {
@@ -36,12 +43,21 @@ void SunSystem::init(glm::vec3 eye) {
 	moon->init();
 	
 	axis->init();
+
+	exSun->setColor(PURPLE);
+	exSun->makeDrawable();
+
+	//schiff->scale(0.05);
+	schiff->setColor(SILVER);
+	schiff->makeDrawable();
+
 	glm::vec4 eyeVec4 = glm::vec4(eye[0], eye[1], eye[2], 1.0f);
 	sun->setLightVector(eyeVec4, lightsource);
 	planet->setLightVector(eyeVec4, lightsource);
 	moon->setLightVector(eyeVec4, lightsource);
+	exSun->setLightVector(eyeVec4, lightsource);
+	schiff->setLightVector(eyeVec4, lightsource);
 
-	exSun->makeDrawable();
 }
 void SunSystem::draw() {
 	/* Monde drehen sich doppelt so schnell, um den Unterschied zu sehen */
@@ -63,24 +79,25 @@ void SunSystem::draw() {
 	axis->draw(model, view, projection);
 
 	/* Malen der ehemaligen Sonne*/
-		matrixStack.push(model);
-		rad = exSunX * (PI / 180);
-		model = glm::rotate(model, rad, xAxis);
-		rad = exSunY * (PI / 180);
-		model = glm::rotate(model, rad, yAxis);
-		rad = exSunZ * (PI / 180);
-		model = glm::rotate(model, rad, zAxis);
-		exSun->draw(model, view, projection);
-		model = matrixStack.top();
-
-		matrixStack.pop();
+	matrixStack.push(model);
+	exSun->draw(model, view, projection);
+	model = matrixStack.top();
+	matrixStack.pop();
 
 	matrixStack.push(model);
 	rad = rotationAngle * (PI / 180);
 	model = glm::rotate(model, direction * rad, yAxis);
 
+
 	drawPlanetOne();
 	drawPlanetTwo();
+
+
+	rad = 2 * rotationMoonAngle * (PI / 180);
+	model = glm::rotate(model, direction * rad, yAxis);
+	model = glm::translate(model, { 0.0f, planetOneLift, 0.0f });
+	drawSchiff();
+
 	model = matrixStack.top();
 	matrixStack.pop();
 
@@ -114,37 +131,45 @@ void SunSystem::increaseSpeed() {
 void SunSystem::decreaseSpeed() {
 	if (speed > 0.04f) speed -= speedStep;
 }
-
 void SunSystem::liftUpPlanetOne() {
 	if (planetOneLift < 1.5) planetOneLift += planetOneLiftStep;
 }
 void SunSystem::liftDownPlanetOne() {
 	if (planetOneLift > -1.5) planetOneLift -= planetOneLiftStep;
 }
+void SunSystem::drawSchiff(){
+	matrixStack.push(model);
+	float rad = 90 * (PI / 180);
+	model = glm::translate(model, { -1.5f, 0.0f, 0.0f });
+	model = glm::rotate(model, direction * rad, yAxis);
 
+	schiff->draw(model, view, projection);
+	model = matrixStack.top();
+	matrixStack.pop();
+}
 void SunSystem::drawPlanetOne() {
 	/* Zeichnen der Achse von Planet 1 */
 	matrixStack.push(model);
 	model = glm::translate(model, {3.0f, 0.0f, 0.0f});
 	axis->draw(model, view, projection);
 
-		/* Zeichen von Planet 1 mit Rotation um sich selbst */
-		matrixStack.push(model);
-		float rad = rotationAngle * (PI / 180);
-		model = glm::rotate(model, direction * rad, yAxis);
-		model = glm::translate(model, { 0.0f, planetOneLift, 0.0f });
-		planet->draw(model, view, projection);
-		model = matrixStack.top();
-		matrixStack.pop();
+	/* Zeichen von Planet 1 mit Rotation um sich selbst */
+	matrixStack.push(model);
+	float rad = rotationAngle * (PI / 180);
+	model = glm::rotate(model, direction * rad, yAxis);
+	model = glm::translate(model, { 0.0f, planetOneLift, 0.0f });
+	planet->draw(model, view, projection);
+	model = matrixStack.top();
+	matrixStack.pop();
 		
-		/* Zeichen der Monde mit Rotation um Planet 1 (doppelt so schnelle Rotation) */
-		matrixStack.push(model);
-		rad = rotationMoonAngle * (PI / 180);
-		model = glm::rotate(model, direction * rad, yAxis);
-		model = glm::translate(model, { 0.0f, planetOneLift, 0.0f });
-		drawPlanetOneMoons();
-		model = matrixStack.top();
-		matrixStack.pop();
+	/* Zeichen der Monde mit Rotation um Planet 1 (doppelt so schnelle Rotation) */
+	matrixStack.push(model);
+	rad = rotationMoonAngle * (PI / 180);
+	model = glm::rotate(model, direction * rad, yAxis);
+	model = glm::translate(model, { 0.0f, planetOneLift, 0.0f });
+	drawPlanetOneMoons();
+	model = matrixStack.top();
+	matrixStack.pop();
 
 	model = matrixStack.top();
 	matrixStack.pop();
@@ -272,6 +297,8 @@ void SunSystem::toggleShading() {
 	sun->toggleShading();
 	planet->toggleShading();
 	moon->toggleShading();
+	exSun->toggleShading();
+	schiff->toggleShading();
 }
 void SunSystem::toggleNormalMode() {
 	sun->toggleNormal();
@@ -282,22 +309,57 @@ void SunSystem::toggleNormalMode() {
 void SunSystem::toggleMeshNormals() {
 	if (exSun->hasNormals) {
 		exSun->renderNormals = !exSun->renderNormals;
+		schiff->renderNormals = !schiff->renderNormals;
 	}
 	else {
-		std::cout << "Das Mesh hat keine Normalen!" << std::endl;
+		exSun->renderNormals = !exSun->renderNormals;
+		schiff->renderNormals = !schiff->renderNormals;
+		std::cout << "Das Mesh hat keine Normalen, aber wir haben mal eben welche berechnet!" << std::endl;
 	}
+}
+
+void SunSystem::toggleMeshFaceNormals() {
+	exSun->renderFaceNormals = !exSun->renderFaceNormals;
+	schiff->renderFaceNormals = !schiff->renderFaceNormals;
 }
 
 void SunSystem::toggleBoundingBox() {
 	exSun->renderBoundingBox = !exSun->renderBoundingBox;
+	schiff->renderBoundingBox = !schiff->renderBoundingBox;
 }
 
 void SunSystem::rotateExSunX() {
-	exSunX += 3;
+	exSun->rotateX();
 }
 void SunSystem::rotateExSunY() {
-	exSunY += 3;
+	exSun->rotateY();
 }
 void SunSystem::rotateExSunZ() {
-	exSunZ += 3;
+	exSun->rotateZ();
+}
+
+void SunSystem::scaleObjUp() {
+	if (scaleObj < 0.1) {
+		scaleObj += 0.01;
+		exSun->scale(scaleObj);
+	}
+
+}
+void SunSystem::scaleObjDown() {
+	if (scaleObj > 0.02) {
+		scaleObj -= 0.01;
+		exSun->scale(scaleObj);
+	}
+}
+void SunSystem::scaleSchiffUp() {
+	if (scaleSchiff < 1) {
+		scaleSchiff += 0.01;
+		schiff->scale(scaleSchiff);
+	}
+}
+void SunSystem::scaleSchiffDown() {
+	if (scaleSchiff > 0.02) {
+		scaleSchiff -= 0.01;
+		schiff->scale(scaleSchiff);
+	}
 }

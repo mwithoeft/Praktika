@@ -4,7 +4,7 @@
 
 
 
-enum Color { EMERALD, RUBY, RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA };
+enum Color { EMERALD, RUBY, RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA, SILVER, PURPLE};
 enum Shading { FLAT, GOURAUD, PHONG, BLINNPHONG};
 enum Lightsource { L_POINT, L_DIRECTION };
 
@@ -63,6 +63,7 @@ private :
 
 	Color color = YELLOW;
 	Color normalsColor = CYAN;
+
 
 	bool normale = true;
 
