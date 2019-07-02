@@ -80,6 +80,7 @@ void SunSystem::draw() {
 
 	/* Malen der ehemaligen Sonne*/
 	matrixStack.push(model);
+	model = glm::scale(model, exSun->getScaleFactor());
 	exSun->draw(model, view, projection);
 	model = matrixStack.top();
 	matrixStack.pop();

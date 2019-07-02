@@ -327,7 +327,7 @@ void Mesh::initBoundingBox(const glm::mat4& model) {
 }
 
 void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
-	glm::mat4 mv = view * glm::scale(model, glm::vec3(scaleObj, scaleObj, scaleObj));
+	glm::mat4 mv = view * model;
 	// Create mvp.
 	glm::mat4 mvp = projection * mv;
 	glm::mat3 nm = glm::inverseTranspose(glm::mat3(model));
@@ -370,7 +370,7 @@ void Mesh::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 	}
 
 	if (renderBoundingBox) {
-		initBoundingBox(glm::scale(model, glm::vec3(scaleObj, scaleObj, scaleObj)));
+		initBoundingBox(model);
 		program->use();
 		program->setUniform("mvp", projection* view);
 		glBindVertexArray(objBoundingBox.vao);
@@ -686,3 +686,32 @@ glm::vec3 Mesh::getColor() {
 
 	}
 }
+
+glm::vec3 Mesh::getScaleFactor() {
+	return glm::vec3(scaleObj, scaleObj, scaleObj);
+}
+
+void Mesh::calcScale() {
+	float x = boundingBox->sizeX;
+	float y = boundingBox->sizeY;
+	float z = boundingBox->sizeZ;
+	
+	float space = (x * 100) / xSpace;
+	float xfactor = (100 / space);
+
+	space = (y * 100) / ySpace;
+	float yfactor = (100 / space);
+
+	space = (z * 100) / zSpace;
+	float zfactor = (100 / space);
+
+	float min = Mesh::min(xfactor, yfactor, zfactor);
+	
+	scaleObj = min;
+}
+float Mesh::min(float x, float y, float z) {
+	if (x < y && x < z) return x;
+	if (y < x && y < z) return y;
+	if (z < y && z < x) return z;
+}
+
