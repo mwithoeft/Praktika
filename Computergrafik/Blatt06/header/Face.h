@@ -13,8 +13,6 @@ public:
 	std::vector<unsigned int> vt;
 	std::vector<unsigned int> vn;
 
-	unsigned int id;
-
 private:
 
 };

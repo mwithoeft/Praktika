@@ -38,7 +38,6 @@ bool ObjParser::parseObj(const std::string &path, Mesh& mesh) {
 			float x, y, z;
 			sscanf_s(Line.c_str(), "%*s %f %f %f", &x, &y, &z);
 			v->position = glm::vec3(x, y, z);
-			v->id = mesh.vertices.size() + 1; //.obj fängt ja bei 1 an
 			mesh.vertices.push_back(v);
 			logfile << "Vertex eingelesen: " << x << " " << y << " " << z << std::endl;
 		}
@@ -60,7 +59,6 @@ bool ObjParser::parseObj(const std::string &path, Mesh& mesh) {
 
 		else if (Name == "f") {// Face
 			Face* f = new Face();
-			f->id = mesh.faces.size() + 1;
 
 			std::istringstream tokenizer(Line);
 			std::vector<std::string> tokens;

@@ -13,5 +13,4 @@ public:
 	glm::vec3 position;
 
 	std::vector<glm::vec3> faceNormals;
-	unsigned int id;
 };
